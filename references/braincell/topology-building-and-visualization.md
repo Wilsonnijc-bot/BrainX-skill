@@ -8,9 +8,9 @@ Use when building, inspecting, validating, or explaining the runtime topology of
 
 ## Used by
 
-- `skills/brainx-debugging-diagnostics/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
 - `references/braincell/braincell-manual-morphology-construction.md`
+- `references/diagnostics/common-failures-index.md`
 
 ## Open when
 

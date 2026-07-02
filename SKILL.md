@@ -1,6 +1,6 @@
 ---
 name: brainx-skill-bundle
-description: Routes BrainX requests across BrainUnit, BrainState, BrainCell, morphology, debugging, performance acceleration, installation, and skill evolution. Use when a request involves BrainX generally, requires choosing the correct BrainX package or skill, or should use BrainX tools instead of ad hoc NumPy/JAX simulation code.
+description: Routes BrainX requests across BrainUnit, BrainState, BrainCell, morphology, diagnostics references, performance acceleration, and installation. Use when a request involves BrainX generally, requires choosing the correct BrainX package or skill, or should use BrainX tools instead of ad hoc NumPy/JAX simulation code.
 ---
 
 # BrainX Skill Bundle Router
@@ -69,13 +69,13 @@ Use `skills/brainstate-module-building/SKILL.md` for Modules, layers, compositio
 
 Use `skills/brainstate-brain-dynamics/SKILL.md` for BrainState / brainpy.state-style neural dynamics: Dynamics modules, `update()`, LIF-like models, state evolution, spiking populations, synaptic delays, event-driven spike operators, or SNN simulation/training.
 
-Use `skills/brainstate-parameter-constraints-regularization/SKILL.md` for learnable parameters, constrained parameters, parameter transforms, and regularization.
+Use `references/brainstate/parameter-constraints-regularization.md` for learnable parameters, constrained parameters, parameter transforms, and regularization.
 
 Use `skills/brainstate-transformations-core/SKILL.md` for JIT, gradients, vectorization, batching, sweeps, transformed execution, and state-aware BrainState transforms.
 
 Use `skills/brainx-accelerate/SKILL.md` when auditing or refactoring BrainX/BrainState simulation code for performance, replacing slow Python/NumPy loops with state-aware BrainState transform patterns, or benchmarking `jit`, `scan`, `vmap`, `grad`, checkpointed scans, multi-device mapping, shape stability, RNG safety, and warm runtime.
 
-Use `skills/brainstate-control-flow/SKILL.md` when looping or branching must remain valid under JAX/BrainState transformations.
+Use `references/brainstate/brainstate-control-flow-patterns.md` when looping or branching must remain valid under JAX/BrainState transformations.
 
 Use `skills/brainstate-deeplearning-training/SKILL.md` for losses, optimizers, metrics, training steps, evaluation, and training loops.
 
@@ -87,7 +87,8 @@ BrainState routing shortcuts:
   → `skills/brainstate-brain-dynamics/SKILL.md`
 
 - Looping or branching that must remain valid under `jit` / `grad` / `vmap`:
-  → `skills/brainstate-control-flow/SKILL.md`
+  → `skills/brainstate-transformations-core/SKILL.md`
+  → `references/brainstate/brainstate-control-flow-patterns.md`
 
 - Performance audit or acceleration of BrainX/BrainState simulation code:
   → `skills/brainx-accelerate/SKILL.md`
@@ -98,7 +99,8 @@ BrainState routing shortcuts:
 
 - Training RNN / SNN / time-unrolled dynamics:
   → `skills/brainstate-deeplearning-training/SKILL.md`
-  → `skills/brainstate-control-flow/SKILL.md`
+  → `skills/brainstate-transformations-core/SKILL.md`
+  → `references/brainstate/brainstate-control-flow-patterns.md`
   → `skills/brainstate-brain-dynamics/SKILL.md` when spiking/neural-dynamics-specific.
 
 - Seeds / stochasticity / random initialization / dropout / random batches / random connectivity / random spike trains / reproducibility:
@@ -124,16 +126,16 @@ BrainState routing shortcuts:
   → `references/braincell/braincell-manual-morphology-construction.md`
   → `references/braincell/morphology-io-loading-validation.md` for file loading and validation.
 
-- Probes, traces, NodeTree, NaN, transformed debugging, wrong runtime behavior:
-  → `skills/brainx-debugging-diagnostics/SKILL.md`
+- Probes, traces, NodeTree, transformed debugging, wrong runtime behavior:
+  → `references/diagnostics/common-failures-index.md`
+  → `references/diagnostics/brainstate-transformed-diagnostics.md` for transformed BrainState runtime diagnostics.
+  → `references/braincell/probe-reference.md` or `references/braincell/topology-building-and-visualization.md` for BrainCell runtime/probe issues.
 
 ### Debugging and diagnostics
 
-Use `skills/brainx-debugging-diagnostics/SKILL.md` when the user asks why something fails, returns NaN, produces tracers, does not update state, records no trace, attaches probes incorrectly, or behaves unexpectedly under `jit`, `grad`, `vmap`, control flow, or BrainCell runtime.
+Use `references/diagnostics/common-failures-index.md` as the first router when the user asks why something fails, returns NaN, produces tracers, does not update state, records no trace, attaches probes incorrectly, or behaves unexpectedly under `jit`, `grad`, `vmap`, control flow, or BrainCell runtime.
 
-### Skill evolution
-
-Use `skills/skill-evolution/SKILL.md` when adding, refactoring, or validating this skill bundle.
+Use `references/diagnostics/brainstate-transformed-diagnostics.md` for transformed-code debugging under `jit`, `grad`, `vmap`, callbacks, runtime checks, NaN/Inf checks, and traced-value diagnostics.
 
 ## Control-flow routing rule
 
@@ -145,10 +147,10 @@ A fixed call graph is module structure. A runtime-dependent or repeated call gra
 
 ## Debugging routing rule
 
-Transformed-code debugging and BrainCell runtime debugging share one diagnostic skill.
+Transformed-code debugging and BrainCell runtime debugging share the diagnostics references.
 
-- Tracers, transformed prints, callbacks, runtime checks, NaNs, assertions, and breakpoints route to `brainx-debugging-diagnostics`.
-- Missing BrainCell traces, wrong probe targets, wrong runtime topology, wrong CVs, and wrong locsets also route to `brainx-debugging-diagnostics`.
+- Tracers, transformed prints, callbacks, runtime checks, NaNs, assertions, and breakpoints route to `references/diagnostics/brainstate-transformed-diagnostics.md`.
+- Missing BrainCell traces, wrong probe targets, wrong runtime topology, wrong CVs, and wrong locsets route to `references/braincell/probe-reference.md`, `references/braincell/topology-building-and-visualization.md`, and `references/diagnostics/common-failures-index.md`.
 
 ## Randomness routing rule
 

@@ -7,7 +7,7 @@ Detail how gradients and autodiff should be taught after the Transformations Cor
 ## Used by
 
 - `skills/brainstate-transformations-core/SKILL.md`
-- `skills/brainstate-parameter-constraints-regularization/SKILL.md`
+- `references/brainstate/parameter-constraints-regularization.md`
 - `skills/brainstate-deeplearning-training/SKILL.md`
 - `skills/braincell-singlecell/SKILL.md`
 

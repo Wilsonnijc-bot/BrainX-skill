@@ -31,14 +31,14 @@ Collect build, simulate, and train workflows for BrainState-style spiking neural
 ## Section 3: Routes
 
 - For generic optimizer/loss/metrics: `skills/brainstate-deeplearning-training/SKILL.md`.
-- For time loops/branches: `skills/brainstate-control-flow/SKILL.md`.
+- For time loops/branches: `skills/brainstate-transformations-core/SKILL.md` and `references/brainstate/brainstate-control-flow-patterns.md`.
 - For stochastic data/dropout/random spikes: `skills/brainstate-randomness-reproducibility/SKILL.md`.
 - For constrained trainable dynamics parameters: `references/brainstate/parameter-constraints-regularization.md`.
 - For sparse spiking connectivity: `references/brain-dynamics/brain-dynamics-event-driven-operators.md`.
 
 ## Section 4: Control-flow boundary
 
-Open `brainstate-control-flow` when the SNN simulation or loss unrolls over time inside transformed execution, especially under `jit`, `grad`, or `vmap`.
+Open `references/brainstate/brainstate-control-flow-patterns.md` when the SNN simulation or loss unrolls over time inside transformed execution, especially under `jit`, `grad`, or `vmap`.
 
 Do not open control flow for the ordinary Python epoch loop outside transformed code.
 

@@ -2,13 +2,13 @@
 
 ## Purpose
 
-Collect detailed loop and branch patterns for the BrainState Control Flow skill.
+Collect detailed loop and branch patterns for BrainState transformations and acceleration workflows.
 
 ## Used by
 
-- `skills/brainstate-control-flow/SKILL.md`
 - `skills/brainstate-module-building/SKILL.md`
 - `skills/brainstate-transformations-core/SKILL.md`
+- `skills/brainx-accelerate/SKILL.md`
 
 ## Primary source pages to expand from
 

@@ -10,7 +10,7 @@ Use when the user wants to record, sample, inspect, or debug BrainCell runtime s
 
 - `skills/braincell-singlecell/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/brainx-debugging-diagnostics/SKILL.md`
+- `references/diagnostics/common-failures-index.md`
 
 ## Probe types
 
