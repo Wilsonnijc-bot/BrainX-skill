@@ -6,8 +6,8 @@ Provide a unified reference for morphology import paths, validation reports/opti
 
 ## Used by
 
-- `skills/morphology-building/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
+- `references/braincell/braincell-manual-morphology-construction.md`
 
 ## Primary source pages to expand from
 

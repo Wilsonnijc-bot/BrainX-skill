@@ -10,7 +10,7 @@ Catalog BrainCell/BrainState integration and solver choices with their modeling 
 - `skills/brainx-general-guard/SKILL.md`
 - `skills/braincell-singlecell/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/braincell-ion-channel-authoring/SKILL.md`
+- `references/braincell/braincell-custom-ion-channel-authoring.md`
 
 ## Primary source pages to expand from
 

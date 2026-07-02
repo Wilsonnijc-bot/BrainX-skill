@@ -116,10 +116,13 @@ BrainState routing shortcuts:
   → `skills/braincell-multicompartment/SKILL.md`
 
 - Custom ion/channel mechanism:
-  → `skills/braincell-ion-channel-authoring/SKILL.md`
+  → `skills/braincell-singlecell/SKILL.md` or `skills/braincell-multicompartment/SKILL.md` based on whether geometry matters.
+  → `references/braincell/braincell-custom-ion-channel-authoring.md` for custom channel authoring details.
 
 - Morphology construction/loading/validation before full Cell creation:
-  → `skills/morphology-building/SKILL.md`
+  → `skills/braincell-multicompartment/SKILL.md`
+  → `references/braincell/braincell-manual-morphology-construction.md`
+  → `references/braincell/morphology-io-loading-validation.md` for file loading and validation.
 
 - Probes, traces, NodeTree, NaN, transformed debugging, wrong runtime behavior:
   → `skills/brainx-debugging-diagnostics/SKILL.md`

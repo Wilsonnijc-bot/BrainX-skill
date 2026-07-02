@@ -1,25 +1,20 @@
----
-name: morphology-building
-description: Guides BrainCell morphology construction and loading, including branches, points, topology, typed cables, SWC, ASC, NeuroML2, NeuroMorpho imports, validation, and checkpoints. Use when the user asks to build, inspect, import, repair, validate, visualize, or prepare neuronal morphology before creating a BrainCell Cell.
----
-
-# Morphology Building Skill
+# BrainCell Manual Morphology Construction
 
 ## Purpose
 
 Teach the agent how to build, load, validate, and inspect neuronal morphology before BrainCell multicompartment modeling.
 
-## When to use this skill
+## Open when
 
-Use when the user asks about morphology files, SWC, ASC, NeuroML2, NeuroMorpho, branches, points, topology, soma/dendrite/axon structure, geometry, morphology validation, or morphology visualization.
+Open when the user asks about morphology files, SWC, ASC, NeuroML2, NeuroMorpho, branches, points, topology, soma/dendrite/axon structure, geometry, morphology validation, or morphology visualization.
 
-## When not to use this skill
+## Do not use for
 
 Do not use for mechanism dynamics, solver choice, channel kinetics, or training unless morphology is the main issue.
 
 Do not use for single-compartment models where geometry is intentionally ignored.
 
-## What information this skill should eventually cover
+## What information this reference should eventually cover
 
 - Morphology as branch geometry and topology.
 - Branch points and typed cables.
@@ -45,14 +40,13 @@ Do not use for single-compartment models where geometry is intentionally ignored
 
 ## Required / useful reference markdowns
 
-- `references/braincell/morphology-loading-paths.md`
-- `references/braincell/morphology-io-validation.md`
+- `references/braincell/morphology-io-loading-validation.md`
 - `references/libraries/filter-function-library.md`
 - `references/libraries/cv-policy-reference.md`
 - `references/braincell/topology-building-and-visualization.md`
 - `references/diagnostics/common-failures-index.md`
 
-## Common mistakes this skill should prevent
+## Common mistakes this reference should prevent
 
 - Assuming file metadata guarantees valid morphology.
 - Assuming NeuroML2 morphology import also imports mechanisms.

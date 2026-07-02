@@ -3,66 +3,69 @@ name: brainstate-brain-dynamics
 description: Use when the user wants BrainState or brainpy.state-style neural dynamics, including Dynamics modules, update(), LIF-like models, state evolution, spiking populations, synaptic delays, event-driven spike operators, or SNN simulation and training.
 ---
 
-brainstate-brain-dynamics/
+# brainstate-brain-dynamics/
 
-Concepts
+## Concepts
 
 • what this skill is for
-Use when the task is BrainState dynamics/integration: Dynamics modules, time stepping, update flow, before/after hooks, delays, and simulation loops. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Use when the task is BrainState dynamics/integration: Dynamics modules, time stepping, update flow, before/after hooks, delays, and simulation loops. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • brain models as dynamical systems
-Brain models are dynamical systems: state variables that evolve over time according to update rules. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Brain models are dynamical systems: state variables that evolve over time according to update rules. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • Dynamics
-Dynamics is a module that defines how state variables evolve over time in neural or other dynamical systems. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Dynamics is a module that defines how state variables evolve over time in neural or other dynamical systems. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • element-wise principle
-State updates only affect local variables and do not include cross-unit interactions. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+State updates only affect local variables and do not include cross-unit interactions. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • what Dynamics is not
-Dynamics does not include synaptic connections, network connectivity, or inter-neuron interactions. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Dynamics does not include synaptic connections, network connectivity, or inter-neuron interactions. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • architecture flow
-Input → connection modules → dynamics modules → output. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Input → connection modules → dynamics modules → output. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • update flow
-Every Dynamics module must implement update(), which defines how state variables evolve in time. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Every Dynamics module must implement update(), which defines how state variables evolve in time. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • input / output / states / parameters
-Input is external drive; output is observable quantity; states are dynamic variables; parameters are constants that don’t change during simulation. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Input is external drive; output is observable quantity; states are dynamic variables; parameters are constants that don’t change during simulation. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • before / after update mechanism
-Dynamics supports before-update and after-update hooks to insert custom logic at specific points in the update cycle. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Dynamics supports before-update and after-update hooks to insert custom logic at specific points in the update cycle. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • input/output size definition
-Dynamics modules use in_size to define the geometry of the neuron population; out_size defaults to the same as in_size. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Dynamics modules use in_size to define the geometry of the neuron population; out_size defaults to the same as in_size. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • delay support
-Dynamics naturally supports temporal delays through the after-update mechanism. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Dynamics naturally supports temporal delays through the after-update mechanism. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
 • BrainCell / BrainPy boundary note
-Do not turn this into a BrainCell morphology or single-cell skill; the official BrainState SNN workflow says concrete LIF, synapse, and projection models live in companion brainpy.state and wire together as ordinary BrainState modules. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html  
+Do not turn this into a BrainCell morphology or single-cell skill; the official BrainState SNN workflow says concrete LIF, synapse, and projection models live in companion brainpy.state and wire together as ordinary BrainState modules. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
 
-Mini title
+### Mini title
 
 Simulation time-step setup
 
-Script
+#### Script
 
+```python
 brainstate.environ.set(dt=0.1 * u.ms)
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-Set the simulation time step before running the dynamics model. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Set the simulation time step before running the dynamics model. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 Minimal element-wise Dynamics module
 
-Script
+#### Script
 
+```python
 class ExponentialDecay(brainstate.nn.Dynamics):
     """Simple exponential decay dynamics: τ dv/dt = -v"""
     def __init__(self, size, tau=10.0 * u.ms):
@@ -77,19 +80,21 @@ class ExponentialDecay(brainstate.nn.Dynamics):
 dynamics = ExponentialDecay(size=(5,), tau=5.0 * u.ms)
 inp = jnp.array([1.0, 0.5, 0.0, -0.5, -1.0])
 output = dynamics(inp)
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-This demonstrates the element-wise principle: each element evolves independently. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+This demonstrates the element-wise principle: each element evolves independently. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 Minimal LIF dynamics module
 
-Script
+#### Script
 
+```python
 class SimpleLIF(brainstate.nn.Dynamics):
     """Leaky Integrate-and-Fire neuron dynamics.
     Equation: τ dV/dt = -(V - V_rest) + R*I
@@ -114,19 +119,21 @@ class SimpleLIF(brainstate.nn.Dynamics):
         self.V.value = u.math.where(self.spike.value, self.V_reset, self.V.value)
         return self.spike.value
 lif = SimpleLIF(size=(3,))
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-The LIF example updates membrane potential, detects spikes, resets spiking neurons, and returns spike events. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+The LIF example updates membrane potential, detects spikes, resets spiking neurons, and returns spike events. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 Simulation loop with for_loop
 
-Script
+#### Script
 
+```python
 lif.V.value = jnp.ones(3) * lif.V_rest
 lif.spike.value = jnp.zeros(3, dtype=bool)
 duration = 100 * u.ms
@@ -138,51 +145,57 @@ def step_run(t):
         spikes = lif(I_inputs)
         return lif.V.value, spikes
 V_history, spike_history = brainstate.transform.for_loop(step_run, times)
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-Use brainstate.transform.for_loop for trajectory simulation instead of a plain Python loop when compiling the run matters. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Use brainstate.transform.for_loop for trajectory simulation instead of a plain Python loop when compiling the run matters. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 Before / after update hooks
 
-Script
+#### Script
 
+```python
 dynamics.add_before_update(key, function)
 dynamics.add_after_update(key, function)
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-Default flow: before-update receives no update() input parameters; after-update receives the update() return value. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+Default flow: before-update receives no update() input parameters; after-update receives the update() return value. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 Delay support minimal pattern
 
-Script
+#### Script
 
+```python
 delayed_output = dynamics.output_delay(5.0 * u.ms)
 value = delayed_output()
 delayed_V = dynamics.prefetch_delay('V', delay_time=5.0 * u.ms)
 v_delayed = delayed_V()
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Explanation text
+#### Explanation text
 
-After each update(), the delay buffer is automatically updated through the after-update hook; no manual management required. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html  
+After each update(), the delay buffer is automatically updated through the after-update hook; no manual management required. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/01_dynamics_and_integration.html
 
-Mini title
+### Mini title
 
 BrainPy-state SNN workflow note
 
-Script
+#### Script
 
+```python
 neurons = brainpy.state.LIF(
     4,
     V_rest=-52. * u.mV,
@@ -195,68 +208,69 @@ neurons = brainpy.state.LIF(
 brainstate.nn.init_all_states(neurons)
 with brainstate.environ.context(t=0. * u.ms):
     spikes = neurons(8. * u.mA)
+```
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html  
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
 
-Explanation text
+#### Explanation text
 
-brainpy.state.LIF is a leaky integrate-and-fire population — a BrainState Dynamics module. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html  
+brainpy.state.LIF is a leaky integrate-and-fire population — a BrainState Dynamics module. Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
 
-Reference
+## Reference
 
 references/brain-dynamics/brain-dynamics-delay-protocol.md
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html
-Purpose: Explains BrainState Brain Dynamics delay APIs and delay-buffer behavior.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html
+**Purpose:** Explains BrainState Brain Dynamics delay APIs and delay-buffer behavior.
 
 references/brain-dynamics/brain-dynamics-event-driven-operators.md
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html
-Purpose: Catalogs event-driven sparse spike operators and connectivity patterns for scalable SNNs.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html
+**Purpose:** Catalogs event-driven sparse spike operators and connectivity patterns for scalable SNNs.
 
 references/brain-dynamics/brain-dynamics-snn-workflows.md
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html, https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
-Purpose: Routes build, simulate, and train workflows for BrainState-style spiking neural networks.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html, https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
+**Purpose:** Routes build, simulate, and train workflows for BrainState-style spiking neural networks.
 
 references/brainstate/brainstate-control-flow-patterns.md
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
-Purpose: Collects loop and branch patterns that remain valid under BrainState and JAX transformations.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
+**Purpose:** Collects loop and branch patterns that remain valid under BrainState and JAX transformations.
 
 references/libraries/solver-library-with-effects.md
 
-Source: https://brainx.chaobrain.com/braincell/apis/integration.html, https://brainx.chaobrain.com/braincell/integration/solvers.html, https://brainx.chaobrain.com/braincell/integration/advanced.html
-Purpose: Catalogs BrainCell and BrainState solver and integration choices with modeling consequences.
+**Source:** https://brainx.chaobrain.com/braincell/apis/integration.html, https://brainx.chaobrain.com/braincell/integration/solvers.html, https://brainx.chaobrain.com/braincell/integration/advanced.html
+**Purpose:** Catalogs BrainCell and BrainState solver and integration choices with modeling consequences.
 
 references/brainstate/transformation-grad-expansion.md
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
-Purpose: Expands gradient and autodiff teaching for differentiable simulation and parameter fitting.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+**Purpose:** Expands gradient and autodiff teaching for differentiable simulation and parameter fitting.
 
-Full bundled script references
+## Full bundled script references
 
 hodgkin-huxley-neuron.py
 
-Source: https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/hodgkin_huxley_neuron.html
-Purpose: complete executable HH neuron example showing biophysical state variables and continuous-time dynamics.
+**Source:** https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/hodgkin_huxley_neuron.html
+**Purpose:** complete executable HH neuron example showing biophysical state variables and continuous-time dynamics.
 
 snn-simulation.py
 
-Source: https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/snn_simulation.html
-Purpose: complete executable example for simulating single-neuron and network brain dynamics.
+**Source:** https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/snn_simulation.html
+**Purpose:** complete executable example for simulating single-neuron and network brain dynamics.
 
 building-ei-snn.py
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
-Purpose: complete E/I spiking-network simulation workflow with init_all_states and compiled trajectory.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
+**Purpose:** complete E/I spiking-network simulation workflow with init_all_states and compiled trajectory.
 
 training-snn.py
 
-Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
-Purpose: full representative SNN training workflow; use when the task crosses from simulation into optimization.
+**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
+**Purpose:** full representative SNN training workflow; use when the task crosses from simulation into optimization.
 
-Common mistakes -> Fix
+## Common mistakes -> Fix
 
 • putting synaptic connectivity inside Dynamics.update() -> keep dynamics element-wise; use connection/projection modules for interactions.
 • forgetting update() -> every Dynamics module must implement it.

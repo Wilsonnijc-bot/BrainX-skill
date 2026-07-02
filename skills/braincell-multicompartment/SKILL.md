@@ -15,17 +15,17 @@ activation: for building braincell that geometry matters (soma, dendrite), do no
 
 ### Scope and concepts
 
-Scope  
-Concept  
+Scope
+Concept
 Mechanism systems  summarize sharply from https://brainx.chaobrain.com/braincell/concepts/mechanisms.html
-Density side:  
-CableProperty -> passive default property of a branch  
-Ion  
-Channel  
-Points side:  
+Density side:
+CableProperty -> passive default property of a branch
+Ion
+Channel
+Points side:
 ClampProbe, state Probe, Mechanism Probe, current Probe
 
-Concept continued  
+Concept continued
 morphology, Branch https://brainx.chaobrain.com/braincell/concepts/morphology.html
 
 
@@ -39,8 +39,8 @@ What is solver https://brainx.chaobrain.com/braincell/concepts/integration.html
 
 ### Minimal scripts example
 
-1° minimal scripts example  
-paint/place mechanisms in Braincell  
+1° minimal scripts example
+paint/place mechanisms in Braincell
 
 #### Painting cable properties
 
@@ -117,7 +117,7 @@ layout = place_cell.layouts[0]
 
 #### Build a Cell directly from existing morphology
 
-Build a Cell directly from existing morphology  
+Build a Cell directly from existing morphology
 load a morphology
 
 pass it into Cell(...)
@@ -156,11 +156,11 @@ Cell(root='soma', n_branches=9, n_paint_rules=1, n_place_rules=0, initialized=Fa
 
 ### Workflow clarification
 
-Workflow clarification  
-load or build a morphology  
-choose CV Policy + solver  
-paint & place regions and points  
-cell.init_state()  
+Workflow clarification
+load or build a morphology
+choose CV Policy + solver
+paint & place regions and points
+cell.init_state()
 StateProbe()
 
 ### Add-ons Mini example
@@ -169,7 +169,7 @@ Add-ons Mini example: each within 5 lines of code
 
 #### 1° Import Morphology from files SWC, ASC examples
 
-1° Import Morphology from files SWC, ASC examples  
+1° Import Morphology from files SWC, ASC examples
 
 ##### Script
 
@@ -182,13 +182,13 @@ swc_tree = Morphology.from_swc("../../data/morphology/example_tree.swc")
 #### 2° Region and Locset Filter
 
 2° Region and Locset Filter  parse and pick smartly from https://brainx.chaobrain.com/braincell/tutorials/filter.html
-script in "Region and  
-Locset Filter"  
+script in "Region and
+Locset Filter"
 
 #### 3° Use existing Ion/Channel + Mixions through painting
 
-3° Use existing Ion/Channel + Mixions through painting  
-1° add channels  
+3° Use existing Ion/Channel + Mixions through painting
+1° add channels
 code example
 
 ##### Script
@@ -258,7 +258,7 @@ class HTC(braincell.SingleCompartment):
 
 #### 3.5 CV Policy
 
-3.5 CV Policy  
+3.5 CV Policy
 
 ##### Script
 
@@ -272,7 +272,7 @@ policy = braincell.MaxCVLen(20. * u.um)
 
 #### 4° Add cableProperty
 
-4° Add cableProperty  
+4° Add cableProperty
 
 ##### Script
 
@@ -291,7 +291,7 @@ cable_cell.paint(
 
 #### 5° Add Clamp
 
-5° Add Clamp  
+5° Add Clamp
 
 ##### Script
 
@@ -310,7 +310,7 @@ cell.place(RootLocation(0.5), mech.StateProbe("V"))
 
 #### 6° Add Probe
 
-6° Add Probe  
+6° Add Probe
 
 ##### Explanation text
 
@@ -356,12 +356,12 @@ state_probe:v:axon(1)_v [5] axon(1)_v
 
 #### 7° Visualization example
 
-7° Visualization example  
+7° Visualization example
 -> then refer to Cell visualization skill
 
--> script and explanation  
-in "Region and  
-Locset Filter"  
+-> script and explanation
+in "Region and
+Locset Filter"
 
 ### Common failure
 
@@ -369,7 +369,6 @@ Common failure -> Fix
 
 ### Reference
 
-Reference  
 ion library.md
 
 channel library.md
@@ -382,4 +381,8 @@ integrator method.md + effect of different integrations
 
 complete script of multicompartment
 
-skill: morphology building
+manual morphology construction markdown:
+`references/braincell/braincell-manual-morphology-construction.md`
+
+custom ion channel markdown:
+`references/braincell/braincell-custom-ion-channel-authoring.md`

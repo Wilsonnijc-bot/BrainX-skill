@@ -7,7 +7,7 @@ Catalog BrainCell control-volume policies and how discretization choices affect 
 ## Used by
 
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/morphology-building/SKILL.md`
+- `references/braincell/braincell-manual-morphology-construction.md`
 
 ## Primary source pages to expand from
 

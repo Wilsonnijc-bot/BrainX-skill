@@ -8,7 +8,7 @@ Catalog available BrainCell ion species and ion-related modeling patterns.
 
 - `skills/braincell-singlecell/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/braincell-ion-channel-authoring/SKILL.md`
+- `references/braincell/braincell-custom-ion-channel-authoring.md`
 
 ## Primary source pages to expand from
 

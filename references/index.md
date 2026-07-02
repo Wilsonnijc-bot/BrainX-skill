@@ -21,6 +21,8 @@ Shared reference files live here once and may be linked by many skills. Open the
 
 ## BrainCell
 
+- `references/braincell/braincell-custom-ion-channel-authoring.md` — custom BrainCell ion/channel authoring notes; open after checking existing channel and ion libraries when a requested current needs a reusable custom component.
+- `references/braincell/braincell-manual-morphology-construction.md` — manual morphology construction and morphology-preparation notes; open for hand-built branches, topology preparation, validation, and pre-Cell morphology work.
 - `references/braincell/morphology-io-loading-validation.md` — unified morphology import, validation report/options, NeuroMorpho cache, and checkpoint reference; open for SWC, ASC, NeuroML2, NeuroMorpho, validation, or branch-type inspection.
 - `references/braincell/probe-reference.md` — BrainCell probe types and trace checks; open for `StateProbe`, `MechanismProbe`, `CurrentProbe`, trace keys, sampling, or missing traces.
 - `references/braincell/topology-building-and-visualization.md` — runtime topology and visualization; open for NodeTree, CV/branch/node views, region/locset coverage, mechanism/probe placement, or unexpected topology behavior.

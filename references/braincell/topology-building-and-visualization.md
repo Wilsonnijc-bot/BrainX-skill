@@ -10,7 +10,7 @@ Use when building, inspecting, validating, or explaining the runtime topology of
 
 - `skills/brainx-debugging-diagnostics/SKILL.md`
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/morphology-building/SKILL.md`
+- `references/braincell/braincell-manual-morphology-construction.md`
 
 ## Open when
 

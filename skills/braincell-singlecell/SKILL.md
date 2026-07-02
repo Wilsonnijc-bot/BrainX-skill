@@ -11,7 +11,7 @@ Braincell - single cell
 
 ### Scope
 
-Scope: ion, channel, synapse only  
+Scope: ion, channel, synapse only
 Doesn't include geometry
 
 ### Clarification script
@@ -22,9 +22,9 @@ send Clarification sentence to user: it seems like you want a ... model
 
 Conceptual explanation
 
-what is ion, channel, synapse in Braincell  
-what is solver, what is integration  
-In Braincell, singlecompartment usually inherit directly from HH  
+what is ion, channel, synapse in Braincell
+what is solver, what is integration
+In Braincell, singlecompartment usually inherit directly from HH
 sodium ion <-> sodium channel
 
 ### Common mistakes
@@ -63,7 +63,7 @@ In this example, we use SingleCompartment to construct a classical HH neuron wit
 
 As this example shows, SingleCompartment serves as a convenient modeling interface in braincell, greatly simplifying the construction of neurons and improving modeling efficiency.
 
-declaration -> integration  
+declaration -> integration
 and advancing
 summarize key from https://brainx.chaobrain.com/braincell/concepts/integration.html
 
@@ -73,7 +73,7 @@ Add-ons minimal example
 
 #### 1° add channels
 
-1° add channels  
+1° add channels
 code example
 
 ##### Script
@@ -148,7 +148,6 @@ directly use https://brainx.chaobrain.com/braincell/examples/ei_network.html
 
 ### Reference
 
-Reference
 weblink: concepts ions & channels&Integrations
 ion library.md  summarize from https://brainx.chaobrain.com/braincell/apis/braincell.ion.html
 channel library.md  summarize from https://brainx.chaobrain.com/braincell/apis/braincell.channel.html
@@ -158,5 +157,8 @@ summarize from https://brainx.chaobrain.com/braincell/apis/integration.html
 example script of more complex single cell
 choose from html
 
-customize ion channel skill
+customize ion channel markdown:
+`references/braincell/braincell-custom-ion-channel-authoring.md`
 
+if geometry or manual morphology construction appears, route to multicompartment and use:
+`references/braincell/braincell-manual-morphology-construction.md`

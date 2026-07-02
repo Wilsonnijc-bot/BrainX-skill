@@ -11,23 +11,23 @@ Brainstate-Module building
 
 ### Concepts
 
-• Concepts  
+• Concepts
 reusability & composibility: build individual small ones and can combine & nest it
 
 model is a tree, with State object at the leaves
 
-->how to register parameters  
-params =model.states(brainstate.ParamState)  
+->how to register parameters
+params =model.states(brainstate.ParamState)
 Basic Neural-network layer explanation -> when to use
 
 ### Mini title
 
-Minimal example  
+Minimal example
 
 ### Script
 
 ```python
-# minimal script using pre-built layer e.g linear  
+# minimal script using pre-built layer e.g linear
 # Create a linear layer
 brainstate.random.seed(42)
 linear = brainstate.nn.Linear(in_size=(10,), out_size=(5,))
@@ -63,54 +63,54 @@ Implement skip connections for deeper networks:
 ```python
 class ResidualBlock(brainstate.nn.Module):
     """Residual block: y = F(x) + x"""
-    
+
     def __init__(self, dim):
         super().__init__()
-        
+
         # Two linear layers with activation in between
         self.linear1 = Linear(dim, dim)
         self.activation = LeakyReLU(0.0)
         self.linear2 = Linear(dim, dim)
-    
+
     def update(self, x):
         # Compute residual
         residual = x
-        
+
         # Forward through layers
         out = self.linear1(x)
         out = self.activation(out)
         out = self.linear2(out)
-        
+
         # Add residual
         return out + residual
 
 class ResNet(brainstate.nn.Module):
     """Simple ResNet with multiple residual blocks."""
-    
+
     def __init__(self, input_dim, hidden_dim, output_dim, n_blocks=3):
         super().__init__()
-        
+
         # Input projection
         self.input_proj = Linear(input_dim, hidden_dim)
-        
+
         # Residual blocks
         self.blocks = []
         for i in range(n_blocks):
             block = ResidualBlock(hidden_dim)
             setattr(self, f'block_{i}', block)
             self.blocks.append(block)
-        
+
         # Output projection
         self.output_proj = Linear(hidden_dim, output_dim)
-    
+
     def update(self, x):
         # Project to hidden dimension
         x = self.input_proj(x)
-        
+
         # Pass through residual blocks
         for block in self.blocks:
             x = block(x)
-        
+
         # Project to output
         x = self.output_proj(x)
         return x
@@ -132,10 +132,9 @@ https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/hodgkin_huxley_n
 
 ### Other important concepts
 
-#### Other important concepts
-• Automatic I/O size inference.  
+• Automatic I/O size inference.
 -> Basic size inference concept
-• Sequential composition and deep network  
+• Sequential composition and deep network
 concept of .desc() method
 • Sequential composition
 
@@ -150,32 +149,32 @@ Complex Architecture with Mixed Layer Types
 # Build a more complex network with different layer types
 class ComplexNet(brainstate.nn.Module):
     """Complex network demonstrating various layer types."""
-    
+
     def __init__(self, in_size):
         super().__init__()
-        
+
         self.features = brainstate.nn.Sequential(
             # Initial conv block
             brainstate.nn.Conv2d(in_size, out_channels=16, kernel_size=3, padding='SAME'),
             brainstate.nn.ReLU(),
-            
+
             # Strided conv (reduces spatial size)
             brainstate.nn.Conv2d.desc(out_channels=32, kernel_size=3, stride=2, padding='SAME'),
             brainstate.nn.ReLU(),
-            
+
             # Another conv + pool
             brainstate.nn.Conv2d.desc(out_channels=64, kernel_size=3, padding='SAME'),
             brainstate.nn.ReLU(),
             brainstate.nn.MaxPool2d.desc(kernel_size=(2, 2), stride=(2, 2), channel_axis=-1),
         )
-        
+
         self.classifier = brainstate.nn.Sequential(
             brainstate.nn.Flatten(in_size=self.features.out_size),
             brainstate.nn.Linear.desc(out_size=256),
             brainstate.nn.ReLU(),
             brainstate.nn.Linear.desc(out_size=10),
         )
-    
+
     def update(self, x):
         x = self.features(x)
         x = self.classifier(x)
@@ -219,19 +218,19 @@ BrainState-ModuleBuilding REFERENCES (reference.md)
 
 ### Reference markdown
 
-#### Pre-built Activation Functions.md 
-reorganize the content inside 
+#### Pre-built Activation Functions.md
+reorganize the content inside
 https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
 
 ### Reference markdown
 
-#### Pre-built Basic Layers.md  
+#### Pre-built Basic Layers.md
 reference.md
 reorganize the content inside https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html
 
 ### Reference markdown
 
-#### Size Inference with Convolution.md  
+#### Size Inference with Convolution.md
 Convolution layers automatically compute output spatial dimensions based on:
 
 Input spatial size
@@ -296,7 +295,7 @@ With 'VALID' padding and stride=2:
 
 ### Reference markdown
 
-#### Size Inference with Pooling & Flatten.md  
+#### Size Inference with Pooling & Flatten.md
 Size Inference with Pooling and Flatten
 Pooling layers reduce spatial dimensions, and Flatten layers convert multi-dimensional tensors to 1D vectors. BrainState tracks all these transformations automatically.
 
@@ -436,4 +435,3 @@ https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_
 ### Explanation text
 
 -> under Example - Brain Dynamics
-

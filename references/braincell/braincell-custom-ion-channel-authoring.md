@@ -1,9 +1,4 @@
----
-name: braincell-ion-channel-authoring
-description: Guides BrainCell ion and channel authoring, including existing ion/channel selection, custom HH channels, Markov channels, reversal potentials, current coupling, MixIons, Nernst templates, and calcium dynamics. Use when the user needs to add, modify, implement, or debug ionic mechanisms in single-compartment or multicompartment BrainCell models.
----
-
-ion-channel-authoring/
+# BrainCell Custom Ion Channel Authoring
 
 Concepts
 
@@ -33,9 +28,9 @@ Source: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
 
 Evoke case / task boundary
 
-• use this skill when the requested biological current is not covered by a pre-built braincell.channel model.
-• use this skill when the task asks for a reusable custom ion-channel component: gates, parameters, state variables, derivatives, current.
-• do not use this skill when a named pre-built channel already matches the task; use the library first.
+• use this reference when the requested biological current is not covered by a pre-built braincell.channel model.
+• use this reference when the task asks for a reusable custom ion-channel component: gates, parameters, state variables, derivatives, current.
+• do not use this reference when a named pre-built channel already matches the task; use the library first.
 • do not turn channel authoring into generic ODE code; keep it inside braincell.Channel, HH, or Markov patterns.
 • do not ignore root_type; sodium channels go on sodium ions, potassium channels go on potassium ions, etc.
 
@@ -158,4 +153,3 @@ Common mistakes -> Fix
 • adding a potassium channel to a sodium ion -> add channels only to matching ion roots; the docs show this raises a type error.
 • writing pure ODE functions with raw floats -> implement compute_derivative, init_state, reset_state, and current on Channel / HH.
 • stripping units early -> keep brainunit quantities; convert only at formula boundaries with to_decimal(...).
-

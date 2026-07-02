@@ -7,7 +7,7 @@ Catalog BrainCell region and locset filters for spatially targeting mechanisms, 
 ## Used by
 
 - `skills/braincell-multicompartment/SKILL.md`
-- `skills/morphology-building/SKILL.md`
+- `references/braincell/braincell-manual-morphology-construction.md`
 
 ## Primary source pages to expand from
 
