@@ -30,13 +30,13 @@ Detail how BrainState vectorization should be taught after the Transformations C
 
 ## Randomness route
 
-Open `brainstate-randomness-reproducibility` when vectorized stochastic functions need independent or shared random streams.
+Open `references/brainstate-randomness-reproducibility/` when vectorized stochastic functions need independent or shared random streams.
 
 ## Keep out
 
 - Full training-loop tutorial.
 - Full control-flow tutorial.
-- Detailed random-number tutorial except routing notes. Use `references/brainstate/advanced-randomness.md` after the core randomness skill.
+- Detailed random-number tutorial except routing notes. Use `references/brainstate-randomness-reproducibility/advanced-randomness.md` after the core randomness reference.
 
 ## Common mistakes to document
 

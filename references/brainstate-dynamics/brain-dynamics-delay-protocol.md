@@ -2,11 +2,14 @@
 
 ## Purpose
 
-Explain BrainState Brain Dynamics delay APIs and delay-buffer behavior after the core Brain Dynamics skill routes here.
+Explain BrainState Brain Dynamics delay APIs and delay-buffer behavior after `brainstate-module-building` or the BrainState Dynamics hub routes here.
+
+Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html
 
 ## Used by
 
-- `skills/brainstate-brain-dynamics/SKILL.md`
+- `references/brainstate-dynamics/README.md`
+- `skills/brainstate-module-building/SKILL.md`
 
 ## Open when
 

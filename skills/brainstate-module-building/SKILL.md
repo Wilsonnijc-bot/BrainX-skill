@@ -1,6 +1,6 @@
 ---
 name: brainstate-module-building
-description: Guides BrainState Module design, composition, nested graph structure, state traversal, prebuilt layers, activations, normalization, size inference, reusable components, stochastic modules, and random initialization. Use for fixed module dataflow, layer wiring, model organization, and Module-State relationships; route dynamic loops or runtime-dependent branches to BrainState control flow.
+description: Guides BrainState Module design, composition, nested graph structure, state traversal, prebuilt layers, activations, normalization, size inference, reusable components, stochastic modules, and random initialization. Use for fixed module dataflow, layer wiring, model organization, and Module-State relationships; route dynamic loops or runtime-dependent branches to BrainState control flow and specialized time-evolving Dynamics patterns to the BrainState dynamics reference.
 ---
 
 ## Slide 12
@@ -8,6 +8,10 @@ description: Guides BrainState Module design, composition, nested graph structur
 ### Title
 
 Brainstate-Module building
+
+### Dynamics routing
+
+`Dynamics` is a specialized BrainState `Module` pattern for time-evolving systems, not a separate primary skill. If the task involves `Dynamics`, `update()`, time-evolving systems, LIF/SNN populations, delays, before/after update hooks, event-driven spike communication, trajectory simulation, or neural population workflows, open `references/brainstate-dynamics/`.
 
 ### Concepts
 
@@ -210,228 +214,37 @@ Forward pass: (2, 32, 32, 3) -> (2, 10)
 
 • Common mistakes -> Fix
 
-## Slide 13
+## References
 
-### Title
+Use these references by scope instead of loading every module-building example up front.
 
-BrainState-ModuleBuilding REFERENCES (reference.md)
+### Core layer catalogs
 
-### Reference markdown
+- `references/libraries/prebuilt-layer-library.md`
+  Use first for BrainState `Linear`, convolution, pooling, padding, dropout, and utility layers.
+  Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html
 
-#### Pre-built Activation Functions.md
-reorganize the content inside
-https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
+- `references/libraries/prebuilt-activation-library.md`
+  Use for activation, normalization, BatchNorm, LayerNorm, and related module choices.
+  Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
 
-### Reference markdown
+### Size inference references
 
-#### Pre-built Basic Layers.md
-reference.md
-reorganize the content inside https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html
+- `references/size-inference-with-convolution.md`
+  Small reference for `Conv2d.in_size`, `Conv2d.out_size`, `kernel_size`, `padding`, and `stride` when building convolutional modules.
+  Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html
 
-### Reference markdown
+- `references/size-inference-with-pooling-flatten.md`
+  Small reference for pooling dimension reduction and `Flatten` shape conversion before dense classifiers.
+  Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/03_common_layers.html
 
-#### Size Inference with Convolution.md
-Convolution layers automatically compute output spatial dimensions based on:
+### Full composition script
 
-Input spatial size
+- `references/scripts/modern_cnn.py`
+  Full reference for manual module composition with `Conv2d`, `BatchNorm2d`, `GELU`, `MaxPool2d`, `Linear`, `LayerNorm`, and `Dropout`.
+  Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
 
-Kernel size
+### Optional dynamics-network composition reference
 
-Stride
-
-Padding mode
-
-### Script
-
-```python
-# Create a 2D convolution layer
-conv = brainstate.nn.Conv2d(
-    in_size=(28, 28, 3),      # (height, width, channels)
-    out_channels=32,
-    kernel_size=3,
-    stride=1,
-    padding='SAME'
-)
-
-print("Conv2d Layer:")
-print(f"  in_size:  {conv.in_size}")
-print(f"  out_size: {conv.out_size}")
-print(f"\n  Input:  (H, W, C) = {conv.in_size}")
-print(f"  Output: (H', W', C') = {conv.out_size}")
-print("\nWith 'SAME' padding and stride=1, spatial dimensions are preserved!")
-
-# Test with different padding
-conv_valid = brainstate.nn.Conv2d(
-    in_size=(28, 28, 3),
-    out_channels=32,
-    kernel_size=3,
-    stride=2,
-    padding='VALID'
-)
-
-print(f"\nWith 'VALID' padding and stride=2:")
-print(f"  in_size:  {conv_valid.in_size}")
-print(f"  out_size: {conv_valid.out_size}")
-print("  Spatial dimensions are reduced!")
-```
-
-### Script result
-
-```text
-Conv2d Layer:
-  in_size:  (28, 28, 3)
-  out_size: (28, 28, 32)
-
-  Input:  (H, W, C) = (28, 28, 3)
-  Output: (H', W', C') = (28, 28, 32)
-
-With 'SAME' padding and stride=1, spatial dimensions are preserved!
-
-With 'VALID' padding and stride=2:
-  in_size:  (28, 28, 3)
-  out_size: (13, 13, 32)
-  Spatial dimensions are reduced!
-```
-
-### Reference markdown
-
-#### Size Inference with Pooling & Flatten.md
-Size Inference with Pooling and Flatten
-Pooling layers reduce spatial dimensions, and Flatten layers convert multi-dimensional tensors to 1D vectors. BrainState tracks all these transformations automatically.
-
-### Script
-
-```python
-# MaxPool reduces spatial dimensions
-pool = brainstate.nn.MaxPool2d(
-    in_size=(28, 28, 32),
-    kernel_size=(2, 2),
-    stride=(2, 2),
-    channel_axis=-1
-)
-
-print("MaxPool2d Layer:")
-print(f"  in_size:  {pool.in_size}  (H=28, W=28, C=32)")
-print(f"  out_size: {pool.out_size}  (H=14, W=14, C=32)")
-print("  Spatial dimensions reduced by 2x!")
-
-# Flatten converts to 1D
-flatten = brainstate.nn.Flatten(in_size=(14, 14, 32))
-
-print(f"\nFlatten Layer:")
-print(f"  in_size:  {flatten.in_size}  (3D tensor)")
-print(f"  out_size: {flatten.out_size}  (1D vector)")
-print(f"  Total elements: {14 * 14 * 32} = {flatten.out_size[0]}")
-```
-
-### Script result
-
-```text
-MaxPool2d Layer:
-  in_size:  (28, 28, 32)  (H=28, W=28, C=32)
-  out_size: (14, 14, 32)  (H=14, W=14, C=32)
-  Spatial dimensions reduced by 2x!
-
-Flatten Layer:
-  in_size:  (14, 14, 32)  (3D tensor)
-  out_size: (6272,)  (1D vector)
-  Total elements: 6272 = 6272
-```
-
-### Explanation text
-
--> these illustrate more variations of size inference
-
-### Mini title
-
-#### Modern CNN script from activation function and normalization
-Building a complete network with activations and normalization:
-
-### Script
-
-```python
-import brainunit as u
-
-
-class ModernCNN(brainstate.nn.Module):
-    """CNN with modern activations and normalization."""
-
-    def __init__(self, num_classes=10):
-        super().__init__()
-
-        # Block 1: Conv + BatchNorm + GELU
-        self.conv1 = brainstate.nn.Conv2d((32, 32, 3), out_channels=64, kernel_size=(3, 3), padding='SAME')
-        self.bn1 = brainstate.nn.BatchNorm2d((32, 32, 64))
-        self.act1 = brainstate.nn.GELU()
-        self.pool1 = brainstate.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-
-        # Block 2
-        self.conv2 = brainstate.nn.Conv2d((16, 16, 64), out_channels=128, kernel_size=(3, 3), padding='SAME')
-        self.bn2 = brainstate.nn.BatchNorm2d((16, 16, 128))
-        self.act2 = brainstate.nn.GELU()
-        self.pool2 = brainstate.nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2), in_size=self.bn2.out_size)
-
-        # Classifier
-        self.fc1 = brainstate.nn.Linear((128 * 8 * 8,), (256,))
-        self.ln = brainstate.nn.LayerNorm((256,))
-        self.act3 = brainstate.nn.GELU()
-        self.dropout = brainstate.nn.Dropout(prob=0.5)
-        self.fc2 = brainstate.nn.Linear((256,), (num_classes,))
-
-    def update(self, x):
-        # Block 1
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.act1(x)
-        x = self.pool1(x)
-
-        # Block 2
-        x = self.conv2(x)
-        x = self.bn2(x)
-        x = self.act2(x)
-        x = self.pool2(x)
-
-        # Classifier
-        x = u.math.flatten(x, start_axis=1)
-        x = self.fc1(x)
-        x = self.ln(x)
-        x = self.act3(x)
-        x = self.dropout(x)
-        x = self.fc2(x)
-
-        return x
-
-# Create and test
-brainstate.random.seed(0)
-model = ModernCNN(num_classes=10)
-
-# Forward pass
-x = brainstate.random.randn(4, 32, 32, 3)  # 4 images
-with brainstate.environ.context(fit=True) as env:
-    logits = model(x)
-
-print("Modern CNN with GELU + BatchNorm + LayerNorm:")
-print(model)
-print()
-print("Input:", x.shape)
-print("Output:", logits.shape)
-print()
-print("Logits:", logits[0])
-```
-
-### Explanation text
-
--> illustrate combining pre-built layers
-
-### Mini title
-
-#### Skill for Deeplearning Training
-
-### Script reference
-
-#### Training Spiking Neural Network script
-https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
-
-### Explanation text
-
--> under Example - Brain Dynamics
+- Building an SNN: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
+  Use `references/brainstate-dynamics/` when module composition crosses into BrainState dynamics networks: `LIF` populations, projections, synapses, event communication, and a composed E/I network. Prefer the SNN workflow reference over the Training SNN tutorial when the goal is module organization rather than optimization.

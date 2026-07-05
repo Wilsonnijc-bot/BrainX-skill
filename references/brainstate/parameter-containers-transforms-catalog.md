@@ -9,7 +9,7 @@ Catalog `Param`, `Const`, and built-in parameter transforms, and map common cons
 - `references/brainstate/parameter-constraints-regularization.md`
 - `skills/brainstate-deeplearning-training/SKILL.md`
 - `skills/brainstate-module-building/SKILL.md`
-- `skills/brainstate-brain-dynamics/SKILL.md`
+- `references/brainstate-dynamics/`
 
 ## Primary source pages to expand from
 

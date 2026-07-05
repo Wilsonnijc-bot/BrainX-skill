@@ -8,7 +8,7 @@ Catalog classical, structural, chained, and prior-distribution regularizers, and
 
 - `references/brainstate/parameter-constraints-regularization.md`
 - `skills/brainstate-deeplearning-training/SKILL.md`
-- `skills/brainstate-brain-dynamics/SKILL.md`
+- `references/brainstate-dynamics/`
 
 ## Primary source pages to expand from
 

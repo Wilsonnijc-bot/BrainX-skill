@@ -1,6 +1,6 @@
 # Advanced BrainState RNG reference
 
-Use this markdown only after the compact RNG skill is insufficient. Keep the default path in `SKILL.md`: seed once, call `brainstate.random`, and let BrainState manage keys automatically.
+Use this markdown only after `references/brainstate-randomness-reproducibility/README.md` is insufficient. Keep the default path compact: seed once, call `brainstate.random`, and let BrainState manage keys automatically.
 
 Official anchor phrase: `brainstate.random` provides "a comprehensive set of random number generation functions and utilities for neural network simulations and scientific computing." It includes standard random distributions, random state management with automatic key splitting, seed management utilities, and a NumPy-compatible API.
 

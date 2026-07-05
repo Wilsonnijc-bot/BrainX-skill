@@ -1,9 +1,8 @@
----
-name: brainstate-randomness-reproducibility
-description: Use when writing BrainState code that needs random numbers, reproducible examples/tests, stochastic masks/noise, or a decision between the default BrainState RNG path and advanced key/stream APIs.
----
+# BrainState Randomness And Reproducibility Reference
 
-# BrainState random number generation
+Use this reference when BrainState code needs random numbers, reproducible examples/tests, stochastic masks/noise, seed control, random trials, stochastic state, dropout/noise, RNG under transforms, or a decision between the default BrainState RNG path and advanced key/stream APIs.
+
+Usually reached from primary skills only when the task actually involves randomness. Do not load this for ordinary deterministic state, module, training, or BrainCell modeling tasks.
 
 Use `brainstate.random` for BrainState RNG. Official anchor phrase: it "wraps JAX’s random number generation capabilities with a stateful interface that simplifies usage while maintaining reproducibility and performance."
 
@@ -39,7 +38,7 @@ return x * mask / keep_prob
 
 For noisy stochastic behavior, generate noise at call time with `brainstate.random.normal(..., shape)`.
 
-## Open `references/brainstate/advanced-randomness.md` for
+## Open `references/brainstate-randomness-reproducibility/advanced-randomness.md` for
 
 - manual keys: `get_key`, `set_key`, `get_key_data`, `restore_key`, `split_key`, `split_keys`, `self_assign_multi_keys`
 - custom `RandomState` instances or independent streams
@@ -50,7 +49,7 @@ For noisy stochastic behavior, generate noise at call time with `brainstate.rand
 - distribution visualization, mini-batch sampling, full dropout/noisy-layer examples
 - RNG combined with transformations, parallelism, or brain-dynamics workflows
 
-## Official BrainX sources
+## Mirror Source URLs
 
 - https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 - https://brainx.chaobrain.com/brainstate/apis/random.html

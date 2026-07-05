@@ -8,28 +8,31 @@ description: Guides BrainState training workflows, including losses, optimizers,
 ## Concepts
 
 • what this skill is for
-Use when the task is a BrainState supervised-training loop: model, loss, optimizer, registered parameters, compiled train step, metrics, and evaluation. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+Use when the task is a BrainState supervised-training loop: model, loss, optimizer, registered parameters, compiled train step, metrics, and evaluation. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • training loop structure
-This tutorial assembles Module, ParamState, grad, and jit into a complete training loop. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+This tutorial assembles Module, ParamState, grad, and jit into a complete training loop. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • model / loss / optimizer / metrics
-A BrainState training loop is built from count_parameters, braintools.optim, grad + clip_grad_norm + jit, and MultiMetric. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+A BrainState training loop is built from count_parameters, braintools.optim, grad + clip_grad_norm + jit, and MultiMetric. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • parameter collection
-Collect exactly the ParamState instances; other state types are left untouched. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+Collect exactly the ParamState instances; other state types are left untouched. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • gradient update
-A single training step differentiates the loss, clips gradients, then applies optimizer.update(grads) in place. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+A single training step differentiates the loss, clips gradients, then applies optimizer.update(grads) in place. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • compiled training step
-Wrapping the whole step in brainstate.transform.jit compiles it once and tracks state reads/writes automatically across the transform boundary. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+Wrapping the whole step in brainstate.transform.jit compiles it once and tracks state reads/writes automatically across the transform boundary. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • metrics lifecycle
-MultiMetric bundles several metrics; lifecycle is always reset → update per batch → compute. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+MultiMetric bundles several metrics; lifecycle is always reset → update per batch → compute. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 • fit/eval environment note
-Stochastic modules may read fit = brainstate.environ.get('fit', False) before applying randomness. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
+Stochastic modules may read fit = brainstate.environ.get('fit', False) before applying randomness. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
+
+• tiny RNG block
+Use `brainstate.random.seed(seed)` once for reproducible training examples/tests. Use `brainstate.random` for random batches, synthetic data, stochastic layers, dropout/noise, and random spike data. Route advanced stochastic/dropout/fit-mode/randomness issues to `references/brainstate-randomness-reproducibility/`.
 
 ### Mini title
 
@@ -51,11 +54,11 @@ x_train = (x_train - mean) / std
 x_test = (x_test - mean) / std
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-The statistics come from the training set only; the test set is transformed with those same numbers, never its own. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+The statistics come from the training set only; the test set is transformed with those same numbers, never its own. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ### Mini title
 
@@ -74,11 +77,11 @@ class MLP(brainstate.nn.Module):
 model = MLP(DIM, 32, N_CLASSES)
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-A two-layer perceptron composes two brainstate.nn.Linear layers with a ReLU nonlinearity; the final layer emits one logit per class. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+A two-layer perceptron composes two brainstate.nn.Linear layers with a ReLU nonlinearity; the final layer emits one logit per class. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ### Mini title
 
@@ -92,11 +95,11 @@ optimizer = braintools.optim.Adam(lr=1e-2)
 optimizer.register_trainable_weights(model.states(brainstate.ParamState))
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-After constructing an optimizer, register the states it is allowed to update. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+After constructing an optimizer, register the states it is allowed to update. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ### Mini title
 
@@ -117,11 +120,11 @@ def train_step(x, y):
     return loss
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-grad differentiates the loss, clip_grad_norm rescales gradients, and optimizer.update(grads) applies the update in place. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+grad differentiates the loss, clip_grad_norm rescales gradients, and optimizer.update(grads) applies the update in place. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ### Mini title
 
@@ -141,11 +144,11 @@ def eval_step(x, y):
     metrics.update(loss=loss, logits=logits, labels=y)
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-Each sub-metric reads the keyword arguments it needs from a single update(...) call. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+Each sub-metric reads the keyword arguments it needs from a single update(...) call. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ### Mini title
 
@@ -167,69 +170,70 @@ for epoch in range(15):
     stats = metrics.compute()
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 #### Explanation text
 
-Iterate in mini-batches, reshuffle each epoch with brainstate.random.permutation, reset metrics, run evaluation, then compute statistics. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
+Iterate in mini-batches, reshuffle each epoch with brainstate.random.permutation, reset metrics, run evaluation, then compute statistics. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
 
 ## Reference
 
 references/brainstate/transformation-grad-expansion.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 **Purpose:** Expands gradient and autodiff teaching for differentiable simulation and parameter fitting.
 
 references/brainstate/transformation-jit-expansion.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html, https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html, https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 **Purpose:** Expands BrainState-aware JIT compilation, state write-back, cache, and static-argument guidance.
 
 references/brainstate/parameter-constraints-regularization.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html, https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html, https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 **Purpose:** Collects constrained parameter, parameter transform, and regularization notes for trainable BrainState values.
 
-references/brainstate/advanced-randomness.md
+references/brainstate-randomness-reproducibility/
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
-**Purpose:** Catalogs advanced BrainState RNG streams, stochastic layers, and transformed-randomness patterns.
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
+**Purpose:** Routes BrainState RNG, reproducibility, dropout/noise, stochastic training, fit-mode randomness, and advanced transformed-randomness patterns.
 
 references/brainstate/brainstate-control-flow-patterns.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
 **Purpose:** Collects loop and branch patterns that remain valid under BrainState and JAX transformations.
+
+references/braintools-optimizer-reference.md
+
+**Source mirrored:** https://brainx.chaobrain.com/braintools/optim/index.html
+**Purpose:** Routes Braintools optimizer and learning-rate-scheduler choices for BrainState training loops.
 
 references/libraries/prebuilt-layer-library.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/apis/nn/linear.html, https://brainx.chaobrain.com/brainstate/apis/nn/conv.html, https://brainx.chaobrain.com/brainstate/apis/nn/normalization.html, https://brainx.chaobrain.com/brainstate/apis/nn/pooling.html, https://brainx.chaobrain.com/brainstate/apis/nn/padding.html, https://brainx.chaobrain.com/brainstate/apis/nn/dropout.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/apis/nn/linear.html, https://brainx.chaobrain.com/brainstate/apis/nn/conv.html, https://brainx.chaobrain.com/brainstate/apis/nn/normalization.html, https://brainx.chaobrain.com/brainstate/apis/nn/pooling.html, https://brainx.chaobrain.com/brainstate/apis/nn/padding.html, https://brainx.chaobrain.com/brainstate/apis/nn/dropout.html
 **Purpose:** Catalogs BrainState prebuilt layers so agents reuse existing components before writing custom modules.
 
 references/libraries/prebuilt-activation-library.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/apis/nn/activation.html
 **Purpose:** Catalogs BrainState activation and normalization components for module-building tasks.
 
-references/brain-dynamics/brain-dynamics-snn-workflows.md
-
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html, https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
-**Purpose:** Routes build, simulate, and train workflows for BrainState-style spiking neural networks.
 
 ## Full bundled script references
 
-training-and-metrics-classification.py
+references/scripts/integrator_rnn.py
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html
-**Purpose:** complete executable synthetic classification training loop with optimizer and metrics.
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/examples/deep_learning/integrator_rnn.html
+**Purpose:** full stateful sequence-training reference script with synthetic temporal data, custom RNNCell, trainable initial state, ParamState collection, Adam optimizer, JIT prediction/training steps, gradient update, L2 regularization, epoch loop, and evaluation visualization.
 
-training-snn.py
+references/brainstate-dynamics/scripts/training-snn.py
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
 **Purpose:** complete executable representative workflow for training a spiking neural network with surrogate gradients.
 
 snn-training-example.py
 
-**Source:** https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/snn_training.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/snn_training.html
 **Purpose:** longer example-gallery script for SNN training variants.
 
 ## Common mistakes -> Fix

@@ -1,6 +1,6 @@
 ---
 name: brainstate-transformations-core
-description: Guides BrainState-aware program transformations for stateful code, including jit, grad, vmap, transformed state handling, and routing to transformation expansion references. Use when the user asks about compilation, gradients, batching, sweeps, vectorization, differentiable simulation, or replacing raw JAX transforms; route transformed loops and branches to BrainState control flow.
+description: Guides BrainState-aware program transformations and performance-oriented transform decisions for stateful code, including jit, grad, vmap, control-flow transforms, transformed state handling, state-safe transform composition, and routing to transformation expansion references. Use when the user asks about compilation, gradients, batching, sweeps, vectorization, differentiable simulation, acceleration, throughput, or replacing raw JAX transforms; route transformed loops and branches to BrainState control flow.
 ---
 
 # brainstate-transformations-core/
@@ -8,28 +8,31 @@ description: Guides BrainState-aware program transformations for stateful code, 
 ## Concepts
 
 • what this skill is for
-Use when the task needs BrainState-aware jit, grad, vmap, or composed transforms over modules/states. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+Use when the task needs BrainState-aware `jit`, `grad`, `vmap`, control-flow transforms, state-safe transform composition, or performance-oriented transform decisions over modules/states. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+
+• acceleration discoverability
+If the user asks for speed, acceleration, GPU performance, batching, vectorization, parameter sweeps, many neurons/trials, compile/runtime separation, memory reduction, throughput, multi-device execution, or a performance audit, open `references/brainx-acceleration-audit/`.
 
 • BrainState transformation difference from raw JAX
-brainstate.transform mirrors the JAX transformation API — jit, grad, vmap — but every transform is state-aware: it tracks the State objects your model reads and writes. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+brainstate.transform mirrors the JAX transformation API — jit, grad, vmap — but every transform is state-aware: it tracks the State objects your model reads and writes. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • state-aware transformation
-Wrap a model in a brainstate transform and its state is handled for you. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+Wrap a model in a brainstate transform and its state is handled for you. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • raw JAX boundary
-A BrainState model keeps mutable State; raw jax.jit can silently discard the State write. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+A BrainState model keeps mutable State; raw jax.jit can silently discard the State write. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • jit
-jit traces a function the first time it is called, compiles it with XLA, and reuses the compiled version afterwards. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+jit traces a function the first time it is called, compiles it with XLA, and reuses the compiled version afterwards. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • grad
-grad differentiates a function with respect to a collection of States — not its positional arguments, as in plain JAX. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+grad differentiates a function with respect to a collection of States — not its positional arguments, as in plain JAX. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • vmap
-vmap adds a batch dimension to a function written for a single example, turning Python-level looping into a single vectorized call. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+vmap adds a batch dimension to a function written for a single example, turning Python-level looping into a single vectorized call. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 • composing transformations
-Transforms compose; the common pattern is jit(grad(...)): differentiate, then compile the whole gradient computation. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+Transforms compose; the common pattern is jit(grad(...)): differentiate, then compile the whole gradient computation. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 ### Mini title
 
@@ -52,11 +55,11 @@ forward = brainstate.transform.jit(model)
 forward(x).shape
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 #### Explanation text
 
-Use jit on whole steps — a forward pass, a training step — not on tiny operations. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+Use jit on whole steps — a forward pass, a training step — not on tiny operations. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 ### Mini title
 
@@ -74,11 +77,11 @@ for key in params:
     params[key].value -= 0.1 * grads[key]
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 #### Explanation text
 
-The gradient keys match the parameter keys exactly, so applying an update is a simple loop. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+The gradient keys match the parameter keys exactly, so applying an update is a simple loop. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 ### Mini title
 
@@ -93,11 +96,11 @@ predict_batch = brainstate.transform.vmap(predict_one)
 predict_batch(x).shape
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 #### Explanation text
 
-Because it is state-aware, vmap can also map over the states themselves through in_states / out_states. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+Because it is state-aware, vmap can also map over the states themselves through in_states / out_states. Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 ### Mini title
 
@@ -114,41 +117,38 @@ def train_step():
     return loss
 ```
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 
 ## Reference
 
 references/brainstate/transformation-jit-expansion.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html, https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html, https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
 **Purpose:** Expands BrainState-aware JIT compilation, state write-back, cache, and static-argument guidance.
 
 references/brainstate/transformation-grad-expansion.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/02_autodiff.html, https://brainx.chaobrain.com/brainstate/tutorials/core/07_training_and_metrics.html, https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 **Purpose:** Expands gradient and autodiff teaching for differentiable simulation and parameter fitting.
 
 references/brainstate/transformation-vmap-expansion.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html, https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html, https://brainx.chaobrain.com/brainstate/tutorials/transformations/04_advanced_batching.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/03_vectorization.html, https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html, https://brainx.chaobrain.com/brainstate/tutorials/transformations/04_advanced_batching.html
 **Purpose:** Expands BrainState vectorization, batching, state axes, sweeps, and stochastic vmap patterns.
 
 references/brainstate/brainstate-control-flow-patterns.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
 **Purpose:** Collects loop and branch patterns that remain valid under BrainState and JAX transformations.
 
 references/diagnostics/brainstate-transformed-diagnostics.md
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html, https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/06_error_handling_and_checks.html, https://brainx.chaobrain.com/brainstate/tutorials/transformations/07_debugging.html
 **Purpose:** Collects runtime debugging, checking, and error-handling patterns for transformed BrainState code.
 
-## Full bundled script references
+references/brainx-acceleration-audit/
 
-transformations-essentials.py
-
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
-**Purpose:** complete representative workflow for state-aware jit, grad, vmap, and jit(grad(...)).
+**Purpose:** Routes performance audits and acceleration rewrites after this skill identifies the relevant BrainState transform boundary.
 
 ## Common mistakes -> Fix
 

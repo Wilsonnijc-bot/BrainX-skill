@@ -4,9 +4,14 @@
 
 Collect build, simulate, and train workflows for BrainState-style spiking neural networks.
 
+Mirror Source URLs:
+
+- https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
+- https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html
+
 ## Used by
 
-- `skills/brainstate-brain-dynamics/SKILL.md`
+- `references/brainstate-dynamics/README.md`
 - `skills/brainstate-deeplearning-training/SKILL.md`
 
 ## Section 1: Build and simulate SNN
@@ -32,9 +37,9 @@ Collect build, simulate, and train workflows for BrainState-style spiking neural
 
 - For generic optimizer/loss/metrics: `skills/brainstate-deeplearning-training/SKILL.md`.
 - For time loops/branches: `skills/brainstate-transformations-core/SKILL.md` and `references/brainstate/brainstate-control-flow-patterns.md`.
-- For stochastic data/dropout/random spikes: `skills/brainstate-randomness-reproducibility/SKILL.md`.
+- For stochastic data/dropout/random spikes: `references/brainstate-randomness-reproducibility/`.
 - For constrained trainable dynamics parameters: `references/brainstate/parameter-constraints-regularization.md`.
-- For sparse spiking connectivity: `references/brain-dynamics/brain-dynamics-event-driven-operators.md`.
+- For sparse spiking connectivity: `references/brainstate-dynamics/brain-dynamics-event-driven-operators.md`.
 
 ## Section 4: Control-flow boundary
 

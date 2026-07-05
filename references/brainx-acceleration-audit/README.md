@@ -1,9 +1,8 @@
----
-name: brainx-accelerate
-description: Use when auditing or refactoring BrainX/BrainState simulation code for performance. Systematically finds NumPy/Python-loop inefficiencies and rewrites them into state-aware BrainState transform patterns: jit, scan/control flow, vmap, grad, checkpointed_scan, pmap2/shard_map, State/ParamState/RandomState, PyTrees, batching, RNG, and shape-stable compiled simulation logic.
----
+# BrainX Acceleration Audit Reference
 
-# brainx-accelerate
+Use when auditing or refactoring BrainX/BrainState simulation code for performance. Systematically finds NumPy/Python-loop inefficiencies and rewrites them into state-aware BrainState transform patterns: `jit`, scan/control flow, `vmap`, `grad`, `checkpointed_scan`, `pmap2`/`shard_map`, `State`/`ParamState`/`RandomState`, PyTrees, batching, RNG, and shape-stable compiled simulation logic.
+
+Usually reached from `skills/brainstate-transformations-core/SKILL.md` when speed, acceleration, GPU performance, batching, vectorization, parameter sweeps, many neurons/trials, compile/runtime separation, memory reduction, throughput, multi-device execution, or a performance audit becomes the user request.
 
 Use this skill to turn slow BrainX/BrainState simulation code into transform-friendly, state-aware array programs. The goal is not “sprinkle `jit` everywhere.” The goal is to expose the correct simulation axes to BrainState transformations while preserving state semantics, RNG behavior, shapes, gradients, and numerical results.
 
@@ -11,7 +10,7 @@ Optimize in this order: **correctness -> state/RNG safety -> shape stability -> 
 
 ## Reference markdown usage
 
-Start from this `SKILL.md`. Load extra markdowns only when the specific rewrite needs exact transform semantics.
+Start from this reference. Load extra markdowns only when the specific rewrite needs exact transform semantics.
 
 Do not invent BrainState arguments. If the exact API is uncertain, inspect local usage/tests or reference markdowns and state the assumption in the patch notes.
 
@@ -324,6 +323,8 @@ multi-device batch/ensemble/shard:   pmap2/shard_map after single-device cleanup
 Axis order matters. Choose the order that preserves state semantics and minimizes memory. For example, `vmap(scan(step))` creates independent trials with independent recurrent state; `scan(vmap(step))` uses a time loop whose step is already batched.
 
 ### H. Randomness
+
+Tiny RNG block: use one reproducible root seed or stream, then split/fold/map independent randomness for trials, parameter sweeps, stochastic dynamics, dropout/noise, and transformed execution. Route deeper seed/key restoration details to `references/brainstate-randomness-reproducibility/`.
 
 Bad:
 

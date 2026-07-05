@@ -367,22 +367,24 @@ Locset Filter"
 
 Common failure -> Fix
 
-### Reference
+## References
 
-ion library.md
+Use `references/cell_multicompartment_reference.py` when the user asks for multicompartment BrainCell modeling, morphology-based cells, CV discretization, region-based channel assignment, point clamps/probes, or simulation of a full `Cell`.
 
-channel library.md
+- `references/cell_multicompartment_reference.py`
+  Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/cell.html
+  Purpose: primary reference for turning morphology into a simulation-ready multicompartment `Cell`.
+  Covers: `Morphology.from_swc`, `Cell`, CVs, CV policies, `init_state`, `node_tree`, `paint`, `place`, density mechanisms, point mechanisms, `CurrentClamp`, `StateProbe`, and minimal simulation with `run`.
 
-morphology loading paths.md
+Do not confuse with: `SingleCompartment` examples are useful for point-cell HH/channel workflows, but multicompartment work should start from `Cell(morpho)` and CV-based discretization.
 
-filter function library.md
+Supporting references:
 
-integrator method.md + effect of different integrations
-
-complete script of multicompartment
-
-manual morphology construction markdown:
-`references/braincell/braincell-manual-morphology-construction.md`
-
-custom ion channel markdown:
-`references/braincell/braincell-custom-ion-channel-authoring.md`
+- `references/libraries/ion-library.md` - built-in ion choices.
+- `references/libraries/channel-library.md` - built-in channel and mechanism choices.
+- `references/braincell/morphology-io-loading-validation.md` - morphology loading paths.
+- `references/libraries/filter-function-library.md` - region and locset filters.
+- `references/libraries/solver-library-with-effects.md` - integrator methods and solver effects.
+- `references/braincell/braincell-manual-morphology-construction.md` - manual morphology construction.
+- `references/braincell/braincell-custom-ion-channel-authoring.md` - custom ion/channel authoring route.
+- `references/brainstate-randomness-reproducibility/` - conditional route only for random trials, noise, parameter sweeps, or reproducibility.

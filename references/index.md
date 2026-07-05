@@ -4,7 +4,8 @@ Shared reference files live here once and may be linked by many skills. Open the
 
 ## BrainState
 
-- `references/brainstate/advanced-randomness.md` — advanced BrainState RNG, RandomState, dropout, random batches, checkpointed RNG, and transformed randomness; open after the randomness skill establishes that stochastic behavior matters.
+- `references/brainstate-randomness-reproducibility/` — seed control, random trials, stochastic modules, dropout/noise, RNG under transforms, and reproducibility; open only when stochastic behavior matters.
+- `references/brainstate-randomness-reproducibility/advanced-randomness.md` — advanced BrainState RNG, `RandomState`, dropout, random batches, checkpointed RNG, and transformed randomness; open after the randomness reference establishes the boundary.
 - `references/brainstate/brainstate-control-flow-patterns.md` — BrainState control-flow pattern catalog; open when loops or branches must remain valid under `jit`, `grad`, or `vmap`.
 - `references/brainstate/parameter-constraints-regularization.md` — conceptual workflow for `ParamState` vs `nn.Param`, constrained values, regularization penalties, `Const`, and training-loss integration.
 - `references/brainstate/parameter-containers-transforms-catalog.md` — catalog for `Param`, `Const`, and built-in parameter transforms; open when mapping constraints to transform choices.
@@ -13,11 +14,17 @@ Shared reference files live here once and may be linked by many skills. Open the
 - `references/brainstate/transformation-jit-expansion.md` — BrainState JIT expansion notes; open for compilation, cache/static arguments, state write-back, or transformed simulation speedups.
 - `references/brainstate/transformation-vmap-expansion.md` — BrainState vectorization expansion notes; open for `vmap`, batching, sweeps, vectorized stochastic functions, or state axes.
 
-## Brain Dynamics
+## BrainState Dynamics
 
-- `references/brain-dynamics/brain-dynamics-delay-protocol.md` — delay APIs and delay-buffer behavior; open for `output_delay`, `prefetch_delay`, `Delay`, `DelayAccess`, `StateWithDelay`, or biological delays.
-- `references/brain-dynamics/brain-dynamics-event-driven-operators.md` — event-driven sparse spike operators; open for spike-train input, sparse connectivity, `EventLinear`, `EventFixedProb`, or scalable SNN connectivity.
-- `references/brain-dynamics/brain-dynamics-snn-workflows.md` — SNN build/simulate/train workflow routes; open for spiking populations, projections, E/I networks, surrogate-gradient training, or time-unrolled SNN losses.
+- `references/brainstate-dynamics/` — primary reference hub for `Dynamics`, `update()`, time-evolving state, LIF/SNN populations, delays, hooks, event-driven spike communication, trajectory simulation, and neural population workflows.
+- `references/brainstate-dynamics/brain-dynamics-delay-protocol.md` — delay APIs and delay-buffer behavior; open for `output_delay`, `prefetch_delay`, `Delay`, `DelayAccess`, `StateWithDelay`, or biological delays.
+- `references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` — event-driven sparse spike operators; open for spike-train input, sparse connectivity, `EventLinear`, `EventFixedProb`, or scalable SNN connectivity.
+- `references/brainstate-dynamics/brain-dynamics-snn-workflows.md` — SNN build/simulate/train workflow routes; open for spiking populations, projections, E/I networks, surrogate-gradient training, or time-unrolled SNN losses.
+
+## BrainX Infrastructure
+
+- `references/brainx-install/` — install, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch.
+- `references/brainx-acceleration-audit/` — speed, acceleration, GPU performance, batching, vectorization, parameter sweeps, many neurons/trials, compile/runtime separation, memory reduction, throughput, multi-device execution, or performance audit.
 
 ## BrainCell
 

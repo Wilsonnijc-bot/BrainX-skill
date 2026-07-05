@@ -9,31 +9,31 @@ description: Explains BrainUnit quantity safety, including physical units, dimen
 
 • Why BrainUnit exists
 brainunit is a unit-aware scientific computing library built on JAX; it tracks physical units through computations and catches dimension errors at runtime.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • Creating Quantities
 A Quantity = numeric value + physical unit. Create one by multiplying a value with a unit.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • Arithmetic
 Units are tracked automatically. Incompatible operations raise errors.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • Unit conversion
 Use to_decimal() to extract the numeric value in a target unit, or in_unit() to get a new Quantity in the target unit.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • Quantity attributes
 A quantity exposes mantissa, unit, dim, shape, and dtype.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • Unit-aware math
 brainunit.math provides 500+ functions that understand units.
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 • BrainCell connection
 In braincell, every physical quantity carries an explicit unit; passing a bare number where a quantity is expected raises TypeError.
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
+**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/units.html
 
 ## Evoke case / task boundary
 
@@ -46,7 +46,7 @@ In braincell, every physical quantity carries an explicit unit; passing a bare n
 
 Creating quantities
 
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 #### Script
 
@@ -75,7 +75,7 @@ Core mental model: numeric value + physical unit. Attach units at creation, not 
 
 Arithmetic and dimension mismatch
 
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 #### Script
 
@@ -103,7 +103,7 @@ Arithmetic is the guardrail: same-dimension addition, unit multiplication/divisi
 
 Unit conversion and raw-value extraction
 
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 #### Script
 
@@ -120,7 +120,7 @@ Use to_decimal(target_unit) only when raw numeric values are actually needed; ot
 
 Unit-aware math and transforms
 
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 #### Script
 
@@ -145,7 +145,7 @@ Quantities work with JAX transforms, and u.math keeps functions unit-aware.
 
 Function unit contracts
 
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
 #### Script
 
@@ -165,23 +165,6 @@ except Exception as e:
 #### Explanation text
 
 Use @check_units to enforce unit contracts on function arguments.
-
-## Full bundled script references
-
-brainunit-quickstart-quantity-safety.py
-
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-**Purpose:** complete quickstart workflow: quantities, arithmetic, conversion, attributes, math, constants, transforms, decorators.
-
-unit-aware-jax-transform.py
-
-**Source:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-**Purpose:** complete JIT / vmap / grad example with unit tracking.
-
-braincell-unit-parameter-pattern.py
-
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
-**Purpose:** official BrainCell quantity creation pattern for biological parameters.
 
 ## Common mistakes -> Fix
 

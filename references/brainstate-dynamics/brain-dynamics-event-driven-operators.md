@@ -4,10 +4,12 @@
 
 Route and catalog event-driven BrainState/brainpy.state operators for sparse spiking connectivity.
 
+Source mirrored: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html
+
 ## Used by
 
-- `skills/brainstate-brain-dynamics/SKILL.md`
-- `references/brain-dynamics/brain-dynamics-snn-workflows.md`
+- `references/brainstate-dynamics/README.md`
+- `references/brainstate-dynamics/brain-dynamics-snn-workflows.md`
 
 ## Open when
 

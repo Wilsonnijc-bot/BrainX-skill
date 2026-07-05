@@ -7,7 +7,7 @@ Explain the conceptual workflow for `ParamState` versus `brainstate.nn.Param`, c
 ## Used by
 
 - `skills/brainstate-deeplearning-training/SKILL.md`
-- `skills/brainstate-brain-dynamics/SKILL.md`
+- `references/brainstate-dynamics/`
 - `skills/brainstate-module-building/SKILL.md`
 
 ## Primary source pages to expand from

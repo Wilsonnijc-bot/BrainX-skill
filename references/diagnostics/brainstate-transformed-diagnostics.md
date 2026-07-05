@@ -7,7 +7,7 @@ Collect runtime debugging, checking, and error-handling patterns for BrainState 
 ## Used by
 
 - `skills/brainstate-transformations-core/SKILL.md`
-- `skills/brainx-accelerate/SKILL.md`
+- `references/brainx-acceleration-audit/`
 - `references/diagnostics/common-failures-index.md`
 
 ## Primary source pages to expand from

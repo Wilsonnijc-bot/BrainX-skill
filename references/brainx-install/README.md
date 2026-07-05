@@ -1,27 +1,26 @@
----
-name: brainx-install
-description: Guides BrainX environment setup, package installation, backend selection, and validation checks for BrainUnit, BrainState, and BrainCell. Use when the user asks to install BrainX, configure CPU/GPU/TPU or JAX, validate imports, check the Python environment, or troubleshoot setup issues.
----
+# BrainX Install Reference
 
-# brainx-install/
+Guides BrainX environment setup, package installation, backend selection, and validation checks for BrainUnit, BrainState, and BrainCell. Use only when the user asks to install BrainX, configure CPU/GPU/TPU or JAX, validate imports, check the Python environment, or troubleshoot setup issues.
+
+Usually reached from `skills/brainx-general-guard/SKILL.md`; normal modeling tasks should not load install content unless an environment/import/backend failure appears.
 
 ## Concepts
 
 • BrainX meta-package
 BrainX is a meta-package that installs a curated set of BrainX components known to work well together.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 • Requirements
 Official requirements: Python 3.10–3.13, pip 23+, optional GPU/TPU drivers and libraries for accelerators.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 • Hardware-specific install
 Choose one that matches your platform and CUDA/toolchain.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 • Domain routing
 Docs group braincell / brainmass under Modeling, brainunit under Infrastructure, and brainstate under Compilation.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 ## Evoke case / task boundary
 
@@ -45,7 +44,7 @@ Official install docs give requirements and backend-specific commands, but they 
 
 Quick install
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 #### Script
 
@@ -59,7 +58,7 @@ This installs pinned versions of the core packages. Use only when the user wants
 
 Hardware-specific installs
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 #### Script
 
@@ -77,11 +76,11 @@ pip install -U BrainX[tpu]
 #### Explanation text
 
 Choose one that matches the platform and CUDA/toolchain. For detailed JAX wheel options and compatible CUDA/cuDNN versions, the install page points to JAX installation docs.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 Pin exact release
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 #### Script
 
@@ -95,7 +94,7 @@ Releases use date-style versions. Use this when the user needs reproducibility o
 
 Validate install
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 #### Script
 
@@ -106,18 +105,18 @@ python -c "import BrainX, jax; print('BrainX OK'); print('JAX devices:', jax.dev
 #### Explanation text
 
 If using a GPU, the docs say a CUDA device should be listed.
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 
 ## Full bundled script references
 
 brainx-install-verify.py
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 **Purpose:** executable validation check for BrainX import and jax.devices().
 
 brainx-install-commands.sh
 
-**Source:** https://brainx.chaobrain.com/summ/install.html
+**Source mirrored:** https://brainx.chaobrain.com/summ/install.html
 **Purpose:** official command list for full, CPU, CUDA 12, CUDA 13, TPU, pinned, and source installs.
 
 ## Common mistakes -> Fix

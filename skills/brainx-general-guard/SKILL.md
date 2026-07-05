@@ -9,19 +9,23 @@ description: Prevents cross-cutting BrainX misuse and infrastructure mistakes, i
 
 • BrainState mental model
 Three nouns carry the whole framework: State, Module, and Transform.
-**Source:** https://brainx.chaobrain.com/brainstate/getting_started/thinking_in_brainstate.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/getting_started/thinking_in_brainstate.html
 
 • State-aware transforms
 BrainState transformations mirror JAX’s, but understand State; reads and writes are threaded through compiled functions automatically.
-**Source:** https://brainx.chaobrain.com/brainstate/getting_started/thinking_in_brainstate.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/getting_started/thinking_in_brainstate.html
 
 • BrainUnit / BrainCell unit guard
 In braincell, every physical quantity carries an explicit unit; passing a bare number where a quantity is expected raises TypeError.
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
+**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/units.html
 
 • BrainCell modeling guard
 A mechanism is anything installed on a cell that affects dynamics; in braincell, mechanisms are declarative and describe what to install without touching JAX, time, or runtime state.
-**Source:** https://brainx.chaobrain.com/braincell/concepts/mechanisms.html
+**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/mechanisms.html
+
+• Tiny RNG guard
+Use `brainstate.random.seed(seed)` for reproducible BrainState examples/tests and route advanced stochastic behavior to `references/brainstate-randomness-reproducibility/` only when randomness is part of the task.
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
 ## Evoke case / task boundary
 
@@ -31,6 +35,14 @@ A mechanism is anything installed on a cell that affects dynamics; in braincell,
 • do not invent BrainX APIs if official examples exist.
 • do not write raw NumPy/JAX simulation code when BrainState / BrainCell / BrainUnit provides the intended abstraction.
 • do not author custom biological components before checking pre-built components.
+
+## Conditional reference routing
+
+Open `references/brainx-install/` only for installation, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch. Keep normal modeling tasks from loading install content.
+
+Open `references/brainstate-randomness-reproducibility/` only when the task involves seed control, random trials, stochastic state, dropout/noise, random data, transformed randomness, or reproducibility.
+
+Keep global BrainX guardrails active: do not invent APIs, prefer official examples, use BrainState transforms for BrainState state, use BrainUnit quantities for physical parameters, and prefer built-ins before custom implementation.
 
 Domain routing guard
 
@@ -46,7 +58,7 @@ Route before coding: BrainState for State / Module / Transform, BrainCell for ce
 
 Use BrainState JIT for stateful modules
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
 
 #### Script
 
@@ -76,11 +88,11 @@ float(tracker.sum.value), int(tracker.count.value)
 #### Explanation text
 
 brainstate.transform.jit understands State objects and automatically wires read/write traces into the compiled function; raw jax.jit requires explicitly splitting and merging module state.
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
 
 Use BrainState loop transforms for stateful loops
 
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
 
 #### Script
 
@@ -108,11 +120,11 @@ print(f"Final average: {acc.total.value / acc.count.value}")
 #### Explanation text
 
 Control-flow APIs in brainstate.transform provide JAX-compatible loops and conditionals while safely handling State objects; loop transformations compile to a single JAX primitive, reducing compilation overhead.
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
+**Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
 
 Use units before biological simulation
 
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
+**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/units.html
 
 #### Script
 
@@ -130,24 +142,7 @@ radii   = [2.0, 3.0, 4.0] * u.um          # list
 #### Explanation text
 
 Silent unit mismatches are one of the most common and hardest-to-find bugs in neural modeling; BrainCell requires units everywhere and catches dimensional errors immediately.
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
-
-## Full bundled script references
-
-stateful-jit-guard-example.py
-
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/01_jit_and_compilation.html
-**Purpose:** canonical example of stateful BrainState module compiled with brainstate.transform.jit.
-
-stateful-for-loop-guard-example.py
-
-**Source:** https://brainx.chaobrain.com/brainstate/tutorials/transformations/05_control_flow.html
-**Purpose:** canonical state-aware for_loop pattern.
-
-unit-required-braincell-example.py
-
-**Source:** https://brainx.chaobrain.com/braincell/concepts/units.html
-**Purpose:** minimal official quantity creation pattern for BrainCell model parameters.
+**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/units.html
 
 ## Common mistakes -> Fix
 
@@ -158,3 +153,4 @@ unit-required-braincell-example.py
 • treating BrainCell as generic ODE code -> use cells, ions, channels, mechanisms, and integrators.
 • writing custom ion channel first -> check built-in braincell.channel list first.
 • inventing APIs -> open official example/source first; leave [NEEDS OFFICIAL SCRIPT SOURCE] if no official pattern exists.
+• loading install guidance for ordinary modeling -> use `references/brainx-install/` only after install/setup/backend/package evidence appears.

@@ -4,27 +4,27 @@ Concepts
 
 • Ion species + channels
 The electrical behavior of a neuron comes from ion channels; braincell models ion species as owning reversal potential/concentration dynamics and channels as carrying current driven by that reversal potential.
-Source: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
+Source mirrored: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
 
 • Channel
 A channel produces a current as a function of voltage and possibly ion concentration; braincell.channel ships a large literature-derived library named by <current>_<source><year>.
-Source: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
+Source mirrored: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
 
 • Existing vs custom channels
 For Channel, braincell supports two ways of use: defining new ion channels, or using existing ones.
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 • Custom channel base class
 IonChannel provides current, init_state, reset_state, compute_derivative, pre_integral, and post_integral; for practical channel models the docs recommend using Channel.
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 • root_type
 root_type tells braincell which ion the channel acts on, and ensures the right IonInfo is passed into current / compute_derivative.
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 • Registry
 Channels and ions self-register via @register_channel / @register_ion; the registry lets string declarations resolve names like mech.Channel("Na_Ba2002", ...).
-Source: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
+Source mirrored: https://brainx.chaobrain.com/braincell/concepts/ions_channels.html
 
 Evoke case / task boundary
 
@@ -36,7 +36,7 @@ Evoke case / task boundary
 
 Minimal custom HH channel pattern
 
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 Script
 
@@ -80,11 +80,11 @@ print("current:", demo.current(V, k).to_decimal(u.mA / u.cm**2), "mA/cm^2")
 Explanation text
 
 If a new channel can be written in HH-gate form, the docs say to inherit from HH, declare root_type, declare gates, implement each gate’s inf/tau or alpha/beta, then implement current().
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 Lower-level channel interface skeleton
 
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 Script
 
@@ -107,11 +107,11 @@ class CalciumChannel(braincell.Channel):
 Explanation text
 
 Use this only when the HH / Markov templates are not enough; Channel defines the minimal interfaces every channel must implement.
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 
 Registering a custom channel name
 
-Source: https://brainx.chaobrain.com/braincell/developer/extending.html
+Source mirrored: https://brainx.chaobrain.com/braincell/developer/extending.html
 
 Script
 
@@ -127,23 +127,23 @@ mech.Channel("MyNa", g_max=0.1 * u.S / u.cm**2)
 Explanation text
 
 Concrete channels self-register at import time with @register_channel; once imported, the registered name is what string-based declarations resolve to.
-Source: https://brainx.chaobrain.com/braincell/developer/extending.html
+Source mirrored: https://brainx.chaobrain.com/braincell/developer/extending.html
 
 Full bundled script references
 
 custom-hh-channel-demo.py
 
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 Purpose: complete runnable example of a minimal custom HH potassium channel.
 
 manual-icat-hp1992-authoring.py
 
-Source: https://brainx.chaobrain.com/braincell/tutorials/channel.html
+Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
 Purpose: full direct Channel subclass example with parameters, gates, DiffEqState, derivatives, and current.
 
 registered-channel-extension.py
 
-Source: https://brainx.chaobrain.com/braincell/developer/extending.html
+Source mirrored: https://brainx.chaobrain.com/braincell/developer/extending.html
 Purpose: complete example of making a custom channel available by string name.
 
 Common mistakes -> Fix

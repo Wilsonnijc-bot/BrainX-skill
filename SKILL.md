@@ -28,8 +28,11 @@ Do not over-explain. Assume the agent is smart. Give the next correct page, inva
 
 Shared markdown references live under `references/` by category:
 
-- `references/brainstate/` for BrainState transforms, control flow, parameter constraints, and advanced randomness.
-- `references/brain-dynamics/` for Dynamics, delays, event-driven operators, and SNN workflows.
+- `references/brainstate/` for BrainState transforms, control flow, and parameter constraints.
+- `references/brainstate-randomness-reproducibility/` for seed control, random trials, stochastic modules, dropout/noise, RNG under transforms, and advanced randomness.
+- `references/brainstate-dynamics/` for Dynamics, delays, event-driven operators, SNN workflows, and BrainState neural population simulations.
+- `references/brainx-install/` for installation, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch.
+- `references/brainx-acceleration-audit/` for performance audits and acceleration rewrites after transformation-core routing.
 - `references/braincell/` for morphology, probes, and runtime topology.
 - `references/libraries/` for reusable catalogs such as ions, channels, solvers, CV policies, filters, layers, and activations.
 - `references/diagnostics/` for common failures and transformed-code diagnostics.
@@ -41,7 +44,7 @@ Use `references/index.md` as the global map before opening a detailed reference.
 
 ### Installation and infrastructure
 
-Use `skills/brainx-install/SKILL.md` when the user asks about:
+Use `references/brainx-install/` when the user asks about:
 
 - Installing BrainX packages.
 - Choosing CPU/GPU/TPU environment.
@@ -67,32 +70,33 @@ Use `skills/brainstate-state-management/SKILL.md` for mutable values, `.value`, 
 
 Use `skills/brainstate-module-building/SKILL.md` for Modules, layers, composition, nested models, static dataflow, state traversal, and prebuilt layers.
 
-Use `skills/brainstate-brain-dynamics/SKILL.md` for BrainState / brainpy.state-style neural dynamics: Dynamics modules, `update()`, LIF-like models, state evolution, spiking populations, synaptic delays, event-driven spike operators, or SNN simulation/training.
+Use `references/brainstate-dynamics/` from `skills/brainstate-module-building/SKILL.md` for BrainState / brainpy.state-style neural dynamics: `Dynamics` modules, `update()`, LIF-like models, state evolution, spiking populations, synaptic delays, event-driven spike operators, or SNN simulation/training.
 
 Use `references/brainstate/parameter-constraints-regularization.md` for learnable parameters, constrained parameters, parameter transforms, and regularization.
 
 Use `skills/brainstate-transformations-core/SKILL.md` for JIT, gradients, vectorization, batching, sweeps, transformed execution, and state-aware BrainState transforms.
 
-Use `skills/brainx-accelerate/SKILL.md` when auditing or refactoring BrainX/BrainState simulation code for performance, replacing slow Python/NumPy loops with state-aware BrainState transform patterns, or benchmarking `jit`, `scan`, `vmap`, `grad`, checkpointed scans, multi-device mapping, shape stability, RNG safety, and warm runtime.
+Use `references/brainx-acceleration-audit/` from `skills/brainstate-transformations-core/SKILL.md` when auditing or refactoring BrainX/BrainState simulation code for performance, replacing slow Python/NumPy loops with state-aware BrainState transform patterns, or benchmarking `jit`, `scan`, `vmap`, `grad`, checkpointed scans, multi-device mapping, shape stability, RNG safety, and warm runtime.
 
 Use `references/brainstate/brainstate-control-flow-patterns.md` when looping or branching must remain valid under JAX/BrainState transformations.
 
 Use `skills/brainstate-deeplearning-training/SKILL.md` for losses, optimizers, metrics, training steps, evaluation, and training loops.
 
-Use `skills/brainstate-randomness-reproducibility/SKILL.md` for seeds, stochasticity, random initialization, dropout, random batches, random connectivity, random spike trains, independent RNG streams, reproducibility, or checkpointed RNG state.
+Use `references/brainstate-randomness-reproducibility/` for seeds, stochasticity, random initialization, dropout, random batches, random connectivity, random spike trains, independent RNG streams, reproducibility, or checkpointed RNG state.
 
 BrainState routing shortcuts:
 
 - LIF / `update()` / neural dynamics / spiking population / delays / event-driven SNN:
-  → `skills/brainstate-brain-dynamics/SKILL.md`
+  → `skills/brainstate-module-building/SKILL.md`
+  → `references/brainstate-dynamics/`
 
 - Looping or branching that must remain valid under `jit` / `grad` / `vmap`:
   → `skills/brainstate-transformations-core/SKILL.md`
   → `references/brainstate/brainstate-control-flow-patterns.md`
 
 - Performance audit or acceleration of BrainX/BrainState simulation code:
-  → `skills/brainx-accelerate/SKILL.md`
-  → `skills/brainstate-transformations-core/SKILL.md` only when exact transform semantics are needed.
+  → `skills/brainstate-transformations-core/SKILL.md`
+  → `references/brainx-acceleration-audit/`
 
 - Training feedforward model:
   → `skills/brainstate-deeplearning-training/SKILL.md`
@@ -101,10 +105,10 @@ BrainState routing shortcuts:
   → `skills/brainstate-deeplearning-training/SKILL.md`
   → `skills/brainstate-transformations-core/SKILL.md`
   → `references/brainstate/brainstate-control-flow-patterns.md`
-  → `skills/brainstate-brain-dynamics/SKILL.md` when spiking/neural-dynamics-specific.
+  → `references/brainstate-dynamics/` when spiking/neural-dynamics-specific.
 
 - Seeds / stochasticity / random initialization / dropout / random batches / random connectivity / random spike trains / reproducibility:
-  → `skills/brainstate-randomness-reproducibility/SKILL.md`
+  → `references/brainstate-randomness-reproducibility/`
 
 - Constrained or regularized learnable parameters:
   → `references/brainstate/parameter-constraints-regularization.md`
@@ -154,9 +158,9 @@ Transformed-code debugging and BrainCell runtime debugging share the diagnostics
 
 ## Randomness routing rule
 
-Randomness is a concise skill, with advanced details in a reference.
+Randomness is a conditional reference, not a primary skill.
 
-Open `skills/brainstate-randomness-reproducibility/SKILL.md` when a task involves:
+Open `references/brainstate-randomness-reproducibility/` when a task involves:
 
 - Random initialization.
 - Dropout.
@@ -169,7 +173,7 @@ Open `skills/brainstate-randomness-reproducibility/SKILL.md` when a task involve
 - Stochastic control flow.
 - Reproducibility or checkpointed RNG state.
 
-Open `references/brainstate/advanced-randomness.md` only after the core randomness boundary is clear.
+Open `references/brainstate-randomness-reproducibility/advanced-randomness.md` only after the core randomness boundary is clear.
 
 ## Unsupported domain guard
 
