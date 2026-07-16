@@ -201,12 +201,12 @@ Open [references/custom-operators.md](references/custom-operators.md) to choose 
 
 Source: https://brainx.chaobrain.com/brainevent/tutorials/custom-operators/index.html
 
-## Application Script Routing
+## Script References
 
-Keep complete E/I and BrainPy applications in the bundled scripts rather than expanding them in this body:
+Keep the two selected complete applications in the bundled scripts. Sparse-format, plasticity, and custom-operator examples stay inline in their Markdown references; do not promote them into additional standalone Python scripts.
 
-- `references/scripts/102_EI_net_1996.py` is the high-level BrainPy-State route. Use it when the surrounding model already uses `brainpy.state.AlignPostProj` and `brainstate.nn.EventFixedProb`; it does not construct a low-level `brainevent` matrix directly. Preserve its unit-aware E/I weights, state initialization, compiled time loop, and visualization. Upstream source: https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/102_EI_net_1996.py
-- `references/scripts/204_joglekar_2018_propagation.py` is the direct BrainEvent route. Use it when delayed spikes must be wrapped with `BinaryArray`, multiplied by `JITCScalarC`, and vmapped across areas. Preserve its delays, area-specific weights, seeds, refractory masks, external data dependencies, and BrainPy version assumptions. Upstream source: https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/204_joglekar_2018_propagation.py
+- `references/scripts/102_EI_net_1996.py` is the direct full-script reference for a high-level E/I network. Use it when the surrounding model already uses `brainpy.state.AlignPostProj` and `brainstate.nn.EventFixedProb`; it does not construct a low-level `brainevent` matrix directly. Preserve its unit-aware E/I weights, state initialization, compiled time loop, and visualization. Upstream source: https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/102_EI_net_1996.py
+- `references/scripts/204_joglekar_2018_propagation.py` belongs to the connectivity-variants branch for delayed spikes, JIT connectivity, and area mapping. Use it when delayed spikes must be wrapped with `BinaryArray`, multiplied by `JITCScalarC`, and vmapped across areas. Preserve its delays, area-specific weights, seeds, refractory masks, external data dependencies, and BrainPy version assumptions. Upstream source: https://raw.githubusercontent.com/chaobrain/brainpy.state/main/examples/brainpy_like/204_joglekar_2018_propagation.py
 
 ## Common Issues
 
@@ -217,12 +217,21 @@ Keep complete E/I and BrainPy applications in the bundled scripts rather than ex
 - **COO treated as a BrainEvent matrix class:** BrainEvent uses coordinate triplets as construction input; convert them with `coo2csr()`.
 - **Orientation guessed from the class suffix:** route to the orientation reference and benchmark the actual contraction when performance matters.
 
-## References
+## Reference Routing
 
-- [references/sparse-formats.md](references/sparse-formats.md) — COO triplets, CSR, CSC, construction scripts, and selection rules.
-- [references/connectivity-variants.md](references/connectivity-variants.md) — JITC distributions, row/column variants, and fixed fan-in.
-- [references/synaptic-plasticity.md](references/synaptic-plasticity.md) — pre/post event-driven weight updates, CSR/dense selection, and the CSR STDP overlay.
-- [references/custom-operators.md](references/custom-operators.md) — routing across the official Numba, Numba CUDA, Warp, C++, and CUDA tutorials.
+These four files are the complete skill-local Markdown reference inventory:
+
+| Reference | Open when |
+|---|---|
+| [references/sparse-formats.md](references/sparse-formats.md) | Explicit sparse connectivity needs COO construction, CSR/CSC storage, conversion, or format selection. |
+| [references/connectivity-variants.md](references/connectivity-variants.md) | Generated connectivity needs JITC distributions or row/column orientation, or fixed-degree connectivity needs fan-in/fan-out selection. This single route owns both JIT and fixed-connection variants. |
+| [references/synaptic-plasticity.md](references/synaptic-plasticity.md) | Pre- or postsynaptic events must update CSR or dense weights, including the STDP overlay. |
+| [references/custom-operators.md](references/custom-operators.md) | Built-in operations are insufficient and the task requires a Numba, Numba CUDA, Warp, C++, or CUDA extension path. |
+
+Keep `BinaryArray`, dense connectivity, the representative CSR/JITC/fixed fan-out workflows, and the JAX transform pattern in this body. Do not create separate Markdown routes for those canonical paths.
+
+Exact API sources:
+
 - https://brainx.chaobrain.com/brainevent/reference/apis/events.html — exact event-array APIs.
 - https://brainx.chaobrain.com/brainevent/reference/apis/sparsedata.html — exact sparse and generated connectivity classes.
 - https://brainx.chaobrain.com/brainevent/reference/apis/operations.html — event-driven products and plasticity operators.

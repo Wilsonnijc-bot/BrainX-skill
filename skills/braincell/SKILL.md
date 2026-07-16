@@ -1,6 +1,6 @@
 ---
 name: braincell-singlecell
-description: Use when working with BrainCell single-compartment HH-style point neurons, ion/channel choices, current-clamp simulations, solver selection, FI curves, channel ablation, adaptation/rebound mechanisms, or vectorized point-neuron populations where explicit morphology, regions, locsets, paint/place, CV policies, network wiring, or cable geometry are out of scope.
+description: Use when working with BrainCell single-compartment HH-style point neurons, ion/channel choices, current-clamp simulations, solver selection, FI curves, channel ablation, adaptation/rebound mechanisms, custom ion/channel authoring after checking built-ins, or vectorized point-neuron populations where explicit morphology, regions, locsets, paint/place, CV policies, network wiring, or cable geometry are out of scope.
 ---
 
 # BrainCell Single-Compartment Modeling
@@ -9,7 +9,7 @@ description: Use when working with BrainCell single-compartment HH-style point n
 
 Use this skill for BrainCell point-neuron work: Hodgkin-Huxley style `SingleCompartment` cells, built-in ion/channel combinations, direct current injection through `cell.update(I)`, solver choice, channel ablation, FI curves, adaptation/rebound mechanisms, and vectorized populations of independent point neurons.
 
-If the task mentions soma/dendrite/axon structure, branches, morphology files, `Cell`, `Morphology`, regions, locsets, `paint`, `place`, CV policies, cable equations, distributed mechanisms, point clamps/probes on a morphology, SWC/ASC/NeuroML2, manual branch construction, or custom channel authoring, route only to the parent reference `references/multicompartment/multicompartment-cell-workflow.md`. That parent alone selects its nested child references.
+If the task mentions soma/dendrite/axon structure, branches, morphology files, `Cell`, `Morphology`, regions, locsets, `paint`, `place`, CV policies, cable equations, distributed mechanisms, point clamps/probes on a morphology, SWC/ASC/NeuroML2, or manual branch construction, route first to the parent reference `references/multicompartment/multicompartment-cell-workflow.md`. That parent alone selects its six exclusive nested child references.
 
 
 ## P0 Concepts
@@ -213,13 +213,13 @@ This is a channel-level diagnostic pattern, not a normal current-clamp simulatio
 
 For isolated-cell or intracellular biophysics tasks, remain within BrainCell.
 
-When BrainCell neurons are connected into an SNN, use BrainCell for cellular and compartmental dynamics, BrainPy for synapses and projections, and open the `brainevent` skill when spike communication is sparse, large-scale, plastic, or requires specialized connectivity representations.
+When BrainCell neurons are connected into an SNN, use BrainCell for cellular and compartmental dynamics, BrainPy for synapses and projections, and open `skills/brainevent/SKILL.md` when spike communication is sparse, large-scale, plastic, or requires specialized connectivity representations.
 
 For general E-I network construction, leave this skill and route to `skills/brainpy/SKILL.md`. BrainCell owns no SNN-workflow reference.
 
 ## Custom Channel Or Ion Route
 
-Do not teach or route directly to custom HH/Markov ion or channel authoring from this skill. Custom authoring is an exclusive nested child of `references/multicompartment/multicompartment-cell-workflow.md`; only that parent may select it after establishing a multicompartment task.
+Check `references/libraries/ion-library.md` and `references/libraries/channel-library.md` before authoring a custom HH/Markov ion or channel. If the built-ins are insufficient, open the first-layer `references/braincell/braincell-custom-ion-channel-authoring.md`. For morphology-based work, establish the task through `references/multicompartment/multicompartment-cell-workflow.md` before reusing this first-layer authoring route.
 
 ## Common Mistakes And Fixes
 
@@ -233,7 +233,7 @@ Do not teach or route directly to custom HH/Markov ion or channel authoring from
 - Mixing density-based and total quantities -> keep `C`, `g_max`, and injected `I` all density-based by default, or convert the entire model consistently with area.
 - Custom authoring started too early -> open ion/channel libraries first.
 
-## Full Script References
+## Script References
 
 Core single-cell scripts:
 
@@ -269,20 +269,27 @@ Channel diagnostic script:
   Use for voltage-dependent gating curves, steady-state activation/inactivation, low-threshold vs high-threshold calcium channel comparison, and direct channel-method inspection. This is a channel-level diagnostic script, not the default current-clamp simulation pattern.
   Source mirrored: https://brainx.chaobrain.com/braincell/examples/calcium_channel_gating.html
 
+Multicompartment script, opened through the multicompartment parent:
+
+- `references/multicompartment/references/cell_multicompartment_reference.py`
+  Use for the morphology-to-simulation workflow: `Morphology`, `Cell`, CV policies, `paint`, `place`, clamps, probes, and geometry-dependent execution.
+  Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/cell.html
+
 ## First-Layer Reference Routing
 
-Local:
+Semantic skill route:
 
+- `skills/brainevent/SKILL.md` - sparse event communication for BrainCell neurons embedded in networks.
+
+Local references:
+
+- `references/array-creation.md` - unit-aware arrays, ranges, shapes, and constructor patterns used by BrainCell simulations.
 - `references/area-scaled-hh-pattern.md` - density-to-total capacitance, conductance, and current conversion.
 - `references/mixions-for-adaptation.md` - direct adaptation/AHP/KCa/rebound route for point-neuron use and reuse by the nested multicompartment parent.
-- `references/multicompartment/multicompartment-cell-workflow.md` - the only direct multicompartment route; it exclusively owns custom channel authoring, manual construction, morphology IO, filters, CV policies, probes, and topology children.
 - `references/libraries/ion-library.md` - built-in ions, fixed/init-Nernst/dynamic ion choices, concentration dynamics, `MixIons`.
 - `references/libraries/channel-library.md` - built-in channel families, channel dependencies, HH/Markov/custom decision rules.
 - `references/libraries/solver-library-with-effects.md` - integrator names, solver families, speed/accuracy guidance.
+- `references/braincell/braincell-custom-ion-channel-authoring.md` - custom ion/channel extension after built-ins are exhausted.
+- `references/multicompartment/multicompartment-cell-workflow.md` - the only direct multicompartment route; it exclusively owns manual construction, morphology IO, topology, probes, filters, and CV-policy children.
 
-Do not list or open custom-channel-authoring, manual-construction, morphology-IO, morphology-filter, CV-policy, probe, or topology children directly from this skill. They are nested exclusively beneath `references/multicompartment/multicompartment-cell-workflow.md`.
-
-Secondary route references:
-
-- Solver comparison only: https://brainx.chaobrain.com/braincell/examples/integration_methods.html
-- Point-neuron E-I network route only: https://brainx.chaobrain.com/braincell/examples/ei_network.html
+Do not list or open manual-construction, morphology-IO, morphology-filter, CV-policy, probe, or topology children directly from this skill. They are nested exclusively beneath `references/multicompartment/multicompartment-cell-workflow.md`. `references/diagnostics/common-failures-index.md` is second-level only after the manual-morphology, topology, or probe child identifies a failure mode.

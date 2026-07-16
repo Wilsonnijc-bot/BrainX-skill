@@ -2,29 +2,26 @@
 
 Source mirrored: https://brainx.chaobrain.com/braintools/optim/index.html
 
-Use this shared reference when a BrainState, BrainMass, or BrainPy training/fitting task needs optimizer or learning-rate-scheduler selection beyond the default `braintools.optim.Adam` pattern.
+Use this BrainMass-local reference when a BrainMass training or fitting task needs optimizer or learning-rate-scheduler selection beyond the default `braintools.optim.Adam` pattern.
 
 ## Used by
 
-- `skills/brainstate/SKILL.md`
-- `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
-- `skills/brainmass/SKILL.md`
-- `skills/brainpy/SKILL.md`
+- `skills/brainmass/SKILL.md` through the `references/fitting-with-objectives-api.md` or `references/horn-task-training.md` parent route
 
 Official source phrase: "Optimization guides highlight practical solvers for tuning models and experiments."
 
 ## Scope
 
-- Use `braintools.optim` for optimizer objects and learning-rate schedulers in BrainState training loops.
-- For direct BrainState or BrainPy loops, keep optimizer state registered against the model trainable states, usually `model.states(brainstate.ParamState)`.
+- Use `braintools.optim` for optimizer objects and learning-rate schedulers in BrainMass fitting or training workflows.
+- For direct BrainState-style loops inside a BrainMass workflow, keep optimizer state registered against the model trainable states, usually `model.states(brainstate.ParamState)`.
 - Keep gradient computation in `brainstate.transform.grad(...)` and apply updates through the optimizer update path already used by the nested training reference.
 - For BrainMass fitting, use `skills/brainmass/SKILL.md` for `Fitter`, objective, and backend semantics; use this file only to select optimizer, scheduler, or external-wrapper families.
-- Use this reference for selecting optimizer families, scheduler families, or external optimization routes; use `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md` for loss/grad/JIT loop structure.
+- Use this reference for selecting optimizer families, scheduler families, or external optimization routes; keep loss, gradient, JIT, and rollout structure in the selected BrainMass parent workflow. If the task becomes a standalone BrainState training loop, route to `skills/brainstate/SKILL.md` rather than loading BrainState reference files from here.
 
 ## Tutorial Routing
 
 - NevergradOptimizer tutorial: use for gradient-free parameter tuning and experiment search.
-- ScipyOptimizer tutorial: use for SciPy-based routines rather than BrainState gradient-step loops.
+- ScipyOptimizer tutorial: use for SciPy-based routines rather than direct gradient-step loops.
 - Getting Started with optax Optimizers: use when selecting Optax-backed optimizers through Braintools.
 - Learning Rate Scheduling Strategies: use when the training loop needs schedules such as decay, warmup, cosine, cyclic, or plateau behavior.
 - Advanced Optimizers and Techniques: use when a task asks for optimizer variants beyond standard SGD/Adam-style choices.
@@ -35,7 +32,7 @@ Official source phrase: "Optimization guides highlight practical solvers for tun
 - Scheduler utilities include `LRScheduler`, `StepLR`, `MultiStepLR`, `ConstantLR`, `LinearLR`, `ExponentialLR`, `PolynomialLR`, `ExponentialDecayLR`, `CosineAnnealingLR`, `CosineAnnealingWarmRestarts`, `WarmupCosineSchedule`, `CyclicLR`, `OneCycleLR`, `ReduceLROnPlateau`, `WarmupScheduler`, `PiecewiseConstantSchedule`, `ChainedScheduler`, and `SequentialLR`.
 - External optimizer wrappers include `ScipyOptimizer` and `NevergradOptimizer`.
 
-## BrainState Training Pattern Reminder
+## BrainMass Direct Training Pattern Reminder
 
 ```python
 params = model.states(brainstate.ParamState)

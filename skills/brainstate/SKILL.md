@@ -267,7 +267,7 @@ Activation functions determine a neuron or layer output from its input, usually 
 - In `Sequential`, one layer's `out_size` becomes the next layer's input size.
 - Use `.desc()` when a layer should infer its input size from the preceding layer.
 
-The following `ComplexNet` is the canonical inline example for `Sequential`, `.desc()`, and automatic size propagation. Use it directly when a user asks for the canonical example or its inferred sizes; do not ask whether to generalize it unless customization was requested. Do not create a separate size-inference reference unless a task needs formulas or additional edge cases.
+The following `ComplexNet` is the canonical inline example for `Sequential`, `.desc()`, and automatic size propagation. Use it directly when a user asks for the canonical example or its inferred sizes; do not ask whether to generalize it unless customization was requested. Route convolution formulas, pooling reduction, flatten-size inference, and edge cases to the planned consolidated `references/size-inference-variations.md` reference.
 
 ```python
 class ComplexNet(brainstate.nn.Module):
@@ -416,81 +416,58 @@ y = predict_batch(x)
 
 Open references only when the task exceeds this backbone.
 
-### Local references
+### Canonical first-layer references
 
-- `references/resnet.py`
-  Use for `ResidualBlock`, `ResNet`, skip connections, and dynamically registering child Modules with `setattr`.
-- `references/state-graph-operations.md`
-  Use to inspect, extract, replace, split, or reconstruct BrainState State and graphs, including `StateFinder`, `treefy_states`, `treefy_split`, and `treefy_merge`.
-- `references/model-interop-and-migration.md`
-  Use to convert Flax or Equinox models into or out of BrainState, or to migrate a PyTorch model to BrainState.
-
-### State and model operations
-
-- `references/state_collections_and_utilities.md`
-  Use for filtering, reorganizing, freezing, flattening, configuring, and pretty-printing nested mappings and PyTrees with `DictManager`, `DotDict`, `util.struct`, declarative filters, and pretty containers.
-- `references/collective_model_operations.md`
-  Use for model-wide initialization, reset, ordered method invocation, batched lifecycle operations, and State restoration across a Module graph.
-
-### Advanced extension and observability
-
-- `references/extension_mechanisms.md`
-  Use for reusable class-level behavior through mixins and parameter descriptors, runtime modes and type combinators, or observing and intercepting State access through global and per-State hooks.
-
-### Training and parameter references
-
-- `references/deeplearning-training/supervised-training-workflows.md`
-  Use as the supervised-training parent for complete loops, losses, metrics, evaluation, clipping, optimizer updates, and epochs. Let that parent choose deeper transform, randomness, parameter, layer, or script references.
-- `references/braintools-optimizer-reference.md`
-  Use the BrainState-local copy for optimizer families, learning-rate schedulers, and external optimizer wrappers.
-- `references/brainstate/parameter-constraints-regularization.md`
-  Use as the merged parameter-and-regularization parent for `ParamState` versus `nn.Param`, constrained transforms, `nn.Const`, classical/structural penalties, priors, and loss integration. Only this parent selects the parameter-container/transform catalog.
-
-### State and randomness references
-
-- `references/lif_neuron_model.py`
-  Use for the full LIF State example with `HiddenState`, `ShortTermState`, `ParamState`, and explicit `.value` updates.
-- `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
-  Use as the only first-layer randomness parent for independent streams, stochastic transforms, random trials, and checkpointed RNG State. Only this parent may select advanced randomness.
-- State Management: https://brainstate.readthedocs.io/tutorials/basics/02_state_management.html
-- Random Number Generation: https://brainstate.readthedocs.io/tutorials/basics/03_random_numbers.html
-
-### Module-building references
-
-- `references/libraries/prebuilt-layer-library.md`
-  Use for the full layer catalog.
-- `references/libraries/prebuilt-activation-library.md`
-  Use for activation functions, normalization, BatchNorm, and LayerNorm.
-- `references/size-inference-with-convolution.md`
-  Use for detailed convolution size formulas and edge cases.
-- `references/size-inference-with-pooling-flatten.md`
-  Use for detailed pooling and flatten size formulas and edge cases.
-- `references/modern_cnn.py`
-  Use for full CNN composition with convolution, normalization, pooling, Linear, and Dropout.
-- Module System Protocol: https://brainstate.readthedocs.io/tutorials/neural_networks/01_module_basics.html
-
-### Dynamics references
-
-- `references/brainstate-dynamics/dynamics-and-integration.md`
-  Use as the only first-layer dynamics parent for `brainstate.nn.Dynamics`, time-evolving systems, LIF/SNN populations, delays, update hooks, event-driven communication, or trajectory simulation. Let it select delay, event-driven, SNN, solver, and script children.
-- Building an SNN: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html
-
-### Transformation references
-
-- `references/brainstate/transformation-jit-expansion.md`
-  Use for JIT write-back, cache behavior, static arguments, compile/runtime separation, and performance details.
-- `references/brainstate/transformation-grad-expansion.md`
-  Use for autodiff, differentiable simulation, parameter fitting, regularization, `return_value`, and `has_aux`.
-- `references/brainstate/transformation-vmap-expansion.md`
+- `skills/brainstate/references/state-graph-operations.md`
+  Use to find, extract, split, replace, and reconstruct State graphs.
+- `skills/brainstate/references/model-interop-and-migration.md`
+  Use for Flax or Equinox interoperation and PyTorch migration.
+- `skills/brainstate/references/state_collections_and_utilities.md`
+  Use to filter, organize, freeze, flatten, configure, and print nested collections.
+- `skills/brainstate/references/collective_model_operations.md`
+  Use for model-wide initialization, reset, method invocation, batched lifecycle operations, and State restoration.
+- `skills/brainstate/references/extension_mechanisms.md`
+  Use for mixins, descriptors, runtime modes, and State hooks.
+- `skills/brainstate/references/size-inference-variations.md` [planned]
+  Use for convolution formulas and edge cases, pooling reduction, and flatten-size inference. This consolidated target is not yet present; do not substitute either legacy split size-inference article.
+- `skills/brainstate/references/brainstate/parameter-constraints-regularization.md`
+  Use as the parameter parent for `ParamState` versus `nn.Param`, constraints and transforms, `nn.Const`, penalties, prior regularizers, and loss integration.
+- `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
+  Use as the only first-layer randomness parent for streams, stochastic transforms, trials, dropout or noise, and checkpointed RNG State.
+- `skills/brainstate/references/libraries/prebuilt-layer-library.md`
+  Use for the full prebuilt layer catalog.
+- `skills/brainstate/references/libraries/prebuilt-activation-library.md`
+  Use for activation functions and normalization selection.
+- `skills/brainstate/references/brainstate/transformation-jit-expansion.md`
+  Use for State write-back, cache and static arguments, compilation boundaries, and benchmarking.
+- `skills/brainstate/references/brainstate/transformation-grad-expansion.md`
+  Use for autodiff, differentiable simulation, fitting, `return_value`, and `has_aux`.
+- `skills/brainstate/references/brainstate/transformation-vmap-expansion.md`
   Use for State axes, ensembles, sweeps, stochastic `vmap`, `in_states`, and `out_states`.
-- `references/brainstate/brainstate-control-flow-patterns.md`
-  Use for transformed loops, scans, branches, and conditionals.
-- `references/diagnostics/brainstate-transformed-diagnostics.md`
-  Use for transformed-code debugging, runtime checks, NaN checks, and error handling.
+- `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md`
+  Use for transform-safe loops, scans, branches, and checkpointed control flow.
+- `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md`
+  Use as the diagnostics parent for runtime checks, transformed debugging, NaN or Inf checks, callbacks, and traced values.
+- `skills/brainstate/references/braintools-optimizer-reference.md`
+  Use for optimizer families, learning-rate schedulers, and external optimizer wrappers.
 - `skills/brainx-acceleration-audit/SKILL.md`
-  Use for speed, GPU performance, batching, vectorization, parameter sweeps, memory reduction, or multi-device execution.
-- JIT and Compilation: https://brainstate.readthedocs.io/tutorials/transformations/01_jit_and_compilation.html
-- Thinking in BrainState: https://brainstate.readthedocs.io/getting_started/thinking_in_brainstate.html
+  Route performance, batching, sweeps, memory, GPU, and multi-device work to the acceleration skill.
+
+### Parent-only nested references
+
+- Only `skills/brainstate/references/brainstate/parameter-constraints-regularization.md` may select `skills/brainstate/references/brainstate/parameter-containers-transforms-catalog.md` for exhaustive parameter-container and transform-class selection.
+- Only `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` may select `skills/brainstate/references/brainstate-randomness-reproducibility/advanced-randomness.md` for advanced streams, mapped randomness, key restoration, and checkpoint behavior.
+- Only `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md` may select `skills/brainstate/references/diagnostics/common-failures-index.md`; establish transformed diagnostics before opening the recurring-failure router.
+- Do not select these three nested children directly from the skill router or another first-layer reference.
+
+### Script references
+
+- `skills/brainstate/references/lif_neuron_model.py`
+  Direct skill script for combined State roles and explicit `.value` updates. Source: `https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html`.
+- `skills/brainstate/references/modern_cnn.py`
+  Script selected through the prebuilt layer or activation branch for convolution, normalization, pooling, dropout, and dense composition. Source: `https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html`.
+- `skills/brainstate/references/resnet.py`
+  Direct skill script for residual Modules and dynamic child registration. Its source is unresolved, so do not treat it as canonical until the source is established.
 
 ## Common Mistakes and Fixes
 

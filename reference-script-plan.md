@@ -1,16 +1,19 @@
 # Reference Script Plan
 
-This is the normalized script inventory for the bundle. The current repository structure is authoritative for local paths. Each owning `SKILL.md` and the references it routes are authoritative for script purpose, selection, and upstream source.
+This is the normalized script-routing inventory for the bundle. The supplied
+BrainX workspace implementation plan is the sole source of selection and
+provenance. Repository files determine only whether a selected target already
+exists; existing drafts do not add scripts omitted by the supplied plan.
 
 ## Normalization Rules
 
 Apply these rules before reporting a missing path or duplicate:
 
 1. Use the current repository path, not an older skill slug or pre-consolidation directory name.
-2. Resolve every `references/...` path under the owning skill. Duplicate reusable content for every consuming skill; repository-root copies belong only to the root workspace router.
-3. Preserve each selected reference subtree inside the consuming skill. For example, scripts selected by `references/brainstate-dynamics/` stay under that same `brainstate-dynamics/scripts/` subtree after duplication.
+2. Use the exact canonical path declared by the supplied plan. Resolve shorthand `references/...` paths under the owning skill.
+3. Preserve each selected reference subtree. For example, BrainPy's compact training script stays under its declared `references/brainstate-dynamics/scripts/` subtree.
 4. Treat a final/default bundle list as the default. Earlier scripts remain non-default routes unless explicitly excluded.
-5. When multiple skills select the same official workflow, keep a separate package-local copy for each consumer.
+5. Keep every selected script under its owning package skill; a repository-root reference tree owns no scripts.
 6. Keep inline `Script` blocks inline unless the skill or a routed reference explicitly names a full bundled script.
 7. When both a gallery page and a direct `.py` URL are given, the gallery selects the workflow and the direct `.py` is the code source.
 8. Preserve upstream subdirectories, helper imports, data dependencies, filenames, and license headers.
@@ -28,27 +31,22 @@ Canonical path normalization used by this plan:
 
 | Skill | Normalized script requirement |
 |---|---|
-| Bundle router | 3 existing workspace dynamics-script copies, reached through the workspace dynamics parent reference |
-| BrainCell | 8 existing selected scripts; 1 planned custom-channel script; solver/network pages remain routes |
+| Bundle router | No executable workflow or selected script |
+| BrainCell | 8 existing selected scripts; solver/network pages remain routes |
 | BrainEvent | 2 existing selected application scripts |
 | BrainMass | 11 selected scripts: 1 existing and 10 planned; 1 additional optional baseline |
-| BrainPy | 7 planned native-gallery scripts, 7 planned NEST-compatible scripts, and 1 existing local `training-snn.py` copy |
-| BrainState | 7 existing selected scripts |
+| BrainPy | 5 planned native-gallery scripts, 7 planned NEST-compatible scripts, and 1 existing local `training-snn.py` copy |
+| BrainState | 3 existing selected scripts |
 | BrainTrace | Planned: 6 default, 2 non-default quickstarts, 3 on-demand operator scripts, 2 optional heavy scripts, plus imported helpers |
-| BrainUnit | No external script; 5 sourced inline examples |
+| BrainUnit | No external script; 9 inline workflow categories |
 | Acceleration audit | No fixed script |
 | General guard | No external script |
 | BrainX Install | No external script |
 
-## Workspace Router
+## Bundle Router
 
-The root `SKILL.md` contains no executable workflow, but its `references/brainstate-dynamics/dynamics-and-integration.md` copy routes to these workspace-local scripts. They duplicate the BrainState skill's selected dynamics scripts and preserve the same source subtree.
-
-| Canonical script | Role | Crafting source |
-|---|---|---|
-| `references/brainstate-dynamics/scripts/building-ei-snn.py` | Workspace E/I SNN simulation copy | [Building an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html) |
-| `references/brainstate-dynamics/scripts/training-snn.py` | Workspace surrogate-gradient SNN training copy | [Training an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) |
-| `references/brainstate-dynamics/scripts/hodgkin-huxley-neuron.py` | Workspace biophysical dynamics copy | [Hodgkin-Huxley Neuron](https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/hodgkin_huxley_neuron.html) |
+The root `SKILL.md` contains no executable workflow and selects no script.
+The repository root contains no shared reference or script tree.
 
 ## BrainCell
 
@@ -64,14 +62,6 @@ The root `SKILL.md` contains no executable workflow, but its `references/brainst
 | `skills/braincell/references/scripts/thalamic_neurons.py` | Thalamic phenotype/channel comparison | [Thalamic Neurons](https://brainx.chaobrain.com/braincell/examples/thalamic_neurons.html) |
 | `skills/braincell/references/scripts/calcium_channel_gating.py` | Channel gating diagnostic | [Calcium Channel Gating](https://brainx.chaobrain.com/braincell/examples/calcium_channel_gating.html) |
 | `skills/braincell/references/multicompartment/references/cell_multicompartment_reference.py` | Routed morphology-to-`Cell` workflow | `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` and [Cell in BrainCell](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
-
-### Planned routed custom-channel script
-
-Place the retained full script in the existing BrainCell script namespace rather than creating a second script tree under repository-root references. Keep the custom HH and registry examples inline in the routed reference.
-
-| Canonical target | Role | Crafting source |
-|---|---|---|
-| `skills/braincell/references/scripts/manual-icat-hp1992-authoring.py` | Direct `Channel` subclass with states, derivatives, and current | `skills/braincell/references/braincell/braincell-custom-ion-channel-authoring.md` and [Channels](https://brainx.chaobrain.com/braincell/tutorials/channel.html) |
 
 Do not create `integration_methods.py` or `ei_network.py` by default. Solver comparison stays at [Integration Methods](https://brainx.chaobrain.com/braincell/examples/integration_methods.html). BrainCell owns no SNN-workflow reference; general E/I network work routes to `skills/brainpy/SKILL.md`.
 
@@ -109,13 +99,12 @@ Quickstart, noise, batching, small-network, forward-model, and gradient-fitting 
 
 ## BrainPy
 
-Use `skills/brainpy/references/scripts/`. The gallery selects the seven scripts; each direct GitHub file is the code source.
+Use `skills/brainpy/references/scripts/`. The supplied plan selects five native
+gallery scripts; each direct GitHub file is the code source.
 
 | Canonical script | Role | Code source |
 |---|---|---|
 | `103_COBA_2005.py` | Default full E/I COBA simulation | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/103_COBA_2005.py) |
-| `104_CUBA_2005_version2.py` | Explicit E→E, E→I, I→E, I→I pathways | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/104_CUBA_2005_version2.py) |
-| `brunel.py` | Builder/Network script route | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/brunel.py) |
 | `106_COBA_HH_2007.py` | Custom HH neuron in a COBA network | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/106_COBA_HH_2007.py) |
 | `107_gamma_oscillation_1996.py` | Custom neuron/synapse paper reproduction | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py) |
 | `109_fast_global_oscillation.py` | `DeltaProj` with delayed feedback | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) |
@@ -137,7 +126,7 @@ The inline surrogate-gradient route uses the local duplicate `skills/brainpy/ref
 | `clopath_synapse_spike_pairing.py` | Clopath plasticity spike-pairing workflow | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py) |
 | `spatial_gaussex.py` | Spatial Gaussian/exponential connectivity workflow | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py) |
 
-These seven scripts are a separate NEST-compatible selection. Do not merge them with the seven native BrainPy-style scripts above.
+These seven scripts are a separate NEST-compatible selection. Do not merge them with the five native BrainPy-style scripts or the compact `training-snn.py` route above.
 
 ## BrainState
 
@@ -145,13 +134,10 @@ These seven scripts are a separate NEST-compatible selection. Do not merge them 
 |---|---|---|
 | `skills/brainstate/references/lif_neuron_model.py` | State-management example | [State and PyTrees](https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html) |
 | `skills/brainstate/references/modern_cnn.py` | CNN module composition | [Activations and Normalization](https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html) |
-| `skills/brainstate/references/resnet.py` | Residual composition and child registration | Existing local script explicitly selected by `skills/brainstate/SKILL.md` |
-| `skills/brainstate/references/deeplearning-training/references/scripts/integrator_rnn.py` | Stateful sequence training | [Integrator RNN](https://brainx.chaobrain.com/brainstate/examples/deep_learning/integrator_rnn.html) |
-| `skills/brainstate/references/brainstate-dynamics/scripts/building-ei-snn.py` | E/I SNN simulation | [Building an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/04_building_an_snn.html) |
-| `skills/brainstate/references/brainstate-dynamics/scripts/training-snn.py` | Surrogate-gradient SNN training | [Training an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html) |
-| `skills/brainstate/references/brainstate-dynamics/scripts/hodgkin-huxley-neuron.py` | Biophysical dynamics | [Hodgkin-Huxley Neuron](https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/hodgkin_huxley_neuron.html) |
+| `skills/brainstate/references/resnet.py` | Residual composition and child registration | Source is not recorded in the supplied plan; do not treat as canonical until established |
 
-[Training Spiking Neural Networks](https://brainx.chaobrain.com/brainstate/examples/brain_dynamics/snn_training.html) remains external-only because the deep-learning reference explicitly says no local duplicate is bundled.
+Existing training and dynamics scripts remain on disk but are not selected by
+the supplied BrainState script inventory.
 
 ## BrainTrace
 
@@ -199,7 +185,10 @@ Craft the helpers from the exact sibling sources named in the BrainTrace skill: 
 
 ### BrainUnit
 
-Keep its five source-backed examples inline: quantity creation, arithmetic/dimension mismatch, conversion, unit-aware math/JIT, and `@u.check_units`. All are crafted from [BrainUnit Quickstart](https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html). Do not invent `quantity_safety_quickstart.py`.
+Keep the nine declared workflow categories inline: quantity creation,
+arithmetic, dimension matching, conversion, attributes, unit-aware math,
+physical constants, JAX transformations, and `@u.check_units`. Do not invent
+`quantity_safety_quickstart.py`.
 
 ### BrainX Acceleration Audit
 
@@ -209,5 +198,7 @@ No fixed script. It applies its local transform-reference copies to the user's a
 
 No external script. Its JIT, stateful-loop, unit, and routing fragments remain inline guard examples.
 
+### BrainX Install
 
-
+No external script. Inspection and verification commands remain inline because
+environment managers differ.

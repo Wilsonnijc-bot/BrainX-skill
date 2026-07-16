@@ -1,6 +1,6 @@
 ---
 name: brainpy
-description: Use when working with native BrainPy-style brainpy.state simulations and trainable spiking neural networks: point neurons, synapses, synaptic outputs, projections, plasticity, readouts, unitful simulation, or surrogate-gradient training.
+description: "Use when working with native BrainPy-style brainpy.state simulations and trainable spiking neural networks: point neurons, synapses, synaptic outputs, projections, plasticity, readouts, unitful simulation, or surrogate-gradient training."
 ---
 
 # BrainPy State
@@ -160,7 +160,7 @@ The projection bundles comm, syn, out, and post; AlignPostProj keeps synaptic st
 
 ## Sparse Event Case
 
-BrainPy defines neuron, synapse, projection, and network dynamics. When a projection carries sparse binary spikes through large or sparse connectivity, open the `brainevent` skill for event representations, connectivity formats, event matrix operations, plasticity operators, and custom kernels.
+BrainPy defines neuron, synapse, projection, and network dynamics. When a projection carries sparse binary spikes through large or sparse connectivity, open the semantic `skills/brainevent/SKILL.md` skill route for event representations, connectivity formats, event matrix operations, plasticity operators, and custom kernels.
 
 Do not treat BrainEvent as a separate simulator: the BrainPy simulation may still advance with fixed timesteps while BrainEvent accelerates the sparse communication performed at each step.
 
@@ -170,7 +170,7 @@ Source: https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_trai
 
 Full local script: `references/brainstate-dynamics/scripts/training-snn.py`. Use it when the complete runnable form is more useful than the compact inline pattern below.
 
-Open `references/braintools-optimizer-reference.md` when optimizer or learning-rate-scheduler selection goes beyond the canonical Adam pattern; keep BrainPy surrogate gradients, time unrolling, loss construction, and State initialization in this skill.
+Open the training-nested `references/braintools-optimizer.md` route when optimizer or learning-rate-scheduler selection goes beyond the canonical Adam pattern; keep BrainPy surrogate gradients, time unrolling, loss construction, and State initialization in this skill.
 
 ```python
 import brainunit as u
@@ -314,187 +314,84 @@ Use `scan` when the time-series loop needs a value carried outside the model's o
   Source: https://brainx.chaobrain.com/braintrace/tutorials/batching.html
   Vmap-based batching is recommended: compile the computation graph for a single sample, then use `vmap` to automatically vectorize across the batch dimension.
 
-## References
+## Reference Routing
 
-### brainpy-neuron-library.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html
-
-Purpose: consolidated neuron library and selection guide; covers IF/LIF/LIFRef/ALIF/ExpIF/AdEx/HH/Izhikevich/etc. Open only when replacing the canonical first-neuron model.
-
-### brainpy-synapse-library.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html
-
-Purpose: synaptic dynamics catalog for `syn=...`: `Expon`, `DualExpon`, `Alpha`, `AMPA`, `GABAa`, `BioNMDA`. Keep separate from synaptic outputs because this is about temporal filtering / receptor dynamics.
-
-### brainpy-synaptic-outputs.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html
-
-Purpose: merged output catalog and COBA/CUBA decision guide; covers `COBA`, `CUBA`, `MgBlock`, reversal potential semantics, and current-based vs conductance-based projection output.
-
-### brainpy-projection-library.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-projections.html
-- https://brainx.chaobrain.com/brainpy-state/concepts/alignpre-alignpost.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html
-
-Purpose: projection choice and projection API reference; covers `AlignPostProj`, `align_pre_projection`, `align_post_projection`, `CurrentProj`, `DeltaProj`, gap junctions, `comm/syn/out/post`, and delayed prefetch idioms. Skill body keeps only the compact rule of thumb.
-
-### brainpy-plasticity.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-plasticity.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html
-
-Purpose: merged plasticity reference for `STP` and `STD`, including their internal state and projection integration through `stp=...`.
-
-### brainpy-custom-models.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-reproduce-a-paper.html
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-
-Purpose: custom `brainpy.state.Neuron` / `brainpy.state.Synapse` patterns, custom ODE steps, and paper-reproduction style. Open before adapting `106_COBA_HH_2007.py` or `107_gamma_oscillation_1996.py`.
-
-### brainpy-training.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/concepts/differentiability.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/tutorials/04-train-an-snn.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-surrogate-gradients.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html
-
-Purpose: one training pillar covering differentiability, surrogate gradients, `ParamState`, `brainstate.transform.grad`, BPTT through `for_loop`, and checkpointed long rollouts. Replaces separate `differentiability.md`, `surrogate-gradients.md`, and `long-rollouts-checkpoint.md`.
-
-### brainpy-readouts-and-inputs.md
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html
-- https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html
-- https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html
-
-Purpose: readout and input helpers for training / decoding tasks; covers `LeakyRateReadout`, spike generators, Poisson helpers, encoders, and when to add a trainable readout head.
-
-### braintools.md
-
-Source:
-
-- https://brainx.chaobrain.com/braintools/
-
-Purpose: helper package reference for initializers, surrogate functions, metrics, encoders, and visualization utilities used by BrainPy scripts. Route optimizer families, schedulers, and external optimizer wrappers to the local `references/braintools-optimizer-reference.md` copy.
-
-## External Routing / Not Bundled Here
-
-### online-learning.md
-
-Decision: do not create this as a normal BrainPy reference by default.
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/concepts/online-learning.html
-
-Purpose: route online-learning implementation questions to the BrainTrace skill/package. Keep only the conceptual boundary in this BrainPy skill body.
-
-### NEST-compatible/nest-workflow.md
-
-Decision: keep this as the existing separate NEST-compatible branch.
-
-Purpose: route NEST-compatible API requests to `NEST-compatible/nest-workflow.md` without merging that material into the native BrainPy body.
-
-## Full Bundled Script References
-
-Include only these genuinely useful scripts.
-
-### 103_COBA_2005.py
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/103_COBA_2005.py
-
-Purpose: representative full E/I COBA network; shared E/I population, excitatory and inhibitory `AlignPostProj`, `Expon`, and `COBA`. Use as the default full simulation reference.
-
-### 104_CUBA_2005_version2.py
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/104_CUBA_2005_version2.py
-
-Purpose: separate E and I populations with multiple explicit projections:
+Use BrainPy-owned references for selection and implementation details, the BrainEvent skill route for event-specialist work, the training parent for training-only Braintools decisions, and the NEST parent for compatibility work. Route online-learning implementations to BrainTrace rather than creating a BrainPy `online-learning.md` leaf.
 
 ```text
-E -> E
-E -> I
-I -> E
-I -> I
+brainpy/
+├── skills/brainevent/SKILL.md
+├── references/brainpy-neuron-library.md
+├── references/brainpy-synapse-library.md
+├── references/brainpy-synaptic-outputs.md
+├── references/brainpy-projection-library.md
+├── references/brainstate-dynamics/brain-dynamics-delay-protocol.md
+├── references/brainstate-dynamics/brain-dynamics-event-driven-operators.md
+├── references/array-creation.md
+├── references/brainpy-plasticity.md
+├── references/brainpy-custom-models.md
+├── references/brainpy-training.md
+│   ├── references/braintools-encoder-library.md
+│   ├── references/braintools-metrics.md
+│   ├── references/braintools-optimizer.md
+│   └── references/braintools-surrogate-gradient.md
+├── references/brainpy-readouts-and-inputs.md
+├── NEST-compatible/nest-workflow.md
+│   ├── Model Library [embedded lookup area]
+│   ├── Synapse And Connectivity [embedded lookup area]
+│   ├── Devices [embedded lookup area]
+│   ├── Network Building [embedded lookup area]
+│   ├── Divergence And Parity [embedded lookup area]
+│   └── Integration Categories [embedded lookup area]
+└── references/braintools-initializers.md
 ```
 
-Use when the user needs decomposition into named pathways instead of one shared population.
+| Canonical reference | Open when |
+|---|---|
+| `skills/brainevent/SKILL.md` | Sparse binary communication needs BrainEvent representations, connectivity, operators, plasticity, or custom kernels. |
+| `skills/brainpy/references/brainpy-neuron-library.md` | Selecting a native point-neuron model. |
+| `skills/brainpy/references/brainpy-synapse-library.md` | Selecting synaptic dynamics or receptor filters. |
+| `skills/brainpy/references/brainpy-synaptic-outputs.md` | Choosing COBA, CUBA, MgBlock, or current-versus-conductance output semantics. |
+| `skills/brainpy/references/brainpy-projection-library.md` | Choosing projection APIs, alignment, direct-current projections, gap junctions, or projection-level delay integration. |
+| `skills/brainpy/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | Delay APIs and buffer behavior are the primary question. |
+| `skills/brainpy/references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` | Sparse event operators and connectivity mechanics are the primary question. |
+| `skills/brainpy/references/array-creation.md` | Unit-aware array construction is the primary question. |
+| `skills/brainpy/references/brainpy-plasticity.md` | Integrating STP or STD state with native projections. |
+| `skills/brainpy/references/brainpy-custom-models.md` | Authoring custom Neuron/Synapse anatomy, ODE steps, or a paper reproduction. |
+| `skills/brainpy/references/brainpy-training.md` | Differentiability, surrogate gradients, `ParamState`, BPTT, or checkpointed rollouts are involved. Open its Braintools leaves only for the corresponding selection task. |
+| `skills/brainpy/references/braintools-encoder-library.md` | Selecting latency, rate, Poisson, population, Bernoulli, delta, step-current, spike-count, temporal, or rank-order encoders for training. |
+| `skills/brainpy/references/braintools-metrics.md` | Selecting classification, regression, ranking, spike-train, synchronization, LFP, or connectivity metrics for training. |
+| `skills/brainpy/references/braintools-optimizer.md` | Selecting optimizers, schedulers, Optax bridges, or SciPy/Nevergrad wrappers for training. |
+| `skills/brainpy/references/braintools-surrogate-gradient.md` | Selecting functional or object-style surrogate gradients and their shape parameters for training. |
+| `skills/brainpy/references/brainpy-readouts-and-inputs.md` | Selecting readout heads, spike/input generators, Poisson helpers, or encoders. |
+| `skills/brainpy/references/braintools-initializers.md` | Selecting parameter, weight, or distance-modulated connectivity initialization independently of training. |
+| `skills/brainpy/NEST-compatible/nest-workflow.md` | The request uses NEST-compatible models, porting, network construction, devices, parity, or integration categories. The six nested lookup areas remain compact sections in this parent file. |
 
-### brunel.py
+Reference targets named above are canonical architecture. A missing target is planned work; do not replace it with an invented body or a differently named route.
 
-Source:
+## Selected Script Inventory
 
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/brunel.py
+Keep exactly these native BrainPy gallery scripts as selected full-script references:
 
-Purpose: Builder / Network API style; keep as a script-only branch, not the canonical skill-body path.
+- `103_COBA_2005.py` - canonical E/I COBA network; projection branch.
+- `106_COBA_HH_2007.py` - custom HH network; custom-model branch.
+- `107_gamma_oscillation_1996.py` - custom neuron and synapse; custom-model branch.
+- `109_fast_global_oscillation.py` - `DeltaProj` and delay; projection branch.
+- `201_surrogate_grad_lif_fashion_mnist.py` - real-data SNN training; training branch.
 
-### 106_COBA_HH_2007.py
+The compact local training script is `references/brainstate-dynamics/scripts/training-snn.py`. It belongs to the training branch and is the only selected script body currently stored under this skill.
 
-Source:
+Keep exactly these seven NEST-compatible scripts in the `NEST-compatible/nest-workflow.md` full-script branch:
 
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/106_COBA_HH_2007.py
+- `brunel_alpha.py`
+- `brunel_delta.py`
+- `brette_et_al_2007.py`
+- `synapsecollection.py`
+- `evaluate_tsodyks2_synapse.py`
+- `clopath_synapse_spike_pairing.py`
+- `spatial_gaussex.py`
 
-Purpose: custom Hodgkin-Huxley neuron model inside a COBA E/I network; open when the user needs custom neuron model anatomy.
-
-### 107_gamma_oscillation_1996.py
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/107_gamma_oscillation_1996.py
-
-Purpose: custom neuron + custom synapse + `CurrentProj`; representative paper-reproduction script for gamma oscillation.
-
-### 109_fast_global_oscillation.py
-
-Canonical filename: `109_fast_global_oscillation.py`. Do not create a numeric alias.
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py
-
-Purpose: `DeltaProj` plus delayed spike feedback using `brainstate.nn.Delay`; use for direct delta-synapse and delayed-projection patterns.
-
-### 201_surrogate_grad_lif_fashion_mnist.py
-
-Source:
-
-- https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html
-- https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py
-
-Purpose: real-dataset SNN training; Fashion-MNIST, latency/input encoding, LIF hidden layer, synaptic filtering, optimizer, loss, train/test loop.
-
+Do not add unselected native or NEST gallery scripts to this architecture unless the source plan is revised.
 
 ## Common Mistakes -> Fix
 

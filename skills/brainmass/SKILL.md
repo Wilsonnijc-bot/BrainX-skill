@@ -1,6 +1,6 @@
 ---
 name: brainmass
-description: Use when working with BrainMass neural-mass workflows: one-model simulation, stochastic runs, batched ensembles, delay-coupled networks, BOLD/EEG/MEG forward models, parameter fitting, model catalogs, or whole-brain neural-mass examples. Routes non-differentiable fitting tasks to a standalone gradient-free reference script.
+description: "Use when working with BrainMass neural-mass workflows: one-model simulation, stochastic runs, batched ensembles, delay-coupled networks, BOLD/EEG/MEG forward models, parameter fitting, model catalogs, or whole-brain neural-mass examples. Routes non-differentiable fitting tasks to a standalone gradient-free reference script."
 ---
 
 # BrainMass Core Workflows
@@ -275,7 +275,7 @@ HRFBold BOLD: (7, 8)
 
 Use Quickstart fitting as the body path. It loads example_signal, extracts a target RMS amplitude, marks one Hopf parameter trainable with Param(..., fit=True), and fits with Fitter.
 
-Open `references/braintools-optimizer-reference.md` when choosing an optimizer, learning-rate scheduler, or SciPy/Nevergrad wrapper beyond this canonical `Fitter` example; keep BrainMass-specific objectives and backend selection in this skill.
+Open `references/braintools-optimizer.md` through the fitting parent when choosing an optimizer, learning-rate scheduler, or SciPy/Nevergrad wrapper beyond this canonical `Fitter` example; keep BrainMass-specific objectives and backend selection in this skill.
 
 Source: https://brainx.chaobrain.com/brainmass/getting_started/quickstart.html
 
@@ -324,7 +324,7 @@ amplitude matched: 0.7157  (target 0.7152)
 
 Stop using the inline workflow when the objective is non-differentiable, discrete, jagged, black-box, or produces an unavailable or unreliable gradient. Do not merely replace `backend='grad'`: gradient-free fitting also needs a bounded search space and a different optimizer-argument form.
 
-Open and adapt `references/scripts/gradient-free-fitting.py` for the complete, runnable version of the same Hopf amplitude-recovery problem with both `backend='nevergrad'` and derivative-free `backend='scipy'`. Preserve its shared objective, `SigmoidT`-derived bounds, and backend-specific step semantics. Then open the shared `references/braintools-optimizer-reference.md` only if the task requires choosing a different SciPy / Nevergrad method or configuring its wrapper.
+Open and adapt `references/scripts/gradient-free-fitting.py` for the complete, runnable version of the same Hopf amplitude-recovery problem with both `backend='nevergrad'` and derivative-free `backend='scipy'`. Preserve its common objective, `SigmoidT`-derived bounds, and backend-specific step semantics. Then open the BrainMass-local `references/braintools-optimizer.md` through `references/fitting-with-objectives-api.md` only if the task requires choosing a different SciPy / Nevergrad method or configuring its wrapper.
 
 Decision rule: "if you can differentiate the objective, use `grad`." Reach for gradient-free search only when the gradient is unavailable or unreliable.
 Source: https://brainx.chaobrain.com/brainmass/tutorials/07_gradient_free_fitting.html
@@ -400,6 +400,32 @@ Use `scan` when the time-series loop needs a value carried outside the model's o
 
 Do not keep key-concepts.md as a separate reference by default. The skill body already absorbs its P0 concepts. Keep references for API inventory and workflow variants only.
 
+The canonical architecture is ten BrainMass package references plus four reusable Braintools references:
+
+```text
+references/
+├── modellibrary.md
+├── noiseprocesses.md
+├── coupling-network-api.md
+├── forward-observation-api.md
+├── fitting-with-objectives-api.md
+│   ├── braintools-metrics.md
+│   ├── braintools-optimizer.md
+│   └── braintools-surrogate-gradient.md
+├── datasets-api.md
+├── visualization-analysis-api.md
+├── batch-transform-acceleration.md
+├── horn-task-training.md
+│   ├── braintools-cognitive-tasks.md
+│   ├── braintools-metrics.md
+│   └── braintools-optimizer.md
+└── parameter-sweeps-and-regime-analysis.md
+```
+
+Treat the indented Braintools entries as nested routes, not additional top-level BrainMass branches. Enter `braintools-surrogate-gradient.md` only through `fitting-with-objectives-api.md`; enter `braintools-cognitive-tasks.md` only through `horn-task-training.md`. Select `braintools-metrics.md` or `braintools-optimizer.md` only after choosing the fitting or HORN parent that owns the workflow.
+
+Only `braintools-optimizer.md` currently exists in this draft. The other canonical reference targets remain planned; do not infer that a routed file is already bundled.
+
 ### modellibrary.md
 
 Sources:
@@ -438,7 +464,7 @@ Sources:
 
 Purpose: one merged signal-mapping reference for HRFBold, HRF kernels, TemporalAverage, BOLDSignal, EEG / MEG lead fields, and lead-field readouts; body only keeps the fast differentiable HRFBold path. Observation docs explicitly separate convolution BOLD from temporal averaging and point to BOLDSignal / EEG / MEG on the forward-model side.
 
-### orchestration-fitting-objectives-api.md
+### fitting-with-objectives-api.md
 
 Sources:
 
@@ -486,13 +512,65 @@ Source: https://brainx.chaobrain.com/brainmass/howto/parameter_sweeps.html
 
 Purpose: regime exploration and sensitivity analysis; open when the user asks for sweeps rather than fitting.
 
-## Full Bundled Script References
+### braintools-cognitive-tasks.md
+
+Parent route: `horn-task-training.md` only.
+
+Source: https://brainx.chaobrain.com/braintools/apis/cogtask.html
+
+Purpose: build and generate cognitive-task trials for HORN task-training workflows.
+
+### braintools-metrics.md
+
+Parent routes: `fitting-with-objectives-api.md` and `horn-task-training.md`.
+
+Source: https://brainx.chaobrain.com/braintools/apis/metric.html
+
+Purpose: select losses and metrics for objective fitting or HORN task training after the BrainMass parent workflow has been chosen.
+
+### braintools-optimizer.md
+
+Parent routes: `fitting-with-objectives-api.md` and `horn-task-training.md`.
+
+Sources:
+
+- https://brainx.chaobrain.com/braintools/apis/optim.html
+- https://brainx.chaobrain.com/braintools/optim/index.html
+
+Purpose: select optimizers, schedulers, Optax bridges, or SciPy/Nevergrad wrappers after the BrainMass parent workflow has been chosen.
+
+### braintools-surrogate-gradient.md
+
+Parent route: `fitting-with-objectives-api.md` only.
+
+Source: https://brainx.chaobrain.com/braintools/apis/surrogate.html
+
+Purpose: select a surrogate gradient only for a differentiable fitting workflow that contains a non-differentiable spike function.
+
+## Script Reference Inventory
 
 ### Selection Rule
 
-Use gallery scripts as full bundled scripts. The gallery is a "curated, runnable showcase"; model-zoo pages are one self-contained demo per model family, while case studies are end-to-end applications.
+Use the selected gallery workflows as full-script targets. The gallery is a "curated, runnable showcase"; model-zoo pages are one self-contained demo per model family, while case studies are end-to-end applications.
 
 Prefer complete workflows over redundant model demos. Do not include every model zoo page by default.
+
+The canonical inventory is eleven selected scripts plus one optional script. Only `references/scripts/gradient-free-fitting.py` currently exists; every other target below remains planned and must not be treated as bundled.
+
+| Target | Selection | Parent route | Status |
+|---|---|---|---|
+| `references/scripts/gradient-free-fitting.py` | Selected | `fitting-with-objectives-api.md` | Exists |
+| `references/scripts/resting-state-meg-whole-brain-pipeline.py` | Selected | `coupling-network-api.md` -> `forward-observation-api.md` | Planned |
+| `references/scripts/eeg-fitting-with-gradients.py` | Selected | `fitting-with-objectives-api.md` | Planned |
+| `references/scripts/seizure-epileptor-case-study.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/wong-wang-decision-making.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/horn-cognitive-task-training.py` | Selected | `horn-task-training.md` | Planned |
+| `references/scripts/hopf-bifurcation-single-node.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/wilson-cowan-ei-dynamics.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/jansen-rit-eeg-proxy.py` | Selected | `modellibrary.md` -> `forward-observation-api.md` | Planned |
+| `references/scripts/kuramoto-synchronization.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/wong-wang-dmf-resting-state.py` | Selected | `modellibrary.md` | Planned |
+| `references/scripts/linear-baseline-node.py` | Optional | `modellibrary.md` | Planned |
 
 ### gradient-free-fitting.py
 

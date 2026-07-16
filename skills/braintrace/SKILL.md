@@ -220,7 +220,7 @@ This pattern keeps the model definition simple, with single-sample logic, while 
 
 ## Algorithm Routing
 
-Use only this routing in the skill body. Open `algorithms-and-customization.md` for detailed choices.
+Use only this routing in the skill body. Open `skills/braintrace/references/algorithms-and-customization.md` for detailed choices.
 
 - **braintrace.D_RTRL**
   Use for rate-based RNNs where accurate temporal gradient propagation is needed and parameter-count memory is acceptable.
@@ -234,66 +234,20 @@ Use only this routing in the skill body. Open `algorithms-and-customization.md` 
   Paper-faithful algorithms tailored to spiking neural networks are approximate except where a regime makes them exact; know the regime before relying on their gradients.
   Source: https://brainx.chaobrain.com/braintrace/apis/algorithms.html
 
-## Important Performance Concepts
-
-### P0 execution and performance rules
-
-- **Time-series execution**
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-  Never drive a repeatedly executed model with a bare Python `for` / `while` loop; `brainstate.transform` primitives lower the whole loop into one compiled XLA program and trace the body only once.
-
-- **jit**
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-  Use `brainstate.transform.jit` for a single step or one-shot call: it compiles the step once, then subsequent calls reuse the compiled program. For many-step BrainTrace rollouts, do not call a jitted step from a Python loop; use `for_loop` or `scan` around the compiled learner step when a custom rollout is needed.
-
-- **for_loop**
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-  Use `brainstate.transform.for_loop` for many steps when the model's `State` carries hidden variables automatically and the per-step outputs should be stacked.
-
-```python
-with brainstate.environ.context(dt=0.1 * u.ms):
-    times = u.math.arange(0. * u.ms, 200. * u.ms, brainstate.environ.get_dt())
-
-    def step(t):
-        with brainstate.environ.context(t=t):
-            neuron(25. * u.mA)
-            return neuron.V.value, neuron.get_spike()
-
-    vs, spikes = brainstate.transform.for_loop(step, times)
-```
-
-Use this as the default rollout pattern: define one simulation step, set `t` / `dt` through `brainstate.environ.context`, return monitored values, and let `for_loop` stack the time axis.
-
-- **scan**
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-  Use `brainstate.transform.scan` when the rollout needs an explicit carry alongside model `State`, with body shape `f(carry, x) -> (carry, y)`.
-
-```markdown
-[NEEDS OFFICIAL SCRIPT SOURCE]
-```
-
-Use `scan` when the time-series loop needs a value carried outside the model's own `State`, for example a running statistic, task memory, curriculum variable, external drive state, or custom loss accumulator.
-
-- **Checkpointed loop variants**
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-  For long rollouts under reverse-mode gradients, swap `for_loop` / `scan` for `checkpointed_for_loop` / `checkpointed_scan` only when BPTT memory would otherwise be exhausted.
-
-- **Vmap batching**
-  Vmap-based batching is recommended: compile the computation graph for a single sample, then use `vmap` to automatically vectorize across the batch dimension.
-  Source: https://brainx.chaobrain.com/braintrace/tutorials/batching.html
-
 ## References
 
 Reference quick map:
 
 ```text
-primitive-ops-and-transforms.md
-algorithms-and-customization.md
-compiler-graph-debugging.md
-state-batching-workflows.md
+skills/braintrace/references/primitive-ops-and-transforms.md
+skills/braintrace/references/algorithms-and-customization.md
+skills/braintrace/references/compiler-graph-debugging.md
+skills/braintrace/references/state-batching-workflows.md
+skills/braintrace/references/braintools-metrics.md
+skills/braintrace/references/braintools-optimizer.md
 ```
 
-### primitive-ops-and-transforms.md
+### `skills/braintrace/references/primitive-ops-and-transforms.md`
 
 Source:
 
@@ -305,7 +259,7 @@ Source:
 
 Purpose: one operation-level reference for built-in ETP primitives, `braintrace.matmul`, conv/sparse/LoRA/element-wise ops, parameter transform hooks, and custom ETP primitive registration.
 
-### algorithms-and-customization.md
+### `skills/braintrace/references/algorithms-and-customization.md`
 
 Source:
 
@@ -314,7 +268,7 @@ Source:
 
 Purpose: sharply explains each algorithm choice one by one, then covers the advanced algorithm hierarchy and custom algorithm extension points.
 
-### compiler-graph-debugging.md
+### `skills/braintrace/references/compiler-graph-debugging.md`
 
 Source:
 
@@ -324,7 +278,7 @@ Source:
 
 Purpose: one compiler/debugging reference for `ETraceGraph`, module-info extraction, hidden-group discovery, ETP relations, diagnostics, excluded weights, limitations, and workarounds.
 
-### state-batching-workflows.md
+### `skills/braintrace/references/state-batching-workflows.md`
 
 Source:
 
@@ -333,9 +287,26 @@ Source:
 
 Purpose: deeper reference for hidden-state variants, state initialization/reset, single-sample mode, vmap batching, and multi-step data handling.
 
-## Full Bundled Script References
+### `skills/braintrace/references/braintools-metrics.md`
 
-### Core Quickstart Workflows
+Source:
+
+- https://brainx.chaobrain.com/braintools/apis/metric.html
+
+Purpose: select losses and evaluation metrics for online-learning workflows.
+
+### `skills/braintrace/references/braintools-optimizer.md`
+
+Source:
+
+- https://brainx.chaobrain.com/braintools/apis/optim.html
+- https://brainx.chaobrain.com/braintools/optim/index.html
+
+Purpose: select optimizers and learning-rate schedules for online parameter updates.
+
+## Script References
+
+### Core Quickstart Workflows (2)
 
 #### rnn-online-learning.py
 
@@ -349,24 +320,13 @@ Source: https://brainx.chaobrain.com/braintrace/quickstart/snn_online_learning.h
 
 Purpose: complete executable recurrent SNN workflow using `brainstate` neurons, `braintrace.nn` layers, and `braintrace.ES_D_RTRL`.
 
-### Excluded Minimal Basics
+### Default Scripts (6)
 
-Do not bundle minimal basics by default.
-
-Exclude from default:
-
-- `examples/drtrl/01-basics-integrator.py`
-- `examples/pp_prop/01-basics-lif-integrator.py`
-- `examples/100-gru-on-copying-task.py`
-- `examples/101-integrator-rnn.py`
-
-Reason: the skill body already covers the canonical workflow. Reference scripts should teach representative algorithms, batching modes, temporal-credit choices, operator variations, or performance knobs.
-
-### Category 1: Algorithm Family Representative Workflows
+#### Algorithm Family Representative Workflows
 
 These are the two main algorithm-family scripts.
 
-#### examples/drtrl/09-classification-mnist.py
+##### examples/drtrl/09-classification-mnist.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/09-classification-mnist.py
 
@@ -374,7 +334,7 @@ Category: D_RTRL representative workflow
 
 Purpose: flagship D_RTRL classification script; treats MNIST as row-scan sequence data and compares D_RTRL with BPTT using matched hyperparameters.
 
-#### examples/pp_prop/12-classification-neuromorphic.py
+##### examples/pp_prop/12-classification-neuromorphic.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/12-classification-neuromorphic.py
 
@@ -382,11 +342,11 @@ Category: pp_prop / ES_D_RTRL representative workflow
 
 Purpose: flagship pp_prop classification script; trains a LIF RSNN on Poisson-MNIST and compares pp_prop with BPTT.
 
-### Category 2: Batching Modes
+#### Batching Modes
 
 Keep exactly two batching scripts: one canonical vmap pattern and one batched-primitive alternative.
 
-#### examples/drtrl/02-batching-vmap.py
+##### examples/drtrl/02-batching-vmap.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/02-batching-vmap.py
 
@@ -394,7 +354,7 @@ Category: batching / vmap
 
 Purpose: canonical per-sample-state batching pattern; shows explicit state initialization, graph compilation, and wrapping the online model in `brainstate.nn.Vmap`.
 
-#### examples/pp_prop/06-batching-batched.py
+##### examples/pp_prop/06-batching-batched.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/06-batching-batched.py
 
@@ -402,11 +362,11 @@ Category: batching / batched primitive
 
 Purpose: important alternative to vmap; inputs carry a batch dimension directly and the ETP primitive path handles batched execution.
 
-### Category 3: Temporal-Credit / VJP Method Choice
+#### Temporal-Credit / VJP Method Choice
 
 Keep one contrast script. Do not keep separate single-step and multi-step scripts.
 
-#### examples/pp_prop/14-knob-vjp-method-contrast.py
+##### examples/pp_prop/14-knob-vjp-method-contrast.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/pp_prop/14-knob-vjp-method-contrast.py
 
@@ -414,11 +374,11 @@ Category: VJP method contrast
 
 Purpose: compares `vjp_method='single-step'`, `vjp_method='multi-step'`, and BPTT head-to-head on delayed match-to-sample.
 
-### Category 4: Performance Knob
+#### Performance Knob
 
 Keep one performance-knob script.
 
-#### examples/drtrl/11-knob-fast-solve.py
+##### examples/drtrl/11-knob-fast-solve.py
 
 Source: https://github.com/chaobrain/braintrace/blob/main/examples/drtrl/11-knob-fast-solve.py
 
@@ -426,7 +386,7 @@ Category: D_RTRL performance knob
 
 Purpose: compares `fast_solve=True` and `fast_solve=False`, checks numerical equivalence, and measures wall-clock speedup.
 
-### Category 5: Operator / Custom-Layer Variations
+### Operator Scripts (3)
 
 These are valuable, but they should be opened only when the user is working below `braintrace.nn` or asking about custom layers, ETP operators, LoRA, sparse connectivity, or convolutional online learning.
 
@@ -456,7 +416,7 @@ Category: operator variation / convolution
 
 Purpose: convolutional SNN reference using `braintrace.nn.Conv2d`, where pp_prop dispatches to the convolutional ETP primitive for kernel gradients.
 
-### Category 6: Heavy / Specialized Scripts
+### Optional Specialized Scripts (2)
 
 Do not bundle these by default. Add only if the skill is expected to support benchmarking or biophysical SNN architectures often.
 
@@ -476,7 +436,7 @@ Category: specialized SNN architecture
 
 Purpose: Dale-law excitatory/inhibitory recurrent SNN example; useful only when the user asks for COBA/EI or biologically constrained SNN architecture.
 
-### Required Support Files
+### Helper Dependencies (2)
 
 Bundle only if selected scripts import them. Do not present these as teaching scripts.
 
@@ -506,21 +466,6 @@ examples/drtrl/11-knob-fast-solve.py
 ```
 
 ## Common Mistakes -> Fix
-
-- Time-step a model with a bare Python `for` / `while` loop -> write a per-step function and pass it to `brainstate.transform.for_loop` or `brainstate.transform.scan`.
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-
-- Wrap only the per-step function in `brainstate.transform.jit` and keep the Python loop -> `jit` compiles the step once, but Python still dispatches every iteration; use `for_loop` / `scan` for custom rollouts.
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-
-- Use `scan` for every rollout -> use `for_loop` by default; use `scan` only when an explicit carry is needed outside the model's own `State`.
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-
-- Manually append outputs inside the step function -> return monitored values from the step; `for_loop` / `scan` stack per-step outputs.
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
-
-- Run long BPTT and hit memory pressure -> replace `for_loop` / `scan` in the loss with `checkpointed_for_loop` / `checkpointed_scan`.
-  Source: https://brainx.chaobrain.com/brainmass/howto/batch_and_accelerate.html
 
 - Using `x @ w` for temporal recurrent weights -> use `braintrace.matmul`; regular JAX ops exclude the weight from online learning.
   Source: https://brainx.chaobrain.com/braintrace/quickstart/concepts.html

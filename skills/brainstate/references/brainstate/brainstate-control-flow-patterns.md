@@ -7,7 +7,6 @@ Collect detailed loop and branch patterns for BrainState transformations and acc
 ## Used by
 
 - `skills/brainstate/SKILL.md`
-- `skills/brainx-acceleration-audit/SKILL.md`
 
 ## Primary source pages to expand from
 

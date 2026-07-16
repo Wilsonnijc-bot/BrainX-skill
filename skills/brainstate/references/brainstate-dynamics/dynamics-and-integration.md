@@ -10,7 +10,7 @@ Open this parent for `Dynamics`, `update()`, time-evolving state, LIF/SNN popula
 
 ## Parent-reference boundary
 
-This is the only first-layer BrainState dynamics reference. `skills/brainstate/SKILL.md`, the workspace router, and the workspace reference index route here, not to the dynamics children. This parent is the only first-hop selector for:
+This is the only first-layer BrainState dynamics reference. BrainState routes here, not to the dynamics children. This parent is the only first-hop selector for:
 
 - `references/brainstate-dynamics/brain-dynamics-delay-protocol.md`
 - `references/brainstate-dynamics/brain-dynamics-event-driven-operators.md`

@@ -38,19 +38,22 @@ Use `brainstate.random.seed(seed)` for reproducible BrainState examples/tests an
 
 ## Conditional reference routing
 
+```text
+brainx-general-guard/
+└── brainstate-randomness-reproducibility/
+    └── randomness-and-reproducibility.md
+        └── advanced-randomness.md
+```
+
 Open `skills/brainx-install/SKILL.md` only for installation, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch. Keep normal modeling tasks from loading install content.
 
-Open `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` only when the task involves seed control, random trials, stochastic state, dropout/noise, random data, transformed randomness, or reproducibility.
+Open `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` only when the task involves seed control, random trials, stochastic state, dropout/noise, random data, transformed randomness, or reproducibility.
+
+Do not open `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/advanced-randomness.md` directly. The local randomness parent is its only inbound selection route.
 
 Keep global BrainX guardrails active: do not invent APIs, prefer official examples, use BrainState transforms for BrainState state, use BrainUnit quantities for physical parameters, and prefer built-ins before custom implementation.
 
 Domain routing guard
-
-#### Script
-
-```text
-[NEEDS OFFICIAL SCRIPT SOURCE]
-```
 
 #### Explanation text
 
@@ -152,5 +155,9 @@ Silent unit mismatches are one of the most common and hardest-to-find bugs in ne
 • passing bare floats into BrainCell mechanisms -> attach brainunit units.
 • treating BrainCell as generic ODE code -> use cells, ions, channels, mechanisms, and integrators.
 • writing custom ion channel first -> check built-in braincell.channel list first.
-• inventing APIs -> open official example/source first; leave [NEEDS OFFICIAL SCRIPT SOURCE] if no official pattern exists.
+• inventing APIs -> open the official example/source first; do not fabricate a standalone script when no official pattern exists.
 • loading install guidance for ordinary modeling -> use `skills/brainx-install/SKILL.md` only after install/setup/backend/package evidence appears.
+
+## Script references
+
+None. This guard has no standalone script reference; its compact guard examples remain inline.

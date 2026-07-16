@@ -333,9 +333,9 @@ vm = res.trace(mm, "V_m")
 
 Concepts taught: spike-recorder direction, multimeter direction, `SimulationResult.spikes`, `SimulationResult.rate`, `SimulationResult.trace`, and `SimulationResult.times`.
 
-## Reference Map
+## Embedded Reference Map
 
-Keep these as compact lookup areas, not tutorials. Do not create these files automatically from this workflow; only use or write them when a separate task asks for that work.
+These six areas are compact lookups embedded in this parent file, not child Markdown routes. Do not create separate files for them as part of this architecture pass.
 
 ### Model Library
 
@@ -394,7 +394,7 @@ Sources:
 
 Purpose: numerical and integration behavior by model family.
 
-### Selected Full-Script Reference
+## Selected Full-Script Inventory
 
 Sources:
 
@@ -407,7 +407,7 @@ Sources:
 - `clopath_synapse_spike_pairing.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/clopath_synapse_spike_pairing.py
 - `spatial_gaussex.py`: https://github.com/chaobrain/brainpy.state/blob/main/examples/nest_like/spatial_gaussex.py
 
-Purpose: small selected official gallery reference, not the whole ported-script gallery.
+These seven scripts are the complete selected NEST-compatible inventory for this branch, not the whole ported-script gallery. Do not add unselected gallery scripts unless the source plan is revised.
 
 ## Common Mistakes -> Fix
 
@@ -437,7 +437,7 @@ When using this workflow:
 
 ## Load Strategy
 
-Start from this file for NEST-compatible tasks. Open deeper material only when the user needs it.
+Start from this file for NEST-compatible tasks. Consult only the embedded lookup area that matches the request.
 
 | User need | Open or consult |
 |---|---|

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Provide a compact second-level index of recurring BrainCell morphology, topology, and probe mistakes and the parent-owned reference that should fix each one.
+Provide a compact second-level index of recurring BrainCell morphology, topology, and probe mistakes and the canonical reference route that should fix each one.
 
 ## Used by
 
@@ -10,7 +10,7 @@ Provide a compact second-level index of recurring BrainCell morphology, topology
 - `references/braincell/topology-building-and-visualization.md`
 - `references/braincell/probe-reference.md`
 
-This file is not a first-layer reference and is not selected by `skills/braincell/SKILL.md`, the bundle router, or the workspace index.
+This file is not a first-layer reference and is not selected by `skills/braincell/SKILL.md` or the root bundle skill.
 
 ## Should eventually cover
 
@@ -23,12 +23,13 @@ This file is not a first-layer reference and is not selected by `skills/braincel
 | NeuroML2 morphology expected to include mechanisms | BrainCell multicompartment parent → nested morphology IO |
 | Runtime topology inspected before `init_state()` | BrainCell multicompartment parent → nested topology reference |
 | Region or locset resolves to the wrong target | BrainCell multicompartment parent → nested filter reference |
-| Custom channel authored before checking built-ins | BrainCell multicompartment parent → built-in channel library, then nested custom authoring if needed |
+| Custom channel authored before checking built-ins | Main BrainCell skill → first-layer channel library → first-layer custom authoring if needed |
 
 ## Expansion rules
 
 - Keep each failure entry short.
-- Route back through the multicompartment parent and one parent-owned child.
+- Route morphology failures back through the multicompartment parent and one exclusive child.
+- Route custom-authoring failures through the first-layer channel library and first-layer custom-authoring reference.
 - Add minimal symptom wording.
 - Add minimal fix wording.
 - Do not turn this into a tutorial.

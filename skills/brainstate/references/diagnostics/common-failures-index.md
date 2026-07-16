@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Provide a compact cross-bundle index of recurring BrainX mistakes and the skill/reference that should fix each one.
+Provide a compact BrainState-owned index of recurring BrainX mistakes and the skill or reference that should fix each one.
 
-## Used by
+## Selected by
 
-All skills.
+Only `references/diagnostics/brainstate-transformed-diagnostics.md` may select this second-level router. `skills/brainstate/SKILL.md` and other first-layer references must establish transformed diagnostics through that parent instead of routing here directly.
 
 ## Should eventually cover
 

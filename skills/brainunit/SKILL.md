@@ -174,3 +174,34 @@ Use @check_units to enforce unit contracts on function arguments.
 • using jnp.sum / generic math where units must survive -> use u.math functions.
 • missing function-level unit checks -> use @u.check_units(...) for public helper functions.
 • passing bare numbers into BrainCell -> attach explicit units before constructing mechanisms or parameters.
+
+## Reference routing
+
+The following skill-local references are planned routing targets. Route to the narrowest matching target; do not substitute a standalone script for these references.
+
+```text
+references/
+|-- quantity-inspection-and-conversion.md
+|-- array-creation.md
+|-- array-mechanics.md
+|-- math-function-library.md
+|-- unit-structure-and-definition.md
+|-- temperature-conversions.md
+|-- prefix-library.md
+`-- physical-constant-library.md
+```
+
+| Reference | Route here for |
+|---|---|
+| `references/quantity-inspection-and-conversion.md` | Inspecting mantissas, units, dimensions, and compatibility; converting quantities or extracting values in compatible units. |
+| `references/array-creation.md` | Creating unit-aware arrays from scalars, sequences, ranges, shapes, grids, or existing arrays, including filled, identity, diagonal, triangular, and template-shaped arrays with explicit units and dtypes. |
+| `references/array-mechanics.md` | Array metadata, indexing, slicing, functional updates, reshaping, flattening, squeezing, transposing, broadcasting, concatenating, splitting, stacking, repeating, backend conversion, and named-axis transformations. |
+| `references/math-function-library.md` | Selecting mathematical functions by unit semantics, including dimensionless-input, unit-preserving, unit-changing, reduction, contraction, comparison, boolean, and index-returning operations. Array creation and structural manipulation stay with their dedicated references. |
+| `references/unit-structure-and-definition.md` | Inspecting unit structure, comparing dimensions and scales, combining units, and defining named, derived, or scaled custom units. |
+| `references/temperature-conversions.md` | Affine temperature conversion, Kelvin quantities, plain Celsius values, absolute temperatures, and temperature differences. |
+| `references/prefix-library.md` | Predefined SI base and derived units, generated BrainUnit unit names, and supported prefix symbols and scales. |
+| `references/physical-constant-library.md` | Predefined unit-aware physical constants, including names, values, dimensions, and canonical units. |
+
+## Script routing
+
+Keep the canonical quantity, arithmetic, dimension-matching, conversion, inspection, `brainunit.math`, physical-constant, JAX-transformation, and `@check_units` examples inline in this skill. BrainUnit declares no standalone script files or `references/scripts/` bundle.

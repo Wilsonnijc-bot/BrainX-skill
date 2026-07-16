@@ -2,23 +2,20 @@
 
 Source mirrored: https://brainx.chaobrain.com/braintools/optim/index.html
 
-Use this shared reference when a BrainState, BrainMass, or BrainPy training/fitting task needs optimizer or learning-rate-scheduler selection beyond the default `braintools.optim.Adam` pattern.
+Use this BrainPy training reference when optimizer or learning-rate-scheduler selection goes beyond the default `braintools.optim.Adam` pattern.
 
 ## Used by
 
-- `skills/brainstate/SKILL.md`
-- `skills/brainmass/SKILL.md`
-- `skills/brainpy/SKILL.md`
+- `skills/brainpy/SKILL.md` through the `references/brainpy-training.md` parent route
 
 Official source phrase: "Optimization guides highlight practical solvers for tuning models and experiments."
 
 ## Scope
 
-- Use `braintools.optim` for optimizer objects and learning-rate schedulers in BrainState training loops.
-- For direct BrainState or BrainPy loops, keep optimizer state registered against the model trainable states, usually `model.states(brainstate.ParamState)`.
+- Use `braintools.optim` for optimizer objects and learning-rate schedulers in BrainPy training loops.
+- Keep optimizer state registered against the model trainable states, usually `model.states(brainstate.ParamState)`.
 - Keep gradient computation in `brainstate.transform.grad(...)` and apply updates through the optimizer update path already used by the nested training reference.
-- For BrainMass fitting, use `skills/brainmass/SKILL.md` for `Fitter`, objective, and backend semantics; use this file only to select optimizer, scheduler, or external-wrapper families.
-- Use this reference for selecting optimizer families, scheduler families, or external optimization routes; delegate to `skills/brainstate/SKILL.md` for loss/grad/JIT loop structure so BrainState can select its training parent.
+- Use this reference for selecting optimizer families, scheduler families, or external optimization routes; keep BrainPy loss, gradient, JIT, and rollout structure in the `references/brainpy-training.md` parent.
 
 ## Tutorial Routing
 

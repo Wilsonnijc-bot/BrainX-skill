@@ -2,11 +2,11 @@
 
 Use this reference when BrainState code needs random numbers, reproducible examples/tests, stochastic masks/noise, seed control, random trials, stochastic state, dropout/noise, RNG under transforms, or a decision between the default BrainState RNG path and advanced key/stream APIs.
 
-Usually reached from primary skills only when the task actually involves randomness. Do not load this for ordinary deterministic state, module, training, or BrainCell modeling tasks.
+Reached from the acceleration skill or one of its local transform references only when the audit actually involves randomness. Do not load this for ordinary deterministic State, Module, or transform work.
 
 ## Parent-reference boundary
 
-This is the only first-layer randomness reference. Skills, the workspace router, and the reference index route here. `references/brainstate-randomness-reproducibility/advanced-randomness.md` is its nested child and has no other selection route.
+This is the acceleration skill's only first-layer randomness reference. The acceleration skill and its local transform references route here, never directly to `references/brainstate-randomness-reproducibility/advanced-randomness.md`. That advanced reference is this parent's nested child and has no other selection route.
 
 Use `brainstate.random` for BrainState RNG. Official anchor phrase: it "wraps JAX’s random number generation capabilities with a stateful interface that simplifies usage while maintaining reproducibility and performance."
 

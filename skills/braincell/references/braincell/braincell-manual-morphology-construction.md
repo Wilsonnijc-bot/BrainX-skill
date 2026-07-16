@@ -2,7 +2,7 @@
 
 ## Routing ownership
 
-This is a nested morphology leaf owned only by `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`. Open the multicompartment parent first. Do not route here directly from `skills/braincell/SKILL.md`, the bundle router, or the global reference index.
+This is a nested morphology leaf owned only by `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`. Open the multicompartment parent first. Do not route here directly from `skills/braincell/SKILL.md` or the root bundle skill.
 
 ## Purpose
 

@@ -15,7 +15,7 @@ Optimize in this order: **correctness -> state/RNG safety -> shape stability -> 
 
 ## Reference usage
 
-Start from this skill. Load extra markdowns only when the specific rewrite needs exact transform semantics.
+For any nontrivial State-aware rewrite, route through `skills/brainstate/SKILL.md` first. Load this skill's local references only when the specific rewrite needs exact transform or randomness semantics.
 
 Do not invent BrainState arguments. If the exact API is uncertain, inspect local usage/tests or reference markdowns and state the assumption in the patch notes.
 
@@ -421,18 +421,39 @@ In these cases, report the bottleneck and propose a safer benchmark or represent
 If the user asks for an actual code rewrite, include the patch. If the user asks only for an audit, do not rewrite yet; provide the table and prioritized plan.
 
 
-## Reference loading
+## Reference routing
 
-Do not guess exact BrainState transform syntax when changing transform behavior.
+Do not guess exact BrainState transform syntax when changing transform behavior. `skills/brainstate/SKILL.md` is the required upstream route before any nontrivial State-aware rewrite.
 
-Read these local references only when relevant:
+This skill owns local transform and randomness references for the exact semantics it audits:
 
-- `skills/brainstate/SKILL.md`: before any nontrivial BrainState transform rewrite.
+```text
+brainx-acceleration-audit/
+├── brainstate/
+│   ├── brainstate-control-flow-patterns.md
+│   ├── transformation-jit-expansion.md
+│   ├── transformation-vmap-expansion.md
+│   └── transformation-grad-expansion.md
+└── brainstate-randomness-reproducibility/
+    └── randomness-and-reproducibility.md
+        └── advanced-randomness.md
+```
 
-- `references/brainstate/transformation-jit-expansion.md`: before changing JIT boundaries, static args, raw `jax.jit`, recompilation behavior, or benchmarking.
+### First-layer routes
 
-- `references/brainstate/transformation-vmap-expansion.md`: before rewriting batch/trial/ensemble loops, especially with state or RNG.
+| Route | Open when |
+|---|---|
+| `skills/brainstate/SKILL.md` | Any nontrivial State-aware rewrite |
+| `skills/brainx-acceleration-audit/references/brainstate/transformation-jit-expansion.md` | JIT boundaries, static arguments, recompilation, or benchmarking |
+| `skills/brainx-acceleration-audit/references/brainstate/transformation-vmap-expansion.md` | Batch, trial, ensemble, State-axis, or RNG mapping |
+| `skills/brainx-acceleration-audit/references/brainstate/transformation-grad-expansion.md` | Finite-difference replacement, training gradients, or `ParamState` differentiation |
+| `skills/brainx-acceleration-audit/references/brainstate/brainstate-control-flow-patterns.md` | Time or recurrent loops, `scan`, `for_loop`, `while_loop`, or checkpointing |
+| `skills/brainx-acceleration-audit/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` | Seed/key restoration or independent mapped randomness |
 
-- `references/brainstate/transformation-grad-expansion.md`: before replacing finite differences, adding training gradients, or differentiating over `ParamState`.
+### Nested randomness
 
-- `references/brainstate/brainstate-control-flow-patterns.md`: before rewriting time loops, recurrent loops, `scan`, `for_loop`, `while_loop`, or checkpointed scans.
+The acceleration skill and its transform references route only to the local randomness parent. That parent alone may select `skills/brainx-acceleration-audit/references/brainstate-randomness-reproducibility/advanced-randomness.md` for advanced stream, mapped-key, or restoration behavior. Do not route directly to the advanced child.
+
+## Script references
+
+No fixed or standalone script is bundled with this skill. Build validation cases from the code under audit.

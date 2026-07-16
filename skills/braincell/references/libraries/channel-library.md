@@ -74,7 +74,7 @@ ablated = HH(1, gK=0. * (u.mS / u.cm ** 2))
 
 ## Custom Channel Route
 
-If no built-in channel fits a multicompartment task, return to `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`; only that parent may select its custom-authoring child. This library must not route to the child directly. The custom route must include:
+If no built-in channel fits, open the first-layer `references/braincell/braincell-custom-ion-channel-authoring.md`. For a multicompartment task, establish the morphology workflow through `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` first. The custom route must include:
 
 * `root_type` aligned with the ion dependency.
 * state initialization/reset.

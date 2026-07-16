@@ -6,17 +6,16 @@ This parent reference is the only first-hop morphology route under `skills/brain
 
 ## Exclusive nested-reference ownership
 
-This parent reference is the only first-hop selector for these seven nested child references:
+This parent reference is the only first-hop selector for these six exclusive nested child references:
 
-- `references/braincell/braincell-custom-ion-channel-authoring.md`
+- `references/braincell/braincell-manual-morphology-construction.md`
 - `references/braincell/morphology-io-loading-validation.md`
 - `references/braincell/topology-building-and-visualization.md`
 - `references/braincell/probe-reference.md`
 - `references/libraries/filter-function-library.md`
 - `references/libraries/cv-policy-reference.md`
-- `references/braincell/braincell-manual-morphology-construction.md`
 
-`skills/braincell/SKILL.md`, the workspace router, and the workspace reference index must route to this parent, never directly to those children. After the parent establishes the tree, children may cross-route within it. `references/diagnostics/common-failures-index.md` is a second-level diagnostic child reached only after a morphology, topology, or probe child identifies a failure mode.
+`skills/braincell/SKILL.md` and the root bundle skill must route to this parent, never directly to those children. After the parent establishes the tree, children may cross-route within it. `references/diagnostics/common-failures-index.md` is a second-level diagnostic child reached only after the manual-morphology, topology, or probe child identifies a failure mode.
 
 ## Core Concepts
 
@@ -118,9 +117,9 @@ Open `references/libraries/cv-policy-reference.md` before refining spatial resol
 
 ## Existing Ions, Channels, And MixIons
 
-Open `references/libraries/ion-library.md` and `references/libraries/channel-library.md` before authoring a custom mechanism.
+Reuse the first-layer `references/libraries/ion-library.md`, `references/libraries/channel-library.md`, and `references/libraries/solver-library-with-effects.md` for ion, channel, and solver selection. Reuse does not make those files exclusive children of this parent.
 
-If no built-in channel fits a multicompartment task, open the exclusively owned child `references/braincell/braincell-custom-ion-channel-authoring.md`.
+If no built-in channel fits, open the first-layer sibling `references/braincell/braincell-custom-ion-channel-authoring.md`; this multicompartment parent does not own that reference.
 
 `references/mixions-for-adaptation.md` is a first-layer BrainCell reference owned directly by `skills/braincell/SKILL.md`. Reuse it here when a multicompartment task needs calcium-dependent adaptation, AHP/KCa mechanism selection, or `MixIons(k, ca)` reasoning, then return here for morphology-specific `Cell`, `paint`, `place`, clamp, probe, and CV workflow.
 
@@ -135,7 +134,6 @@ If no built-in channel fits a multicompartment task, open the exclusively owned 
 
 Open these only after this multicompartment parent establishes the morphology task. Do not route to them directly from the main BrainCell skill or the bundle router.
 
-- `references/braincell/braincell-custom-ion-channel-authoring.md` - custom channel and ion extension after built-ins are exhausted.
 - `references/braincell/braincell-manual-morphology-construction.md` - manual morphology construction.
 - `references/braincell/morphology-io-loading-validation.md` - morphology loading, validation, NeuroMorpho, and checkpoints.
 - `references/braincell/topology-building-and-visualization.md` - runtime topology, NodeTree, CV/branch/node views, and visualization.

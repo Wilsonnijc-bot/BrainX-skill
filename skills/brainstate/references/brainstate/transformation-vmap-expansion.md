@@ -8,7 +8,6 @@ Detail how BrainState vectorization should be taught after the Transformations C
 
 - `skills/brainstate/SKILL.md`
 - `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
-- `skills/braincell/SKILL.md`
 
 ## Primary source pages to expand from
 

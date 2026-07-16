@@ -2,7 +2,7 @@
 
 ## Routing ownership
 
-This is an exclusive nested child of `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`. Open the parent first. The main BrainCell skill, workspace router, libraries, and reference index must not route here directly.
+This is a first-layer reference opened from `skills/braincell/SKILL.md` after the built-in ion and channel libraries are exhausted. A multicompartment task still opens `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` first, then may reuse this sibling authoring route without making it a nested morphology child.
 
 Concepts
 
@@ -134,13 +134,6 @@ Concrete channels self-register at import time with @register_channel; once impo
 Source mirrored: https://brainx.chaobrain.com/braincell/developer/extending.html
 
 Keep the minimal custom HH channel and registry examples as inline authoring patterns in this reference. Do not create separate bundled scripts for them.
-
-Full bundled script reference
-
-manual-icat-hp1992-authoring.py
-
-Source mirrored: https://brainx.chaobrain.com/braincell/tutorials/channel.html
-Purpose: full direct Channel subclass example with parameters, gates, DiffEqState, derivatives, and current.
 
 Common mistakes -> Fix
 

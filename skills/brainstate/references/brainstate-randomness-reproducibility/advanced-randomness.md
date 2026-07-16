@@ -1,6 +1,6 @@
 # Advanced BrainState RNG reference
 
-This is a nested child with exactly one selector: `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`. Do not route here from a skill, workspace router, index, transform reference, or dynamics reference. Keep the default path compact: seed once, call `brainstate.random`, and let BrainState manage keys automatically.
+This is a nested child with exactly one selector: `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`. Do not route here directly from `skills/brainstate/SKILL.md` or another BrainState reference. Keep the default path compact: seed once, call `brainstate.random`, and let BrainState manage keys automatically.
 
 Official anchor phrase: `brainstate.random` provides "a comprehensive set of random number generation functions and utilities for neural network simulations and scientific computing." It includes standard random distributions, random state management with automatic key splitting, seed management utilities, and a NumPy-compatible API.
 

@@ -1,8 +1,7 @@
 ---
-
 name: brainx-install
 description: Use when inspecting, installing, upgrading, repairing, or verifying a BrainX environment. Ensures BrainX subpackages belong to one compatible BrainX release, checks Python and CPU/GPU/TPU requirements, and requires explicit user approval before any environment modification.
------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 # BrainX Installation and Environment Management
 
@@ -656,24 +655,14 @@ Be explicit about anything that was not verified.
 * Never treat hardware detection as user consent.
 * Never modify the environment before presenting the plan and receiving approval.
 
-# References
+# Reference routing
 
 Open only the references needed for the current task.
 
-* `compatibility-and-release-matching.md`
+* `references/compatibility-and-release-matching.md` (planned) - open after inspection when matching an observed package tuple, classifying an exact or partial match, diagnosing release drift, or evaluating historical or yanked releases. This reference has no nested Markdown children.
 
-  * Source: `https://brainx.chaobrain.com/summ/`
-  * Cover BrainX release tuples, exact and partial matching, release drift, historical releases, yanked releases, and compatibility evidence.
+Keep Python and environment inspection, hardware selection, repair, and verification guidance in this skill body. Hardware selection applies only when CPU, GPU, or TPU choice is involved; repair applies only after diagnosis and before an approved mutation.
 
-* `python-and-environment-inspection.md`
+# Script references
 
-  * Cover interpreter discovery, pip, uv, Poetry, Conda, Docker, Jupyter, project manifests, lockfiles, and `Requires-Python`.
-
-* `hardware-backend-selection.md`
-
-  * Source: `https://brainx.chaobrain.com/summ/install.html`
-  * Cover CPU, CUDA 12, CUDA 13, TPU, NVIDIA driver evidence, JAX device inspection, containers, remote machines, and clusters.
-
-* `repair-and-verification.md`
-
-  * Cover confirmation boundaries, minimal repair, exact installation commands, optional extras, snapshots, dependency checks, imports, JAX devices, and final reporting.
+No standalone scripts are bundled. Keep read-only shell and Python inspection commands and post-install verification commands inline because environment managers differ.

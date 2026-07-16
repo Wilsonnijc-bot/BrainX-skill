@@ -80,7 +80,7 @@ For `AHP_De1994`, the tutorial shows `root_type` as potassium then calcium, so p
 * Use `PotassiumFixed` + potassium channels for repolarization, leak, delayed rectifier, A-current, or M-current families.
 * Use `CalciumDetailed` when calcium concentration participates in adaptation, rebound, or calcium-activated potassium currents.
 * Use `MixIons` only when the channel requires multiple ion dependencies.
-* If built-ins do not cover a multicompartment mechanism, return to `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`; only that parent may select custom authoring.
+* If built-ins do not cover the mechanism, open the first-layer `references/braincell/braincell-custom-ion-channel-authoring.md`; for multicompartment work, establish the morphology route through `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` first.
 
 ## Common Mistakes -> Fix
 

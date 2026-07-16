@@ -7,8 +7,10 @@ Collect runtime debugging, checking, and error-handling patterns for BrainState 
 ## Used by
 
 - `skills/brainstate/SKILL.md`
-- `skills/brainx-acceleration-audit/SKILL.md`
-- `references/diagnostics/common-failures-index.md`
+
+## Nested routing boundary
+
+This parent establishes transformed diagnostics before selecting `references/diagnostics/common-failures-index.md`. The common-failures index has no other inbound selection route.
 
 ## Primary source pages to expand from
 

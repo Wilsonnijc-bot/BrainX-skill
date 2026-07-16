@@ -6,7 +6,7 @@ Usually reached from primary skills only when the task actually involves randomn
 
 ## Parent-reference boundary
 
-This is the only first-layer randomness reference. Skills, the workspace router, and the reference index route here. `references/brainstate-randomness-reproducibility/advanced-randomness.md` is its nested child and has no other selection route.
+This is this skill's only first-layer randomness reference. `skills/brainx-general-guard/SKILL.md` routes here. `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/advanced-randomness.md` is its nested child and has no other selection route.
 
 Use `brainstate.random` for BrainState RNG. Official anchor phrase: it "wraps JAX’s random number generation capabilities with a stateful interface that simplifies usage while maintaining reproducibility and performance."
 
@@ -42,7 +42,7 @@ return x * mask / keep_prob
 
 For noisy stochastic behavior, generate noise at call time with `brainstate.random.normal(..., shape)`.
 
-## Open the nested child `references/brainstate-randomness-reproducibility/advanced-randomness.md` for
+## Open the nested child `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/advanced-randomness.md` for
 
 - manual keys: `get_key`, `set_key`, `get_key_data`, `restore_key`, `split_key`, `split_keys`, `self_assign_multi_keys`
 - custom `RandomState` instances or independent streams
