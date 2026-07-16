@@ -6,10 +6,10 @@ Detail how BrainState-aware JIT compilation should be taught after the Transform
 
 ## Used by
 
-- `skills/brainstate-transformations-core/SKILL.md`
-- `skills/brainstate-deeplearning-training/SKILL.md`
-- `skills/braincell-singlecell/SKILL.md`
-- `skills/braincell-multicompartment/SKILL.md`
+- `skills/brainstate/SKILL.md`
+- `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
+- `skills/braincell/SKILL.md`
+- `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`
 
 ## Primary source pages to expand from
 

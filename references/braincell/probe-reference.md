@@ -6,11 +6,13 @@ https://brainx.chaobrain.com/braincell/tutorials/mech.html
 
 Use when the user wants to record, sample, inspect, or debug BrainCell runtime state, mechanism state, or currents.
 
+## Routing ownership
+
+This is a nested multicompartment leaf. Open it only after `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`; the bundle router and main BrainCell skill must not route here directly.
+
 ## Used by
 
-- `skills/braincell-singlecell/SKILL.md`
-- `skills/braincell-multicompartment/SKILL.md`
-- `references/diagnostics/common-failures-index.md`
+- `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`
 
 ## Probe types
 

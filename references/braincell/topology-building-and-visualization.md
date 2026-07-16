@@ -6,11 +6,14 @@ https://brainx.chaobrain.com/braincell/tutorials/filter.html
 
 Use when building, inspecting, validating, or explaining the runtime topology of a multicompartment BrainCell Cell.
 
+## Routing ownership
+
+This is a nested morphology leaf. Open it only after `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`, either directly from that parent or through its nested manual-construction reference.
+
 ## Used by
 
-- `skills/braincell-multicompartment/SKILL.md`
+- `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`
 - `references/braincell/braincell-manual-morphology-construction.md`
-- `references/diagnostics/common-failures-index.md`
 
 ## Open when
 

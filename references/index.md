@@ -1,54 +1,97 @@
 # BrainX Reference Index
 
-Shared reference files live here once and may be linked by many skills. Open the smallest reference that answers the immediate question.
+Each consumer owns its reference copy. This index lists only first-layer and parent references. Nested children are intentionally omitted: open the owning parent, which establishes the tree and selects the initial child.
 
-## BrainState
+## Workspace Router
 
-- `references/brainstate-randomness-reproducibility/` — seed control, random trials, stochastic modules, dropout/noise, RNG under transforms, and reproducibility; open only when stochastic behavior matters.
-- `references/brainstate-randomness-reproducibility/advanced-randomness.md` — advanced BrainState RNG, `RandomState`, dropout, random batches, checkpointed RNG, and transformed randomness; open after the randomness reference establishes the boundary.
-- `references/brainstate/brainstate-control-flow-patterns.md` — BrainState control-flow pattern catalog; open when loops or branches must remain valid under `jit`, `grad`, or `vmap`.
-- `references/brainstate/parameter-constraints-regularization.md` — conceptual workflow for `ParamState` vs `nn.Param`, constrained values, regularization penalties, `Const`, and training-loss integration.
-- `references/brainstate/parameter-containers-transforms-catalog.md` — catalog for `Param`, `Const`, and built-in parameter transforms; open when mapping constraints to transform choices.
-- `references/brainstate/regularization-catalog-priors.md` — catalog for classical, structural, chained, and prior-distribution regularizers; open when mapping modeling goals to `reg=` choices.
-- `references/brainstate/transformation-grad-expansion.md` — BrainState gradient expansion notes; open for `grad`, differentiable simulation, parameter fitting, or gradient target selection.
-- `references/brainstate/transformation-jit-expansion.md` — BrainState JIT expansion notes; open for compilation, cache/static arguments, state write-back, or transformed simulation speedups.
-- `references/brainstate/transformation-vmap-expansion.md` — BrainState vectorization expansion notes; open for `vmap`, batching, sweeps, vectorized stochastic functions, or state axes.
-
-## BrainState Dynamics
-
-- `references/brainstate-dynamics/` — primary reference hub for `Dynamics`, `update()`, time-evolving state, LIF/SNN populations, delays, hooks, event-driven spike communication, trajectory simulation, and neural population workflows.
-- `references/brainstate-dynamics/brain-dynamics-delay-protocol.md` — delay APIs and delay-buffer behavior; open for `output_delay`, `prefetch_delay`, `Delay`, `DelayAccess`, `StateWithDelay`, or biological delays.
-- `references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` — event-driven sparse spike operators; open for spike-train input, sparse connectivity, `EventLinear`, `EventFixedProb`, or scalable SNN connectivity.
-- `references/brainstate-dynamics/brain-dynamics-snn-workflows.md` — SNN build/simulate/train workflow routes; open for spiking populations, projections, E/I networks, surrogate-gradient training, or time-unrolled SNN losses.
-
-## BrainX Infrastructure
-
-- `references/brainx-install/` — install, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch.
-- `references/brainx-acceleration-audit/` — speed, acceleration, GPU performance, batching, vectorization, parameter sweeps, many neurons/trials, compile/runtime separation, memory reduction, throughput, multi-device execution, or performance audit.
+- `references/braintools-optimizer-reference.md`
+- `references/brainstate/parameter-constraints-regularization.md`
+- `references/brainstate/transformation-jit-expansion.md`
+- `references/brainstate/transformation-grad-expansion.md`
+- `references/brainstate/transformation-vmap-expansion.md`
+- `references/brainstate/brainstate-control-flow-patterns.md`
+- `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
+- `references/brainstate-dynamics/dynamics-and-integration.md`
+- `references/libraries/ion-library.md`
+- `references/libraries/channel-library.md`
+- `references/libraries/solver-library-with-effects.md`
+- `references/libraries/prebuilt-layer-library.md`
+- `references/libraries/prebuilt-activation-library.md`
+- `references/diagnostics/brainstate-transformed-diagnostics.md`
 
 ## BrainCell
 
-- `references/braincell/braincell-custom-ion-channel-authoring.md` — custom BrainCell ion/channel authoring notes; open after checking existing channel and ion libraries when a requested current needs a reusable custom component.
-- `references/braincell/braincell-manual-morphology-construction.md` — manual morphology construction and morphology-preparation notes; open for hand-built branches, topology preparation, validation, and pre-Cell morphology work.
-- `references/braincell/morphology-io-loading-validation.md` — unified morphology import, validation report/options, NeuroMorpho cache, and checkpoint reference; open for SWC, ASC, NeuroML2, NeuroMorpho, validation, or branch-type inspection.
-- `references/braincell/probe-reference.md` — BrainCell probe types and trace checks; open for `StateProbe`, `MechanismProbe`, `CurrentProbe`, trace keys, sampling, or missing traces.
-- `references/braincell/topology-building-and-visualization.md` — runtime topology and visualization; open for NodeTree, CV/branch/node views, region/locset coverage, mechanism/probe placement, or unexpected topology behavior.
+- `skills/braincell/references/area-scaled-hh-pattern.md`
+- `skills/braincell/references/mixions-for-adaptation.md`
+- `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md`
+- `skills/braincell/references/libraries/ion-library.md`
+- `skills/braincell/references/libraries/channel-library.md`
+- `skills/braincell/references/libraries/solver-library-with-effects.md`
 
-## Libraries
+## BrainEvent
 
-- `references/libraries/channel-library.md` — BrainCell channel catalog blueprint; open when selecting existing channels or checking channel/ion dependencies before authoring.
-- `references/libraries/cv-policy-reference.md` — control-volume policy blueprint; open when choosing or comparing CV policies and discretization effects.
-- `references/libraries/filter-function-library.md` — BrainCell spatial selector/filter blueprint; open for region, locset, branch, and morphology selection patterns.
-- `references/libraries/ion-library.md` — BrainCell ion catalog blueprint; open for ion species, reversal potentials, concentration dynamics, or `MixIons`.
-- `references/libraries/prebuilt-activation-library.md` — BrainState activation catalog; open when choosing prebuilt activation layers.
-- `references/libraries/prebuilt-layer-library.md` — BrainState prebuilt layer catalog; open when choosing existing layers before custom modules.
-- `references/libraries/solver-library-with-effects.md` — solver and integration tradeoff blueprint; open for solver choice, time-step units, stability, stiffness, or trace comparison.
+- `skills/brainevent/references/sparse-formats.md`
+- `skills/brainevent/references/connectivity-variants.md`
+- `skills/brainevent/references/synaptic-plasticity.md`
+- `skills/brainevent/references/custom-operators.md`
 
-## Diagnostics
+## BrainMass
 
-- `references/diagnostics/brainstate-transformed-diagnostics.md` — transformed-code debugging and runtime checks; open for tracers, transformed prints, callbacks, breakpoints, assertions, NaN/Inf checks, or checkify-style errors.
-- `references/diagnostics/common-failures-index.md` — common failure router; open when an error pattern appears or the right diagnostic reference is unclear.
+- `skills/brainmass/references/braintools-optimizer-reference.md`
+
+## BrainPy
+
+- `skills/brainpy/references/braintools-optimizer-reference.md`
+- `skills/brainpy/NEST-compatible/nest-workflow.md`
+
+## BrainState
+
+- `skills/brainstate/references/state-graph-operations.md`
+- `skills/brainstate/references/model-interop-and-migration.md`
+- `skills/brainstate/references/state_collections_and_utilities.md`
+- `skills/brainstate/references/collective_model_operations.md`
+- `skills/brainstate/references/extension_mechanisms.md`
+- `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
+- `skills/brainstate/references/size-inference-with-convolution.md`
+- `skills/brainstate/references/size-inference-with-pooling-flatten.md`
+- `skills/brainstate/references/braintools-optimizer-reference.md`
+- `skills/brainstate/references/brainstate/parameter-constraints-regularization.md`
+- `skills/brainstate/references/brainstate/transformation-jit-expansion.md`
+- `skills/brainstate/references/brainstate/transformation-grad-expansion.md`
+- `skills/brainstate/references/brainstate/transformation-vmap-expansion.md`
+- `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md`
+- `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
+- `skills/brainstate/references/brainstate-dynamics/dynamics-and-integration.md`
+- `skills/brainstate/references/libraries/prebuilt-layer-library.md`
+- `skills/brainstate/references/libraries/prebuilt-activation-library.md`
+- `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md`
+
+## BrainTrace
+
+- `skills/braintrace/SKILL.md`
+
+## BrainUnit
+
+- `skills/brainunit/SKILL.md`
+
+## Acceleration Audit
+
+- `skills/brainx-acceleration-audit/SKILL.md`
+- `skills/brainx-acceleration-audit/references/brainstate/transformation-jit-expansion.md`
+- `skills/brainx-acceleration-audit/references/brainstate/transformation-grad-expansion.md`
+- `skills/brainx-acceleration-audit/references/brainstate/transformation-vmap-expansion.md`
+- `skills/brainx-acceleration-audit/references/brainstate/brainstate-control-flow-patterns.md`
+- `skills/brainx-acceleration-audit/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
+
+## General Guard
+
+- `skills/brainx-general-guard/SKILL.md`
+- `skills/brainx-general-guard/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
+
+## Installation
+
+- `skills/brainx-install/SKILL.md`
 
 ## Policy
 
-- `references/policy/` — reserved for future bundle policy and routing references that are not domain-specific.
+- `references/policy/` is reserved for future workspace policy references.

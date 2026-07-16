@@ -24,7 +24,7 @@ A mechanism is anything installed on a cell that affects dynamics; in braincell,
 **Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/mechanisms.html
 
 • Tiny RNG guard
-Use `brainstate.random.seed(seed)` for reproducible BrainState examples/tests and route advanced stochastic behavior to `references/brainstate-randomness-reproducibility/` only when randomness is part of the task.
+Use `brainstate.random.seed(seed)` for reproducible BrainState examples/tests and route advanced stochastic behavior to `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` only when randomness is part of the task.
 **Source mirrored:** https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
 
 ## Evoke case / task boundary
@@ -38,9 +38,9 @@ Use `brainstate.random.seed(seed)` for reproducible BrainState examples/tests an
 
 ## Conditional reference routing
 
-Open `references/brainx-install/` only for installation, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch. Keep normal modeling tasks from loading install content.
+Open `skills/brainx-install/SKILL.md` only for installation, setup, import errors, backend selection, CUDA/GPU/TPU, JAX device validation, version pinning, or package mismatch. Keep normal modeling tasks from loading install content.
 
-Open `references/brainstate-randomness-reproducibility/` only when the task involves seed control, random trials, stochastic state, dropout/noise, random data, transformed randomness, or reproducibility.
+Open `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` only when the task involves seed control, random trials, stochastic state, dropout/noise, random data, transformed randomness, or reproducibility.
 
 Keep global BrainX guardrails active: do not invent APIs, prefer official examples, use BrainState transforms for BrainState state, use BrainUnit quantities for physical parameters, and prefer built-ins before custom implementation.
 
@@ -153,4 +153,4 @@ Silent unit mismatches are one of the most common and hardest-to-find bugs in ne
 • treating BrainCell as generic ODE code -> use cells, ions, channels, mechanisms, and integrators.
 • writing custom ion channel first -> check built-in braincell.channel list first.
 • inventing APIs -> open official example/source first; leave [NEEDS OFFICIAL SCRIPT SOURCE] if no official pattern exists.
-• loading install guidance for ordinary modeling -> use `references/brainx-install/` only after install/setup/backend/package evidence appears.
+• loading install guidance for ordinary modeling -> use `skills/brainx-install/SKILL.md` only after install/setup/backend/package evidence appears.
