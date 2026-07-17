@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const { parseCommand, runCli, USAGE } = require('../lib/cli');
+const { InstallCancelledError } = require('../lib/prompts');
 const { captureStream } = require('./helpers');
 
 test('parseCommand accepts only the two public commands', () => {
@@ -84,4 +85,23 @@ test('install fails clearly when stdin is not a terminal', async () => {
     stderr.text(),
     'Interactive installation requires a terminal.\nRun this command in an interactive shell.\n',
   );
+});
+
+test('install cancellation exits without invoking the installer', async () => {
+  const stderr = captureStream();
+  let invoked = false;
+  const status = await runCli(['install'], {
+    stderr: stderr.stream,
+    promptForInstall: async () => {
+      throw new InstallCancelledError();
+    },
+    installer: async () => {
+      invoked = true;
+      return 0;
+    },
+  });
+
+  assert.equal(status, 130);
+  assert.equal(invoked, false);
+  assert.equal(stderr.text(), 'Installation cancelled.\n');
 });

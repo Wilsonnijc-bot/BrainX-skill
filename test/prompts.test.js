@@ -80,7 +80,7 @@ test('detected-only skips customization and defaults to global scope', async () 
   assert.equal(calls[1].options.initial, 1);
 });
 
-test('customization preselects detections and validates an empty selection', async () => {
+test('customization starts empty and validates an empty selection', async () => {
   const calls = [];
   const result = await promptForInstall({
     adapters,
@@ -94,7 +94,9 @@ test('customization preselects detections and validates an empty selection', asy
 
   assert.deepEqual(result, { selectedHarnessIds: ['claude', 'codex'], scope: 'project' });
   const multi = calls.find((call) => call.type === 'multiSelect').options;
-  assert.deepEqual(multi.initial, ['codex']);
+  assert.deepEqual(multi.initial, []);
+  assert.equal(multi.emptyError, ' ');
+  assert.deepEqual(multi.symbols.indicator, { on: '\u25cf', off: '\u25cb' });
   assert.equal(multi.validate([]), 'Select at least one harness.');
   assert.equal(multi.validate(['codex']), true);
 });

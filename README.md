@@ -74,8 +74,8 @@ npm test
 npm pack --dry-run
 npm pack
 test_home="$(mktemp -d '/tmp/brainx skills.XXXXXX')"
-HOME="$test_home" npx --yes --package ./brainx-skill-1.0.0.tgz brainx install
-HOME="$test_home" npx --yes --package ./brainx-skill-1.0.0.tgz brainx update
+HOME="$test_home" npx --yes --package ./brainx-skill-1.0.1.tgz brainx install
+HOME="$test_home" npx --yes --package ./brainx-skill-1.0.1.tgz brainx update
 ```
 
 To preview the interaction directly from this checkout:
