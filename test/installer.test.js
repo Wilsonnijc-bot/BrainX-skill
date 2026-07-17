@@ -187,7 +187,7 @@ test('an unmanaged Codex conflict is preserved while Claude installs successfull
   assert.equal(result.status, 1);
   assert.equal(await fs.readFile(conflict, 'utf8'), 'user-authored\n');
   assert.match(await fs.readFile(skillPath(homeDir, 'claude', 'alpha'), 'utf8'), /1\.0\.0/);
-  assert.match(result.stderr, /Codex CLI installation failed/);
+  assert.match(result.stderr, /Codex installation failed/);
   assert.match(result.stderr, /cannot prove ownership/);
   assert.match(result.stderr, new RegExp(path.dirname(conflict).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 

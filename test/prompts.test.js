@@ -56,7 +56,7 @@ test('deduplicates a harness detected in both global and project roots', async (
     cwd,
   });
 
-  assert.deepEqual(detected, [{ id: 'codex', label: 'Codex CLI', displayPath: '~/.agents' }]);
+  assert.deepEqual(detected, [{ id: 'codex', label: 'Codex', displayPath: '~/.agents' }]);
 });
 
 test('detected-only skips customization and defaults to global scope', async () => {
@@ -88,7 +88,7 @@ test('customization starts empty and validates an empty selection', async () => 
     cwd: '/tmp/project',
     stdin: { isTTY: true },
     stdout: captureStream().stream,
-    detected: [{ id: 'codex', label: 'Codex CLI', displayPath: '~/.agents' }],
+    detected: [{ id: 'codex', label: 'Codex', displayPath: '~/.agents' }],
     promptApi: makePromptApi(['customize', 'project'], ['claude', 'codex'], calls),
   });
 
