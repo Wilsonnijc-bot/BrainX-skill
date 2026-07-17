@@ -20,7 +20,7 @@ async function makeBundle(t, options = {}) {
   const packageRoot = path.join(workspace, `package ${version}`);
   await fs.mkdir(path.join(packageRoot, 'skills'), { recursive: true });
   await fs.writeFile(path.join(packageRoot, 'package.json'), `${JSON.stringify({
-    name: 'brainx-skills',
+    name: 'brainx-skill',
     version,
   }, null, 2)}\n`);
   await fs.writeFile(path.join(packageRoot, 'manifest.json'), `${JSON.stringify({

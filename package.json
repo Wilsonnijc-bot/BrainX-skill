@@ -1,7 +1,7 @@
 {
-  "name": "brainx-skills",
+  "name": "brainx-skill",
   "version": "1.0.0",
-  "description": "Portable BrainX Agent Skills for Codex and Claude Code",
+  "description": "Portable BrainX Agent Skills for Claude Code, Codex, and Cursor",
   "license": "Apache-2.0",
   "type": "commonjs",
   "bin": {
@@ -19,8 +19,11 @@
   "engines": {
     "node": ">=18"
   },
+  "dependencies": {
+    "enquirer": "^2.4.1"
+  },
   "scripts": {
-    "test": "node --test test/bundle.test.js test/cli.test.js test/installer.test.js test/paths.test.js",
+    "test": "node --test test/bundle.test.js test/cli.test.js test/installer.test.js test/paths.test.js test/prompts.test.js",
     "prepublishOnly": "npm test"
   },
   "repository": {
@@ -31,6 +34,7 @@
     "agent-skills",
     "brainx",
     "claude-code",
-    "codex"
+    "codex",
+    "cursor"
   ]
 }

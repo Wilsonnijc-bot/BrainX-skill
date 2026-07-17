@@ -2,7 +2,7 @@
 
 ## What BrainX installs
 
-`brainx-skills` distributes a canonical BrainX Agent Skill bundle and copies it into both Codex and Claude Code. The current bundle contains only `brainx-install`. The npm package version is the release version for the CLI and the complete published bundle.
+`brainx-skill` distributes one canonical BrainX Agent Skill bundle for Claude Code, Codex, and Cursor. The current bundle contains only `brainx-install`. The npm package version is the release version for the CLI and the complete published bundle.
 
 ## Requirements
 
@@ -10,41 +10,44 @@
 - macOS, Linux, or Windows
 - Write access to your user-level skill directories
 
-The installer does not require the `codex` or `claude` executable to be on `PATH`.
+The installer does not require harness executables to be on `PATH`.
 
 ## Install
 
 ```bash
-npx brainx-skills install
+npx brainx-skill install
 ```
+
+The installer detects existing harness directories, lets you keep the detected set or customize it, then installs globally or in the current project. Global installation is the default.
 
 If npm resolves a stale cached package, request the latest release explicitly:
 
 ```bash
-npx brainx-skills@latest install
+npx brainx-skill@latest install
 ```
 
 ## Update
 
 ```bash
-npx brainx-skills update
+npx brainx-skill update
 ```
 
 To force npm to resolve the latest published release:
 
 ```bash
-npx brainx-skills@latest update
+npx brainx-skill@latest update
 ```
 
-Update replaces only skill directories proven to be owned by `brainx-skills`. If no managed installation exists, it leaves both destinations unchanged.
+Update uses the harness destinations recorded by the previous installation and does not prompt again. It replaces only skill directories proven to be owned by `brainx-skill`. If no managed installation exists, it leaves all destinations unchanged.
 
 ## Installation locations
 
-The canonical `brainx-install` skill is installed into:
+Depending on the selected scope, the canonical `brainx-install` skill is installed into:
 
 ```text
-Codex:       ~/.agents/skills/<skill-name>
-Claude Code: ~/.claude/skills/<skill-name>
+Claude Code: ~/.claude/skills/<skill-name> or <cwd>/.claude/skills/<skill-name>
+Codex:       ~/.agents/skills/<skill-name> or <cwd>/.agents/skills/<skill-name>
+Cursor:      ~/.cursor/skills/<skill-name> or <cwd>/.cursor/skills/<skill-name>
 ```
 
 Installation ownership is recorded in `~/.brainx/receipt.json`.
@@ -71,14 +74,20 @@ npm test
 npm pack --dry-run
 npm pack
 test_home="$(mktemp -d '/tmp/brainx skills.XXXXXX')"
-HOME="$test_home" npx --yes --package ./brainx-skills-1.0.0.tgz brainx install
-HOME="$test_home" npx --yes --package ./brainx-skills-1.0.0.tgz brainx update
+HOME="$test_home" npx --yes --package ./brainx-skill-1.0.0.tgz brainx install
+HOME="$test_home" npx --yes --package ./brainx-skill-1.0.0.tgz brainx update
+```
+
+To preview the interaction directly from this checkout:
+
+```bash
+npx --yes --package . brainx install
 ```
 
 Recheck that the npm name is available, authenticate, and publish with:
 
 ```bash
-npm view brainx-skills
+npm view brainx-skill
 npm publish --access public
 ```
 

@@ -33,11 +33,16 @@ function receiptPath(homeDir) {
 }
 
 function skillPath(homeDir, adapter, skill, file = 'SKILL.md') {
-  const root = adapter === 'codex' ? ['.agents', 'skills'] : ['.claude', 'skills'];
+  const roots = {
+    claude: ['.claude', 'skills'],
+    codex: ['.agents', 'skills'],
+    cursor: ['.cursor', 'skills'],
+  };
+  const root = roots[adapter];
   return path.join(homeDir, ...root, skill, file);
 }
 
-test('fresh install copies every skill to both destinations and writes ownership', async (t) => {
+test('fresh install copies every skill to all destinations and writes ownership', async (t) => {
   const packageRoot = await makeBundle(t);
   const homeDir = await makeHome(t);
   const result = await run('install', packageRoot, homeDir);
@@ -45,15 +50,83 @@ test('fresh install copies every skill to both destinations and writes ownership
   assert.equal(result.status, 0);
   assert.match(result.stdout, /BrainX skills 1\.0\.0 installed for Codex/);
   assert.match(result.stdout, /BrainX skills 1\.0\.0 installed for Claude Code/);
+  assert.match(result.stdout, /BrainX skills 1\.0\.0 installed for Cursor/);
   assert.equal(result.stderr, '');
   assert.match(await fs.readFile(skillPath(homeDir, 'codex', 'alpha'), 'utf8'), /1\.0\.0/);
   assert.match(await fs.readFile(skillPath(homeDir, 'claude', 'beta'), 'utf8'), /1\.0\.0/);
+  assert.match(await fs.readFile(skillPath(homeDir, 'cursor', 'alpha'), 'utf8'), /1\.0\.0/);
 
   const receipt = await readJson(receiptPath(homeDir));
-  assert.equal(receipt.packageName, 'brainx-skills');
+  assert.equal(receipt.packageName, 'brainx-skill');
   assert.equal(receipt.adapters.codex.packageVersion, '1.0.0');
   assert.equal(receipt.adapters.claude.packageVersion, '1.0.0');
+  assert.equal(receipt.adapters.cursor.packageVersion, '1.0.0');
   assert.deepEqual(receipt.adapters.codex.skills.map((skill) => skill.name), ['alpha', 'beta']);
+});
+
+test('install writes only selected harnesses and preserves their destinations', async (t) => {
+  const packageRoot = await makeBundle(t);
+  const homeDir = await makeHome(t);
+  const cwd = path.join(path.dirname(homeDir), 'Project With Spaces');
+  await fs.mkdir(cwd);
+
+  const result = await run('install', packageRoot, homeDir, {
+    cwd,
+    scope: 'project',
+    selectedHarnessIds: ['claude', 'cursor'],
+  });
+
+  assert.equal(result.status, 0);
+  assert.match(await fs.readFile(skillPath(cwd, 'claude', 'alpha'), 'utf8'), /1\.0\.0/);
+  assert.match(await fs.readFile(skillPath(cwd, 'cursor', 'beta'), 'utf8'), /1\.0\.0/);
+  await assert.rejects(fs.lstat(path.join(cwd, '.agents')), { code: 'ENOENT' });
+
+  const receipt = await readJson(receiptPath(homeDir));
+  assert.equal(receipt.adapters.codex, undefined);
+  assert.equal(receipt.adapters.claude.destination, path.join(cwd, '.claude', 'skills'));
+  assert.equal(receipt.adapters.cursor.destination, path.join(cwd, '.cursor', 'skills'));
+});
+
+test('install preserves receipt entries for previously managed unselected harnesses', async (t) => {
+  const packageRoot = await makeBundle(t);
+  const homeDir = await makeHome(t);
+  assert.equal((await run('install', packageRoot, homeDir, {
+    selectedHarnessIds: ['claude'],
+  })).status, 0);
+
+  const result = await run('install', packageRoot, homeDir, {
+    selectedHarnessIds: ['cursor'],
+  });
+
+  assert.equal(result.status, 0);
+  const receipt = await readJson(receiptPath(homeDir));
+  assert.deepEqual(Object.keys(receipt.adapters).sort(), ['claude', 'cursor']);
+  assert.match(await fs.readFile(skillPath(homeDir, 'claude', 'alpha'), 'utf8'), /1\.0\.0/);
+  assert.match(await fs.readFile(skillPath(homeDir, 'cursor', 'alpha'), 'utf8'), /1\.0\.0/);
+});
+
+test('update reuses recorded project destinations', async (t) => {
+  const oldBundle = await makeBundle(t, { version: '0.9.0', contentTag: 'old release' });
+  const newBundle = await makeBundle(t, { version: '1.0.0', contentTag: 'new release' });
+  const homeDir = await makeHome(t);
+  const project = path.join(path.dirname(homeDir), 'Selected Project');
+  const otherCwd = path.join(path.dirname(homeDir), 'Other Project');
+  await fs.mkdir(project);
+  await fs.mkdir(otherCwd);
+  assert.equal((await run('install', oldBundle, homeDir, {
+    cwd: project,
+    scope: 'project',
+    selectedHarnessIds: ['cursor'],
+  })).status, 0);
+
+  const result = await run('update', newBundle, homeDir, { cwd: otherCwd });
+
+  assert.equal(result.status, 0);
+  assert.match(await fs.readFile(skillPath(project, 'cursor', 'alpha'), 'utf8'), /new release/);
+  await assert.rejects(fs.lstat(path.join(otherCwd, '.cursor')), { code: 'ENOENT' });
+  const receipt = await readJson(receiptPath(homeDir));
+  assert.deepEqual(Object.keys(receipt.adapters), ['cursor']);
+  assert.equal(receipt.adapters.cursor.destination, path.join(project, '.cursor', 'skills'));
 });
 
 test('repeated install is idempotent and does not rewrite the receipt', async (t) => {
@@ -96,7 +169,7 @@ test('update with no managed installation changes nothing', async (t) => {
   assert.equal(result.status, 0);
   assert.equal(
     result.stdout,
-    'No BrainX-managed skills are currently installed.\nRun: npx brainx-skills install\n',
+    'No BrainX-managed skills are currently installed.\nRun: npx brainx-skill install\n',
   );
   assert.equal(result.stderr, '');
   await assert.rejects(fs.lstat(path.join(homeDir, '.agents')), { code: 'ENOENT' });
@@ -114,7 +187,7 @@ test('an unmanaged Codex conflict is preserved while Claude installs successfull
   assert.equal(result.status, 1);
   assert.equal(await fs.readFile(conflict, 'utf8'), 'user-authored\n');
   assert.match(await fs.readFile(skillPath(homeDir, 'claude', 'alpha'), 'utf8'), /1\.0\.0/);
-  assert.match(result.stderr, /Codex installation failed/);
+  assert.match(result.stderr, /Codex CLI installation failed/);
   assert.match(result.stderr, /cannot prove ownership/);
   assert.match(result.stderr, new RegExp(path.dirname(conflict).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 
@@ -132,7 +205,7 @@ test('a forged ownership path invalidates the receipt and protects all destinati
   await fs.mkdir(path.dirname(receiptPath(homeDir)), { recursive: true });
   await fs.writeFile(receiptPath(homeDir), JSON.stringify({
     schemaVersion: 1,
-    packageName: 'brainx-skills',
+    packageName: 'brainx-skill',
     adapters: {
       codex: {
         label: 'Codex',
