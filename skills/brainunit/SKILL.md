@@ -1,207 +1,152 @@
 ---
-name: brainunit-quantity-safety
-description: Explains BrainUnit quantity safety, including physical units, dimensional checks, conversions, scalar and array quantities, and safe boundaries with external libraries. Use when working with voltage, current, time, concentration, conductance, BrainCell physical quantities, unit errors, dimensional mismatches, or suspicious bare numbers.
+name: brainunit
+description: Enforce BrainUnit physical-quantity, dimensional, conversion, unit-aware math, JAX-transformation, and external-library boundary safety. Use when Codex works with BrainUnit or BrainCell values involving voltage, current, time, conductance, capacitance, length, concentration, temperature, physical constants, unit errors, dimensional mismatches, or suspicious bare numbers.
 ---
 
-# brainunit-quantity-safety/
+# BrainUnit Quantity Safety
 
-## Concepts
+## Purpose And Boundary
 
-• Why BrainUnit exists
-brainunit is a unit-aware scientific computing library built on JAX; it tracks physical units through computations and catches dimension errors at runtime.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+Use BrainUnit to keep physical meaning attached to numerical values throughout scientific computations. Keep the canonical path here; open only the narrow reference needed for specialized constructors, array mechanics, function semantics, custom units, temperature, prefixes, or constants.
 
-• Creating Quantities
-A Quantity = numeric value + physical unit. Create one by multiplying a value with a unit.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+## Core Model
 
-• Arithmetic
-Units are tracked automatically. Incompatible operations raise errors.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+- `brainunit` provides physical units and a unit-aware mathematical system in JAX for general AI-driven scientific computing.
+- BrainUnit combines unit names with prefixes and appends a number for predefined squared and cubed forms. Examples include `msiemens`, `siemens2`, and `usiemens3`. Import `brainunit as u` instead of guessing a name or case-sensitive prefix.
 
-• Unit conversion
-Use to_decimal() to extract the numeric value in a target unit, or in_unit() to get a new Quantity in the target unit.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+## Canonical Imports
 
-• Quantity attributes
-A quantity exposes mantissa, unit, dim, shape, and dtype.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-
-• Unit-aware math
-brainunit.math provides 500+ functions that understand units.
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-
-• BrainCell connection
-In braincell, every physical quantity carries an explicit unit; passing a bare number where a quantity is expected raises TypeError.
-**Source mirrored:** https://brainx.chaobrain.com/braincell/concepts/units.html
-
-## Evoke case / task boundary
-
-• use this skill whenever code involves voltage, current, conductance, capacitance, time, length, concentration, temperature, or physical model parameters.
-• use this skill before BrainCell / BrainState biological or dynamical simulation code.
-• do not silently strip units to raw floats.
-• do not mix dimensions and hope the math works.
-• do not use plain jnp math when u.math is the documented unit-aware path.
-• convert to raw numbers only at explicit formula / API boundaries with target units.
-
-Creating quantities
-
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-
-#### Script
+Use these imports for the bundled patterns below.
 
 ```python
 import brainunit as u
 import jax
 import jax.numpy as jnp
-
-# Scalars
-mass = 5.0 * u.kilogram
-speed = 10.0 * u.meter / u.second
-print('mass:', mass)
-print('speed:', speed)
-# Arrays
-voltages = jnp.array([1.0, 2.5, 3.7]) * u.mV
-print('voltages:', voltages)
-print('shape:', voltages.shape, 'dtype:', voltages.dtype)
-# Direct construction
-current = u.Quantity(jnp.array([0.1, 0.2, 0.3]), unit=u.ampere)
-print('current:', current)
+from brainunit import constants
 ```
 
-#### Explanation text
+## Create And Inspect Quantities
 
-Core mental model: numeric value + physical unit. Attach units at creation, not after simulation.
-
-Arithmetic and dimension mismatch
-
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-
-#### Script
+A `Quantity` is a numeric value plus a physical unit. Attach units at creation and retain them through BrainUnit and BrainCell code. BrainCell enforces explicit units and raises `TypeError` when a physical parameter receives a bare number.
 
 ```python
-# Addition: same dimension required
-t1 = 500.0 * u.ms
-t2 = 1.5 * u.second
-print('t1 + t2:', t1 + t2)  # auto-aligns to first unit
-# Multiplication: units multiply
-F = 10.0 * u.newton
-d = 3.0 * u.meter
-print('work = F * d:', F * d)  # N * m = J
-# Division: units divide
-print('speed = d / t:', (100.0 * u.meter) / (10.0 * u.second))  # m/s
-# Dimension mismatch raises error
-try:
-    result = 5.0 * u.meter + 3.0 * u.second
-except Exception as e:
-    print('Error:', e)
+# Scalars, arrays, and direct construction.
+mass = 5.0 * u.kilogram
+speed = 10.0 * u.meter / u.second
+voltages = jnp.array([1.0, 2.5, 3.7]) * u.mV
+current = u.Quantity(jnp.array([0.1, 0.2, 0.3]), unit=u.ampere)
+
+# Inspect without discarding physical metadata.
+q = jnp.array([[1.0, 2.0], [3.0, 4.0]]) * u.volt
+print(q.mantissa, q.unit, q.dim, q.shape, q.dtype)
+
+# BrainCell-facing physical parameters must also carry units.
+resting_voltage = -65.0 * u.mV
+time_step = 0.1 * u.ms
+current_density = 5.0 * u.uA / u.cm**2
+conductance_density = 0.03 * u.mS / u.cm**2
 ```
 
-#### Explanation text
+Do not infer a unit from a parameter name. Inspect `.unit` and `.dim` when debugging; `.mantissa` exposes the current stored scale without converting it.
 
-Arithmetic is the guardrail: same-dimension addition, unit multiplication/division, and immediate error on incompatible dimensions.
+## Compute With Dimensions
 
-Unit conversion and raw-value extraction
+BrainUnit represents units through seven irreducible SI dimensions: length, mass, time, electric current, temperature, amount of substance, and luminous intensity. Units are tracked automatically: addition and subtraction require matching dimensions and align compatible scales, while multiplication, division, powers, and supported functions combine dimension exponents. Treat an incompatibility as a model error rather than stripping units.
 
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+```python
+t1 = 500.0 * u.ms
+t2 = 1.5 * u.second
+elapsed = t1 + t2
 
-#### Script
+work = (10.0 * u.newton) * (3.0 * u.meter)
+average_speed = (100.0 * u.meter) / (10.0 * u.second)
+
+try:
+    invalid = 5.0 * u.meter + 3.0 * u.second
+except Exception as error:
+    print("dimension error:", error)
+```
+
+## Convert At Explicit Boundaries
+
+Use `in_unit(target)` to rescale while retaining a `Quantity`. Use `to_decimal(target)` only when an external API requires raw numbers, and make its expected unit explicit in the variable or parameter name.
 
 ```python
 distance = 2.5 * u.kmeter
-print('In meters:', distance.to_decimal(u.meter))       # 2500.0
-print('In cm:', distance.to_decimal(u.cmeter))           # 250000.0
-print('As Quantity:', distance.in_unit(u.meter))          # 2500.0 m
+distance_m = distance.in_unit(u.meter)
+distance_m_raw = distance.to_decimal(u.meter)
+
+times = u.math.arange(0.0 * u.ms, 10.0 * u.ms, 0.1 * u.ms)
+plot_times_ms = times.to_decimal(u.ms)
 ```
 
-#### Explanation text
+Do not substitute `.mantissa` for conversion.
 
-Use to_decimal(target_unit) only when raw numeric values are actually needed; otherwise prefer keeping a Quantity with in_unit(...).
+## Use Unit-Aware Math And Constants
 
-Unit-aware math and transforms
-
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
-
-#### Script
+Use `u.math` where unit semantics matter: functions may preserve units, change them, require dimensionless input, or return indices or booleans. Import predefined physical constants as quantities rather than recreating bare values.
 
 ```python
-data = jnp.array([2., 4., 6., 8., 10.]) * u.newton
-print('sum:', u.math.sum(data))           # keeps unit
-print('mean:', u.math.mean(data))         # keeps unit
-print('sqrt:', u.math.sqrt(4.0 * u.meter2))  # changes unit: m^2 -> m
-print('sort:', u.math.sort(jnp.array([3., 1., 2.]) * u.volt))
+data = jnp.array([2.0, 4.0, 6.0, 8.0, 10.0]) * u.newton
+total = u.math.sum(data)                             # newton
+mean = u.math.mean(data)                             # newton
+length = u.math.sqrt(4.0 * u.meter2)                 # meter
+ordered = u.math.sort(jnp.array([3.0, 1.0, 2.0]) * u.volt)
 
-# JIT compilation
+avogadro = constants.avogadro
+boltzmann = constants.boltzmann
+elementary_charge = constants.elementary_charge
+electron_mass = constants.electron_mass
+```
+
+## Transform And Validate Unit-Aware Functions
+
+BrainUnit integrates with automatic differentiation, JIT compilation, vectorization, and parallel computation. Its strict physical-unit type checking and dimensional inference perform unit conversion and analysis at compilation time in compiled workflows; eager invalid operations raise when evaluated. Use `jax.jit` and `jax.vmap` with quantities, `u.autograd.grad` for unit-aware derivatives, and `@u.check_units` at scientific function boundaries.
+
+```python
 @jax.jit
 def kinetic_energy(m, v):
     return 0.5 * m * v**2
-KE = kinetic_energy(2.0 * u.kilogram, 3.0 * u.meter / u.second)
-print('KE =', KE)  # kg * m^2 / s^2 = J
-```
 
-#### Explanation text
 
-Quantities work with JAX transforms, and u.math keeps functions unit-aware.
+energy = kinetic_energy(2.0 * u.kilogram, 3.0 * u.meter / u.second)
+velocities = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0]) * u.meter / u.second
+energies = jax.vmap(lambda v: kinetic_energy(2.0 * u.kilogram, v))(velocities)
 
-Function unit contracts
+denergy_dv = u.autograd.grad(
+    lambda v: 0.5 * (2.0 * u.kilogram) * v**2
+)
+momentum = denergy_dv(3.0 * u.meter / u.second)
 
-**Source mirrored:** https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
 
-#### Script
-
-```python
 @u.check_units(v=u.meter / u.second, t=u.second)
 def displacement(v, t):
     return v * t
-print('displacement:', displacement(10.0 * u.meter / u.second, 5.0 * u.second))
 
-# Wrong units raise an error
-try:
-    displacement(10.0 * u.kilogram, 5.0 * u.second)
-except Exception as e:
-    print('Error:', e)
+
+distance_traveled = displacement(
+    10.0 * u.meter / u.second,
+    5.0 * u.second,
+)
 ```
 
-#### Explanation text
+## Reference Routing
 
-Use @check_units to enforce unit contracts on function arguments.
-
-## Common mistakes -> Fix
-
-• using raw numbers for voltage/current/time -> multiply by u.mV, u.nA, u.ms, etc.
-• adding incompatible quantities -> let BrainUnit raise; fix dimensions, not just units.
-• extracting .mantissa or raw values early -> use to_decimal(target_unit) only at boundary.
-• using jnp.sum / generic math where units must survive -> use u.math functions.
-• missing function-level unit checks -> use @u.check_units(...) for public helper functions.
-• passing bare numbers into BrainCell -> attach explicit units before constructing mechanisms or parameters.
-
-## Reference routing
-
-The following skill-local references are planned routing targets. Route to the narrowest matching target; do not substitute a standalone script for these references.
-
-```text
-references/
-|-- quantity-inspection-and-conversion.md
-|-- array-creation.md
-|-- array-mechanics.md
-|-- math-function-library.md
-|-- unit-structure-and-definition.md
-|-- temperature-conversions.md
-|-- prefix-library.md
-`-- physical-constant-library.md
-```
-
-| Reference | Route here for |
+| Reference | Open when |
 |---|---|
-| `references/quantity-inspection-and-conversion.md` | Inspecting mantissas, units, dimensions, and compatibility; converting quantities or extracting values in compatible units. |
-| `references/array-creation.md` | Creating unit-aware arrays from scalars, sequences, ranges, shapes, grids, or existing arrays, including filled, identity, diagonal, triangular, and template-shaped arrays with explicit units and dtypes. |
-| `references/array-mechanics.md` | Array metadata, indexing, slicing, functional updates, reshaping, flattening, squeezing, transposing, broadcasting, concatenating, splitting, stacking, repeating, backend conversion, and named-axis transformations. |
-| `references/math-function-library.md` | Selecting mathematical functions by unit semantics, including dimensionless-input, unit-preserving, unit-changing, reduction, contraction, comparison, boolean, and index-returning operations. Array creation and structural manipulation stay with their dedicated references. |
-| `references/unit-structure-and-definition.md` | Inspecting unit structure, comparing dimensions and scales, combining units, and defining named, derived, or scaled custom units. |
-| `references/temperature-conversions.md` | Affine temperature conversion, Kelvin quantities, plain Celsius values, absolute temperatures, and temperature differences. |
-| `references/prefix-library.md` | Predefined SI base and derived units, generated BrainUnit unit names, and supported prefix symbols and scales. |
-| `references/physical-constant-library.md` | Predefined unit-aware physical constants, including names, values, dimensions, and canonical units. |
+| `references/quantity-inspection-and-conversion.md` | Inspecting compatibility, dimensions, conversions, decomposition, formatting, or raw-value boundaries beyond the canonical pattern. |
+| `references/array-creation.md` | Normalizing inputs with `asarray`, constructing ranges with `arange`, or creating grids, templates, and specialized arrays. |
+| `references/array-mechanics.md` | Indexing, functional updates, reshaping, broadcasting, joining, splitting, repeating, backend conversion, or named-axis rearrangement. |
+| `references/math-function-library.md` | Selecting functions by dimensionless-input, unit-preserving, unit-changing, reduction, contraction, comparison, boolean, or index-returning semantics. |
+| `references/unit-structure-and-definition.md` | Inspecting unit structure, comparing scale and dimension, composing units, or defining named, derived, or scaled custom units. |
+| `references/temperature-conversions.md` | Converting absolute temperatures or temperature differences where Celsius offsets matter. |
+| `references/prefix-library.md` | Looking up predefined SI base or derived units, generated unit names, prefix symbols, and prefix scales. |
+| `references/physical-constant-library.md` | Looking up predefined constant names, values, dimensions, and canonical units. |
 
-## Script routing
+## Official Sources
 
-Keep the canonical quantity, arithmetic, dimension-matching, conversion, inspection, `brainunit.math`, physical-constant, JAX-transformation, and `@check_units` examples inline in this skill. BrainUnit declares no standalone script files or `references/scripts/` bundle.
+- https://brainx.chaobrain.com/brainunit/
+- https://brainx.chaobrain.com/brainunit/getting_started/quickstart.html
+- https://brainx.chaobrain.com/brainunit/physical_units/quantity.html
+- https://brainx.chaobrain.com/brainunit/physical_units/standard_units.html
+- https://brainx.chaobrain.com/braincell/concepts/units.html

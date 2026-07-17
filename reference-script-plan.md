@@ -18,14 +18,11 @@ Apply these rules before reporting a missing path or duplicate:
 7. When both a gallery page and a direct `.py` URL are given, the gallery selects the workflow and the direct `.py` is the code source.
 8. Preserve upstream subdirectories, helper imports, data dependencies, filenames, and license headers.
 
-Canonical path normalization used by this plan:
+Canonical shorthand normalization used by this plan:
 
-| Older or shorthand route | Canonical repository route |
+| Shorthand route | Canonical repository route |
 |---|---|
-| `skills/braincell-singlecell/...` | `skills/braincell/...` |
-| `skills/braincell-multicompartment/...` | `skills/braincell/references/multicompartment/...` |
-| `skills/brainunit-quantity-safety/...` | `skills/brainunit/...` |
-| BrainPy `NEST-Compatible.md` | `skills/brainpy/NEST-compatible/nest-workflow.md` |
+| BrainPy `NEST-Compatible.md` | `skills/brainpy-state/NEST-compatible/nest-workflow.md` |
 
 ## Inventory Summary
 
@@ -63,7 +60,7 @@ The repository root contains no shared reference or script tree.
 | `skills/braincell/references/scripts/calcium_channel_gating.py` | Channel gating diagnostic | [Calcium Channel Gating](https://brainx.chaobrain.com/braincell/examples/calcium_channel_gating.html) |
 | `skills/braincell/references/multicompartment/references/cell_multicompartment_reference.py` | Routed morphology-to-`Cell` workflow | `skills/braincell/references/multicompartment/multicompartment-cell-workflow.md` and [Cell in BrainCell](https://brainx.chaobrain.com/braincell/tutorials/cell.html) |
 
-Do not create `integration_methods.py` or `ei_network.py` by default. Solver comparison stays at [Integration Methods](https://brainx.chaobrain.com/braincell/examples/integration_methods.html). BrainCell owns no SNN-workflow reference; general E/I network work routes to `skills/brainpy/SKILL.md`.
+Do not create `integration_methods.py` or `ei_network.py` by default. Solver comparison stays at [Integration Methods](https://brainx.chaobrain.com/braincell/examples/integration_methods.html). BrainCell owns no SNN-workflow reference; general E/I network work routes to `skills/brainpy-state/SKILL.md`.
 
 The manual-morphology reference names future blueprint ideas but no full bundled scripts, so it contributes no script requirement yet.
 
@@ -99,7 +96,7 @@ Quickstart, noise, batching, small-network, forward-model, and gradient-fitting 
 
 ## BrainPy
 
-Use `skills/brainpy/references/scripts/`. The supplied plan selects five native
+Use `skills/brainpy-state/references/scripts/`. The supplied plan selects five native
 gallery scripts; each direct GitHub file is the code source.
 
 | Canonical script | Role | Code source |
@@ -110,11 +107,11 @@ gallery scripts; each direct GitHub file is the code source.
 | `109_fast_global_oscillation.py` | `DeltaProj` with delayed feedback | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/109_fast_global_oscillation.py) |
 | `201_surrogate_grad_lif_fashion_mnist.py` | Real-data surrogate-gradient SNN training | [source](https://github.com/chaobrain/brainpy.state/blob/main/examples/brainpy_like/201_surrogate_grad_lif_fashion_mnist.py) |
 
-The inline surrogate-gradient route uses the local duplicate `skills/brainpy/references/brainstate-dynamics/scripts/training-snn.py`, crafted from [Training an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html).
+The inline surrogate-gradient route uses the local duplicate `skills/brainpy-state/references/brainstate-dynamics/scripts/training-snn.py`, crafted from [Training an SNN](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/05_training_an_snn.html).
 
 ### NEST-compatible branch
 
-`skills/brainpy/NEST-compatible/nest-workflow.md` is the existing NEST workflow reference. Place its selected full scripts under `skills/brainpy/NEST-compatible/references/scripts/`; use the [NEST gallery](https://brainx.chaobrain.com/brainpy-state/examples/nest-gallery.html) as selection context and each direct GitHub file as code authority.
+`skills/brainpy-state/NEST-compatible/nest-workflow.md` is the existing NEST workflow reference. Place its selected full scripts under `skills/brainpy-state/NEST-compatible/references/scripts/`; use the [NEST gallery](https://brainx.chaobrain.com/brainpy-state/examples/nest-gallery.html) as selection context and each direct GitHub file as code authority.
 
 | Canonical script | Role | Code source |
 |---|---|---|

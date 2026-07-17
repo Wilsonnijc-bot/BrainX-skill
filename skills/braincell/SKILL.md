@@ -1,5 +1,5 @@
 ---
-name: braincell-singlecell
+name: braincell
 description: Use when working with BrainCell single-compartment HH-style point neurons, ion/channel choices, current-clamp simulations, solver selection, FI curves, channel ablation, adaptation/rebound mechanisms, custom ion/channel authoring after checking built-ins, or vectorized point-neuron populations where explicit morphology, regions, locsets, paint/place, CV policies, network wiring, or cable geometry are out of scope.
 ---
 

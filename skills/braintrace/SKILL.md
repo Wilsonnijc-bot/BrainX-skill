@@ -1,5 +1,5 @@
 ---
-name: braintrace-online-learning
+name: braintrace
 description: Use when working with BrainTrace, ETP primitives, D-RTRL, ES-D-RTRL, pp-prop, online learning, eligibility traces, BrainTrace RNNs/SNNs, compiler graphs, hidden states, vmap batching, or BrainTrace debugging.
 ---
 

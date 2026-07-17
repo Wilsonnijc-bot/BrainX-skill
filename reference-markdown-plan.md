@@ -13,7 +13,7 @@ exists; they do not add routes that the supplied plan does not declare.
 | `skills/braincell/` | 15 Markdown routes plus 1 semantic skill route | 8 first-layer Markdown routes, 1 semantic skill route, 6 exclusive multicompartment children, and 1 second-level diagnostic child | Expose the pasted first layer and preserve parent-only multicompartment selection |
 | `skills/brainevent/` | 4 | None | Preserve; all four exist |
 | `skills/brainmass/` | 14 | Ten package references plus four reusable Braintools references | Add the omitted Braintools branches and use the pasted fitting-reference name |
-| `skills/brainpy/` | 17 Markdown routes plus 1 semantic skill route | Training owns four Braintools children; NEST workflow owns six compact lookup areas | Add omitted local array, delay/event, and Braintools routes |
+| `skills/brainpy-state/` | 17 Markdown routes plus 1 semantic skill route | Training owns four Braintools children; NEST workflow owns six compact lookup areas | Add omitted local array, delay/event, and Braintools routes |
 | `skills/brainstate/` | 19 Markdown references plus 1 semantic skill route | First-layer references plus parameter, randomness, and diagnostics trees | Consolidate size inference and preserve parent-only selection |
 | `skills/braintrace/` | 6 | None declared | Add all six skill-local routes |
 | `skills/brainunit/` | 8 | None declared | Add all eight skill-local routes; keep examples inline |
@@ -120,7 +120,7 @@ when the task needs them.
 
 
 
-## BrainPy: `skills/brainpy/SKILL.md`
+## BrainPy: `skills/brainpy-state/SKILL.md`
 
 BrainPy uses a semantic route to the BrainEvent skill for event-driven
 connectivity. Its array, delay, and event-protocol Markdown are local copies,
@@ -129,27 +129,27 @@ and one compact NEST workflow parent owns all NEST-compatible lookup areas.
 | Canonical reference | Need | Crafting source |
 |---|---|---|
 | `skills/brainevent/SKILL.md` | Semantic binary-event and sparse-connectivity boundary | The BrainPy routing tree in the supplied plan |
-| `skills/brainpy/references/brainpy-neuron-library.md` | Neuron catalog and selection | [Neuron API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html), [neuron-selection how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html) |
-| `skills/brainpy/references/brainpy-synapse-library.md` | Synaptic dynamics and receptor filters | [Synapse API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html) |
-| `skills/brainpy/references/brainpy-synaptic-outputs.md` | COBA/CUBA/MgBlock outputs and current-versus-conductance selection | [Synaptic-output API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html), [COBA/CUBA how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html) |
-| `skills/brainpy/references/brainpy-projection-library.md` | Projection APIs, AlignPre/AlignPost, direct-current projections, gap junctions, and delays | [Projection API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-projections.html), [alignment concept](https://brainx.chaobrain.com/brainpy-state/concepts/alignpre-alignpost.html), [delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html) |
-| `skills/brainpy/references/brainpy-plasticity.md` | STP/STD state and projection integration | [Plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-plasticity.html), [short-term-plasticity how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html) |
-| `skills/brainpy/references/brainpy-custom-models.md` | Custom Neuron/Synapse anatomy, ODE steps, and paper reproduction | [Paper-reproduction how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-reproduce-a-paper.html), [BrainPy gallery](https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html) |
-| `skills/brainpy/references/brainpy-training.md` | Differentiability, surrogate gradients, ParamState, BPTT, and checkpointed rollouts | [Differentiability concept](https://brainx.chaobrain.com/brainpy-state/concepts/differentiability.html), [train-an-SNN tutorial](https://brainx.chaobrain.com/brainpy-state/brainpy-style/tutorials/04-train-an-snn.html), [surrogate-gradient how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-surrogate-gradients.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
-| `skills/brainpy/references/brainpy-readouts-and-inputs.md` | Readout heads, spike/input generators, Poisson helpers, and encoders | [Readout API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html), [readout how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html), [input API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html) |
-| `skills/brainpy/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | Skill-local delay APIs and buffer behavior | [delay tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
-| `skills/brainpy/references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` | Skill-local sparse event operators and connectivity | [event-driven tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html) |
-| `skills/brainpy/references/array-creation.md` | Skill-local unit-aware simulation-array creation | The BrainPy routing tree in the supplied plan |
-| `skills/brainpy/references/braintools-encoder-library.md` | Experimental/data input encoders and spike operations | [Braintools encoder API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
-| `skills/brainpy/references/braintools-initializers.md` | Parameter, weight, and distance-modulated connectivity initializers | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
-| `skills/brainpy/references/braintools-metrics.md` | Classification, regression, spike-train, synchronization, LFP, and connectivity metrics | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
-| `skills/brainpy/references/braintools-optimizer.md` | Optimizers, schedulers, Optax bridges, and external wrappers | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
-| `skills/brainpy/references/braintools-surrogate-gradient.md` | Functional and object-style surrogate gradients | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
-| `skills/brainpy/NEST-compatible/nest-workflow.md` | Parent route for the NEST-compatible branch | The BrainPy routing tree in the supplied plan |
+| `skills/brainpy-state/references/brainpy-neuron-library.md` | Neuron catalog and selection | [Neuron API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-neurons.html), [neuron-selection how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-choose-neuron.html) |
+| `skills/brainpy-state/references/brainpy-synapse-library.md` | Synaptic dynamics and receptor filters | [Synapse API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synapses.html) |
+| `skills/brainpy-state/references/brainpy-synaptic-outputs.md` | COBA/CUBA/MgBlock outputs and current-versus-conductance selection | [Synaptic-output API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-synouts.html), [COBA/CUBA how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-coba-cuba-synapses.html) |
+| `skills/brainpy-state/references/brainpy-projection-library.md` | Projection APIs, AlignPre/AlignPost, direct-current projections, gap junctions, and delays | [Projection API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-projections.html), [alignment concept](https://brainx.chaobrain.com/brainpy-state/concepts/alignpre-alignpost.html), [delays how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-delays.html) |
+| `skills/brainpy-state/references/brainpy-plasticity.md` | STP/STD state and projection integration | [Plasticity API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-plasticity.html), [short-term-plasticity how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-short-term-plasticity.html) |
+| `skills/brainpy-state/references/brainpy-custom-models.md` | Custom Neuron/Synapse anatomy, ODE steps, and paper reproduction | [Paper-reproduction how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/sim-reproduce-a-paper.html), [BrainPy gallery](https://brainx.chaobrain.com/brainpy-state/examples/brainpy-gallery.html) |
+| `skills/brainpy-state/references/brainpy-training.md` | Differentiability, surrogate gradients, ParamState, BPTT, and checkpointed rollouts | [Differentiability concept](https://brainx.chaobrain.com/brainpy-state/concepts/differentiability.html), [train-an-SNN tutorial](https://brainx.chaobrain.com/brainpy-state/brainpy-style/tutorials/04-train-an-snn.html), [surrogate-gradient how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-surrogate-gradients.html), [checkpointing how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-long-rollouts-checkpoint.html) |
+| `skills/brainpy-state/references/brainpy-readouts-and-inputs.md` | Readout heads, spike/input generators, Poisson helpers, and encoders | [Readout API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-readouts.html), [readout how-to](https://brainx.chaobrain.com/brainpy-state/brainpy-style/howto/train-readouts.html), [input API](https://brainx.chaobrain.com/brainpy-state/apis/brainpy-inputs.html) |
+| `skills/brainpy-state/references/brainstate-dynamics/brain-dynamics-delay-protocol.md` | Skill-local delay APIs and buffer behavior | [delay tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/02_synaptic_delays.html) |
+| `skills/brainpy-state/references/brainstate-dynamics/brain-dynamics-event-driven-operators.md` | Skill-local sparse event operators and connectivity | [event-driven tutorial](https://brainx.chaobrain.com/brainstate/tutorials/brain_dynamics/03_event_driven_operators.html) |
+| `skills/brainpy-state/references/array-creation.md` | Skill-local unit-aware simulation-array creation | The BrainPy routing tree in the supplied plan |
+| `skills/brainpy-state/references/braintools-encoder-library.md` | Experimental/data input encoders and spike operations | [Braintools encoder API](https://brainx.chaobrain.com/braintools/apis/braintools.html) |
+| `skills/brainpy-state/references/braintools-initializers.md` | Parameter, weight, and distance-modulated connectivity initializers | [Initializer API](https://brainx.chaobrain.com/braintools/apis/init.html) |
+| `skills/brainpy-state/references/braintools-metrics.md` | Classification, regression, spike-train, synchronization, LFP, and connectivity metrics | [Metric API](https://brainx.chaobrain.com/braintools/apis/metric.html) |
+| `skills/brainpy-state/references/braintools-optimizer.md` | Optimizers, schedulers, Optax bridges, and external wrappers | [Optimization API](https://brainx.chaobrain.com/braintools/apis/optim.html), [optimization tutorials](https://brainx.chaobrain.com/braintools/optim/index.html) |
+| `skills/brainpy-state/references/braintools-surrogate-gradient.md` | Functional and object-style surrogate gradients | [Surrogate-gradient API](https://brainx.chaobrain.com/braintools/apis/surrogate.html) |
+| `skills/brainpy-state/NEST-compatible/nest-workflow.md` | Parent route for the NEST-compatible branch | The BrainPy routing tree in the supplied plan |
 
 ### Training nested routes
 
-`skills/brainpy/references/brainpy-training.md` alone selects the encoder,
+`skills/brainpy-state/references/brainpy-training.md` alone selects the encoder,
 metrics, optimizer, and surrogate-gradient Braintools references. The
 initializers reference remains a first-layer route because initialization can
 be required without training.

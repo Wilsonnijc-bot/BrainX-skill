@@ -1,5 +1,5 @@
 ---
-name: brainevent-event-driven-connectivity
+name: brainevent
 description: Use when representing binary spike events with BrainEvent, multiplying BinaryArray values through dense, CSR, JIT-generated, or fixed-degree connectivity, choosing among BrainEvent connectivity formats, applying event-driven plasticity, or routing custom operator work.
 ---
 

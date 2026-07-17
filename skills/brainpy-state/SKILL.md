@@ -1,5 +1,5 @@
 ---
-name: brainpy
+name: brainpy-state
 description: "Use when working with native BrainPy-style brainpy.state simulations and trainable spiking neural networks: point neurons, synapses, synaptic outputs, projections, plasticity, readouts, unitful simulation, or surrogate-gradient training."
 ---
 
