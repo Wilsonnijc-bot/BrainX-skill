@@ -1,128 +1,226 @@
-# BrainState Parameter and Regularization Reference
+# BrainState Parameter Constraints and Regularization
 
-## Purpose
+Use this first-layer reference after `skills/brainstate/SKILL.md` has selected `brainstate.nn.Param` for a parameter that needs a valid-domain transform, a regularization penalty, a prior, or fixed parameter-like storage. It owns advanced constraint and loss-integration decisions; the main skill owns the basic `ParamState` versus `nn.Param` choice.
 
-Explain `ParamState` versus `brainstate.nn.Param`, constrained values, parameter transforms, `Const`, classical and structural penalties, prior-distribution regularizers, and training-loss integration.
+This is the only reference that may open `references/brainstate/parameter-containers-transforms-catalog.md`. Open that nested catalog only when selecting among the complete parameter-container or transform families. Keep execution transforms such as `brainstate.transform.jit` and `brainstate.transform.grad` conceptually separate from `brainstate.nn` parameter transforms.
 
-## Used by
+## Parameter contract
 
-- `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
-- `references/brainstate-dynamics/dynamics-and-integration.md`
-- `skills/brainstate/SKILL.md`
+`brainstate.nn.Param` adds two orthogonal capabilities on top of a bare trainable `ParamState`: a bijective transform maps the unconstrained array seen by the optimizer to the constrained value used by the model, and a regularization term contributes a penalty to the loss.
 
-## Primary source pages
+- `param.val` is the underlying `ParamState`; optimizers update its unconstrained array.
+- `param.value()` applies the forward transform and returns the constrained model-space value. With the default `IdentityT`, constrained and unconstrained values coincide.
+- `param.set_value(value)` applies the inverse transform when storing a constrained value back.
+- `param.reg_loss()` applies the attached `reg=` object to the parameter's current value. Attaching a regularizer does not add the result to an objective; the loss function must do that.
+- `nn.Const` is a `Param` with `fit=False`. It is excluded from `model.states(brainstate.ParamState)`, so `grad` and optimizers leave it unchanged.
 
-- [Parameters, Transforms, and Regularization](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html)
-- [Constrain and Regularize Parameters](https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html)
-- [Standard Regularizations API](https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html)
+Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
-## Open when
+The constraint how-to returns dimensionless examples as `brainunit.Quantity` values and uses `brainunit.get_magnitude(...)` when a plain JAX value is needed for printing, comparison, or a dimensionless objective.
 
-- The user needs the high-level workflow for constrained or regularized learnable parameters.
-- A model parameter must be positive, bounded, ordered, simplex-valued, or otherwise constrained.
-- A loss should encode shrinkage, sparsity, smoothness, structural pressure, or a prior distribution.
-- The task involves parameter fitting, MAP-style estimation, variational inference, or uncertainty-aware modeling.
-- The distinction between bare trainable state and semantic parameter containers is unclear.
+Official source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 
-## Core distinction
+## Constraint patterns: domain rules bundled with code
 
-`ParamState` is the normal BrainState trainable storage object. Use it for ordinary learnable arrays that do not need parameter-container semantics.
+Use `.value()` in every model computation and mutate `.val.value` only as the optimizer-side, unconstrained representation. The following source-grounded forms establish the important limits:
 
-`brainstate.nn.Param` is a semantic parameter container. Use it when a trainable value needs a parameter transform, a regularization object, or parameter-specific access through `value()` and `reg_loss()`.
+```python
+import jax.numpy as jnp
+import brainunit as u
 
-`brainstate.nn.Const` is a fixed parameter-like value. Use it when a value should participate in the same model structure as parameters but should not be optimized.
+import brainstate
+from brainstate import nn
 
-Do not confuse `brainstate.nn.Transform` with `brainstate.transform`. Parameter transforms map values between unconstrained optimizer space and constrained model space. `brainstate.transform` contains execution transforms such as `jit`, `grad`, `vmap`, and control-flow utilities.
+rate = nn.Param(jnp.array(0.5), t=nn.SoftplusT(lower=0.0))
+rate.val.value = jnp.array(-10.0)
+assert float(u.get_magnitude(rate.value())) > 0.0
 
-## Access rule
+mix = nn.Param(
+    jnp.array(0.5),
+    t=nn.SigmoidT(lower=0.0, upper=1.0),
+)
 
-- Optimizers update the stored trainable value, exposed by `param.val`.
-- The model should read `param.value()`.
-- `param.value()` may apply the transform attached through `t=`.
-- `param.reg_loss()` returns the penalty from the regularization attached through `reg=`.
-- A regularization penalty has no effect unless it is added to the training or fitting objective.
+probs = nn.Param(jnp.zeros(3), t=nn.SimplexT())
+p = u.get_magnitude(probs.value())
+assert jnp.all(p >= 0.0)
+assert jnp.isclose(p.sum(), 1.0)
+```
 
-## Workflow
+- `SoftplusT(lower)` maps the real line to the open interval `(lower, infinity)`; an arbitrarily negative optimizer value cannot cross the lower bound.
+- `SigmoidT(lower, upper)` maps to the open interval `(lower, upper)` and approaches, but does not cross, either bound.
+- `SimplexT()` returns a non-negative vector whose entries sum to one.
+- The documented transform path is a smooth bijection rather than a hard clip, so gradients flow through the unconstrained representation.
 
-1. Start with `ParamState` for ordinary trainable weights.
-2. Switch to `nn.Param` when the model-space value needs constraints or regularization.
-3. Attach a transform with `t=` when the optimizer should operate in an unconstrained space but the model should see a constrained value.
-4. Attach a regularization object with `reg=` when the loss should include a penalty or prior.
-5. Use `param.value()` in the model computation.
-6. Add `param.reg_loss()` to the objective if regularization is intended.
-7. Use `nn.Const` for fixed values that should look like model parameters but not update.
+Official source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 
-## Regularization role
+## Regularization access bundled with code
 
-A regularization object contributes a scalar penalty. Attached to `nn.Param`, it is read with `param.reg_loss()`. Creating a regularized parameter is not enough by itself; the penalty must be added to the training or fitting objective.
+A regularization object contributes a scalar penalty derived from a parameter value. Call `reg.loss(value)` directly, or attach it with `reg=` and call `param.reg_loss()`:
 
-## Classical and structural penalties
+```python
+weights = jnp.array([3.0, -4.0])
 
-| Goal | Regularizers |
+l1_penalty = nn.L1Reg(0.1).loss(weights)
+l2_penalty = nn.L2Reg(0.1).loss(weights)
+
+p = nn.Param(
+    weights,
+    reg=nn.ElasticNetReg(
+        l1_weight=1.0,
+        l2_weight=1.0,
+        alpha=0.5,
+    ),
+)
+elastic_net_penalty = p.reg_loss()
+```
+
+For these values, the official example defines L1 as `0.1 * (abs(3) + abs(-4))`, L2 as `0.1 * (3**2 + 4**2)`, and reports `16.0` for the shown elastic-net configuration. `ChainedReg` is the documented composite for combining multiple regularizations; do not guess its constructor when exact composition arguments matter.
+
+Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+
+## End-to-end loss integration
+
+This official workflow keeps the optimizer target in unconstrained `ParamState`s, reads transformed values in the forward pass, and explicitly adds the attached L2 penalty to the data loss:
+
+```python
+class ConstrainedLinear(nn.Module):
+    def __init__(self, din, dout):
+        super().__init__()
+        self.w = nn.Param(
+            brainstate.random.randn(din, dout) * 0.1,
+            reg=nn.L2Reg(1e-3),
+        )
+        self.gain = nn.Param(
+            jnp.array(1.0),
+            t=nn.SoftplusT(lower=0.0),
+        )
+
+    def __call__(self, x):
+        return (x @ self.w.value()) * self.gain.value()
+
+
+model = ConstrainedLinear(4, 2)
+params = model.states(brainstate.ParamState)
+x = brainstate.random.randn(16, 4)
+y = brainstate.random.randn(16, 2)
+
+
+def loss_fn():
+    mse = jnp.mean((model(x) - y) ** 2)
+    penalty = model.w.reg_loss()
+    return mse + u.get_magnitude(penalty)
+
+
+@brainstate.transform.jit
+def train_step():
+    grads, loss = brainstate.transform.grad(
+        loss_fn,
+        params,
+        return_value=True,
+    )()
+    for key in params:
+        params[key].value -= 0.1 * grads[key]
+    return loss
+```
+
+The gradient is taken with respect to the unconstrained `ParamState` collection. The transform constrains what `model(...)` sees; the regularizer affects training only because `loss_fn()` includes `model.w.reg_loss()`.
+
+Official source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
+
+For a model with several regularized parameters, the tutorial's collection pattern is:
+
+```python
+def reg_penalty(self):
+    return sum(p.reg_loss() for p in self.nodes(nn.Param).values())
+```
+
+This walks the model's `nn.Param` nodes, sums their penalties, and adds the result once to the data loss.
+
+Official source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+
+## Fixed parameter-like values
+
+Use `nn.Const` when a value belongs in the module graph and forward computation but must not be collected as trainable state:
+
+```python
+class Scaler(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.weight = nn.Param(jnp.ones(3))
+        self.gain = nn.Const(jnp.array(2.0))
+
+    def __call__(self, x):
+        return x * self.weight.value() * self.gain.value()
+
+
+model = Scaler()
+trainable = model.states(brainstate.ParamState)
+```
+
+`trainable` contains the underlying State for `weight`; `gain` is absent.
+
+Official source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
+
+## Classical and structural regularizers
+
+Use the official API categories as selectors, then inspect the exact class API before relying on arguments not demonstrated above.
+
+| Need | Official API |
 |---|---|
-| Sparsity or shrinkage | `L1Reg`, `L2Reg`, `ElasticNetReg` |
-| Robust shrinkage | `HuberReg` |
-| Grouped sparsity | `GroupLassoReg` |
-| Smoothness or local variation | `TotalVariationReg` |
-| Soft magnitude constraint | `MaxNormReg` |
-| Distributional entropy pressure | `EntropyReg` |
-| Matrix structure | `OrthogonalReg`, `SpectralNormReg` |
-| Combine multiple penalties | `ChainedReg` |
+| Abstract regularization contract | `Regularization` |
+| L1/Lasso sparsity | `L1Reg` |
+| L2/Ridge shrinkage or smoothness | `L2Reg` |
+| Combined L1 and L2 | `ElasticNetReg` |
+| Robust regularization | `HuberReg` |
+| Group sparsity | `GroupLassoReg` |
+| Total variation | `TotalVariationReg` |
+| Soft max-norm constraint | `MaxNormReg` |
+| Entropy pressure | `EntropyReg` |
+| Orthogonal structure | `OrthogonalReg` |
+| Spectral-norm structure | `SpectralNormReg` |
+| Composite penalties | `ChainedReg` |
+
+These methods add penalty terms that encourage sparsity, smoothness, or structural constraints such as orthogonality and spectral norms.
+
+Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
 
 ## Prior-distribution regularizers
 
-| Parameter belief | Regularizers |
+Prior regularizers contribute a negative log-density penalty and encode distributional assumptions for Bayesian-inspired parameter estimation. The API describes them as useful for variational inference, maximum a posteriori estimation, and uncertainty quantification. Each implements `loss()`, `sample_init()`, and `reset_value()` for prior-based initialization; a `Param` carrying a prior can be redrawn with `param.reset_to_prior()`.
+
+| Parameter assumption | Official API |
 |---|---|
 | Gaussian prior | `GaussianReg` |
-| Heavy-tailed prior | `StudentTReg`, `CauchyReg` |
-| Bounded prior | `UniformReg`, `BetaReg` |
-| Positive scale prior | `LogNormalReg`, `ExponentialReg`, `GammaReg` |
-| Variance prior | `InverseGammaReg` |
-| Scale-invariant prior | `LogUniformReg` |
-| Sparse heavy-tail prior | `HorseshoeReg` |
-| Variable-selection prior | `SpikeAndSlabReg` |
-| Simplex prior | `DirichletReg` |
+| Student's t prior | `StudentTReg` |
+| Cauchy prior | `CauchyReg` |
+| Soft bounded uniform prior | `UniformReg` |
+| Value in `[0, 1]` under a Beta prior | `BetaReg` |
+| Positive value under a log-normal prior | `LogNormalReg` |
+| Positive value under an exponential prior | `ExponentialReg` |
+| Positive value under a Gamma prior | `GammaReg` |
+| Variance under an inverse-Gamma prior | `InverseGammaReg` |
+| Scale-invariant log-uniform/Jeffreys prior | `LogUniformReg` |
+| Strong sparsity with heavy tails | `HorseshoeReg` |
+| Variable selection | `SpikeAndSlabReg` |
+| Probability simplex | `DirichletReg` |
 
-## When to use regularization
+Match the prior to the parameter domain and the actual modeling assumption. Use `t=` for a guaranteed valid-domain mapping; `reg=` contributes the prior penalty.
 
-Use regularization when the loss should encode weight decay, sparsity, smoothness, structural constraints, biological plausibility, MAP-style priors, or explicit parameter-fitting assumptions.
+Official source: https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html
 
-Do not introduce regularization for ordinary beginner training examples unless the task is explicitly about constrained or regularized learning. Do not use a prior-distribution regularizer as decoration; it should encode a real modeling assumption.
+## Decision and failure rules
 
-## Route deeper
+- Need a transform class beyond the positive, interval, or simplex patterns above: open `references/brainstate/parameter-containers-transforms-catalog.md`.
+- Need only a penalty: attach `reg=` without inventing a transform.
+- Need both: attach `t=` and `reg=` to the same `nn.Param`; read `.value()` in the model and add `.reg_loss()` to the objective.
+- Need a fixed value in the graph: use `nn.Const`; do not expect it in a `ParamState` collection.
+- Never read `param.val` as the constrained forward value or update `param.value()` as optimizer storage.
+- Do not treat `SigmoidT` bounds as inclusive, or `SoftplusT(lower)` as able to attain `lower`.
+- Do not attach regularization and assume training includes it automatically.
+- Do not choose a prior whose support conflicts with the parameter domain.
 
-- Open `references/brainstate/parameter-containers-transforms-catalog.md` when choosing a specific parameter container or transform class.
-- Open `references/brainstate/transformation-grad-expansion.md` when the issue is gradient target selection or differentiating a fitting objective.
+## Mirror source URLs
 
-## Brain dynamics examples
-
-- Positive time constants: use `nn.Param` with a positive transform instead of unconstrained raw values.
-- Positive conductances: constrain the model-space value before using it in channel or synapse calculations.
-- Bounded probabilities or gates: use a bounded transform and read the constrained value in the model.
-- Regularized fitted parameters: add `param.reg_loss()` to the loss term used by `grad`.
-
-## Keep out
-
-- Full transform-class selection tables; put those in `parameter-containers-transforms-catalog.md`.
-- JIT/grad/vmap execution mechanics except routing notes.
-
-## Common mistakes to prevent
-
-- Confusing parameter transforms with program transforms.
-- Updating or reading the wrong side of a transformed parameter.
-- Leaving biological or physical parameters unconstrained when their domain is restricted.
-- Creating a regularized `Param` but not adding `param.reg_loss()` to the objective.
-- Choosing a prior regularizer that does not match the parameter domain.
-- Combining penalties without checking their relative scale.
-- Adding regularization without a clear modeling or fitting reason.
-- Ignoring units and biological ranges when learning physical parameters.
-
-## Example prompts this reference should support
-
-- "When should I use `ParamState` versus `nn.Param`?"
-- "Make this conductance parameter positive during fitting."
-- "Add L2 regularization to a BrainState model parameter."
-- "Which regularizer should I use for sparse fitted parameters?"
-- "What regularizer represents a positive scale prior?"
-- "How do I combine several regularization penalties?"
-- "Explain why my transformed parameter has `.val` and `value()`."
+- https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+- https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
+- https://brainx.chaobrain.com/brainstate/apis/nn/regularization.html

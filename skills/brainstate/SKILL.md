@@ -1,129 +1,84 @@
 ---
 name: brainstate
-description: Use when a task involves BrainState State, ParamState, HiddenState, `.value` mutation, PyTree state values, Module composition, parameter collection, collection utilities, model-wide lifecycle operations, mixins, parameter descriptors, State hooks, constrained or fixed parameters, training loops, losses, metrics, optimizers, StateFinder, graph inspection and reconstruction, Flax or Equinox interoperation, prebuilt layers, size inference, reproducible randomness, or state-aware `jit`, `grad`, and `vmap`.
+description: Use for BrainState mutable State and `.value`, ParamState and other State roles, Module graphs, state collection and lifecycle operations, size-aware neural-network composition, reproducible randomness, state-aware jit/grad/vmap, or a BrainState training step.
 ---
 
 # BrainState
 
-## Purpose
+## Purpose And Boundary
 
-Use this as the backbone for BrainState stateful programming, Module graphs, state traversal, parameter registration, reproducible randomness, and state-aware transformations. Keep the canonical path inline and open the routed references only for advanced traversal, collection organization, model-wide lifecycle operations, extension mechanisms, observability, architectures, dynamics, control flow, diagnostics, or performance work.
+Use this skill for BrainState mutable `State`, `brainstate.nn.Module` graphs, state collection and initialization, reproducible randomness, state-aware transformations, and the general structure of stateful training. Activate it for `State`, `.value`, `ParamState`, `HiddenState`, Module traversal, `in_size` / `out_size`, `.desc()`, or `brainstate.transform`.
 
-## Core Mental Model
+Use this canonical path:
 
-BrainState programs are stateful Module graphs:
+`classify State roles -> construct Modules -> register State and children -> initialize -> transform the whole operation -> validate State and outputs`
 
-`small reusable Modules -> nested Module tree -> State objects at the leaves -> brainstate.transform handles stateful execution`
+Keep the canonical path here. Open references only for graph editing, collection utilities, lifecycle operations, extension hooks, constraints, full layer catalogs, transform variants, diagnostics, interoperation, or optimizer selection. Route performance, memory, accelerator, and multi-device work to `skills/brainx-acceleration-audit/SKILL.md`.
 
-Core ideas:
+Advanced branches include training, dynamics, randomness, parameter constraints, model graphs, diagnostics, interoperation, layers, and acceleration. This skill keeps the general stateful training structure; route specialized neuronal or network dynamics to the matching BrainCell or BrainPy-State skill instead of the legacy BrainState dynamics drafts.
 
-- **State is where mutation happens.**
-- Read and write ordinary State, including `ParamState`, through `.value`.
-- `ParamState` is the standard trainable BrainState `State`: a mutable State leaf in the Module graph used for ordinary trainable weights, biases, and other unconstrained values.
-- Use semantic subclasses such as `ParamState` for trainable parameters and `HiddenState` for dynamical or internal state.
-- Build models from small reusable and composable `brainstate.nn.Module` objects.
-- A model is a tree; `State` objects are usually the leaves.
-- Assign a `State` or child `Module` to an attribute so BrainState can find it.
-- Collect trainable parameters by type:
+## P0 Concepts And Core Scripts
 
-```python
-params = model.states(brainstate.ParamState)
-```
+### 1. State Is The Mutation Boundary
 
-Pass this collection to `brainstate.transform.grad` and register the same collection with an optimizer. An `nn.Param` contributes its underlying `.val` `ParamState`; an `nn.Const` does not appear in the collection.
+`State` encapsulates model values that change over time. It can wrap Python scalars, arrays, `jax.Array` values, dictionaries, lists, or another stable PyTree structure; its value remains mutable after compilation. Read and write it through `.value`.
 
-- Use `brainstate.transform`, not raw `jax.jit`, `jax.grad`, or `jax.vmap`, when code touches BrainState State.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html
 
-## State Essentials
+State provides three operational guarantees:
 
-`State` is the container for mutable values in BrainState.
+- Its value can be updated inside JIT-compiled functions.
+- State checks value type, shape, and, when requested, PyTree structure.
+- BrainState transformations can discover and manage its reads and writes.
+
+Only values inside `State` are mutable in transformed code. Keep ordinary Python attributes for static configuration. Preserve the original PyTree structure when assigning `.value`.
+
+#### Create scalar, array, and PyTree State
 
 ```python
 import brainstate
+import brainstate.nn as nn
 import jax.numpy as jnp
 
-s = brainstate.State(jnp.ones(3))
-x = s.value
-s.value = x + 1
-```
-
-Important rules:
-
-- Only values inside State are mutable in BrainState-transformed code.
-- Regular Python attributes are static configuration unless stored as State.
-- Update State explicitly through `.value`.
-- Keep state updates simple and local.
-- Preserve the intended tree structure when a State contains a PyTree.
-- Prefer semantic subclasses over plain `State` when the role is known.
-
-### Create State values
-
-```python
-# Array state
-v = brainstate.State(jnp.zeros(10))
-
-# Scalar state
 counter = brainstate.State(jnp.array(0))
-
-# PyTree state
-neuron_state = brainstate.State({
-    "V": jnp.zeros(100),
-    "u": jnp.zeros(100),
+vector = brainstate.State(jnp.zeros(10))
+neuron = brainstate.State({
+    "V": jnp.zeros(5),
+    "u": jnp.ones(5),
 })
-```
 
-### Update PyTree State
+value = neuron.value
+neuron.value = {
+    "V": value["V"] + 0.1,
+    "u": value["u"],
+}
 
-A State value can be a JAX array or a PyTree such as a dictionary or list of arrays.
-
-```python
-state = brainstate.State({
-    "neurons": {
+with brainstate.check_state_value_tree():
+    neuron.value = {
         "V": jnp.zeros(5),
         "u": jnp.ones(5),
-    },
-    "synapses": {
-        "g": jnp.zeros((5, 5)),
-    },
-})
-
-value = state.value
-state.value = {
-    "neurons": {
-        "V": value["neurons"]["V"] + 0.1,
-        "u": value["neurons"]["u"],
-    },
-    "synapses": {
-        "g": value["synapses"]["g"],
-    },
-}
-```
-
-Use tree checking while debugging structure-changing updates:
-
-```python
-with brainstate.check_state_value_tree():
-    state.value = {
-        "neurons": {
-            "V": jnp.zeros(5),
-            "u": jnp.ones(5),
-        },
-        "synapses": {
-            "g": jnp.zeros((5, 5)),
-        },
     }
 ```
 
-### State subclasses
+#### Choose the State or parameter role
 
-State subclasses are semantic markers used by traversal, filtering, gradient collection, debugging, and model organization.
+State subclasses are functionally State containers and act as semantic markers for filtering and model organization.
 
-| State subclass | Use for |
+| Role | Use |
 |---|---|
-| `ParamState` | Trainable parameters such as weights and biases |
-| `HiddenState` | Internal dynamical state such as membrane voltage or RNN hidden state |
-| `ShortTermState` | Transient runtime state such as current input or last spike time |
-| `LongTermState` | Persistent non-parameter state such as running statistics |
+| `ParamState` | Bare trainable weights, biases, or other unconstrained values |
+| `HiddenState` | Internal activations or dynamical state retained between updates |
+| `ShortTermState` | Transient runtime values such as current input or last spike time |
+| `LongTermState` | Persistent non-parameter values such as running statistics |
+| `nn.Param` | A trainable value requiring a constraint transform or regularizer |
+| `nn.Const` | A fixed value kept inside the Module graph |
+
+`nn.Param` wraps an underlying trainable `ParamState`: computation reads the constrained value with `.value()`, while optimizers update `.val`. `nn.Const` is excluded when collecting `ParamState` objects.
+
+Sources:
+
+- https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html
+- https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
 ```python
 w = brainstate.ParamState(brainstate.random.randn(10, 5) * 0.1)
@@ -131,72 +86,31 @@ b = brainstate.ParamState(jnp.zeros(5))
 h = brainstate.HiddenState(jnp.zeros(5))
 last_spike = brainstate.ShortTermState(jnp.full(5, -1e7))
 running_mean = brainstate.LongTermState(jnp.zeros(5))
+
+positive_tau = nn.Param(jnp.array(2.0), t=nn.SoftplusT(lower=0.1))
+fixed_scale = nn.Const(jnp.array(10.0))
+
+print(positive_tau.value())  # constrained value used by the model
+print(positive_tau.val)      # underlying trainable ParamState
+print(fixed_scale.value())
 ```
 
-### Parameter choice
+### 2. Modules Form Registered State Graphs
 
-Use the smallest parameter abstraction that expresses the model:
+`brainstate.nn.Module` is the base class for BrainState modules. It provides automatic child registration, State collection, inspection, and integration with BrainState transformations. Assign each `State` and child `Module` to an attribute so the model becomes a nested Module graph with State objects at the leaves.
 
-```text
-ordinary trainable value
-    -> ParamState
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/02_modules_and_graph.html
 
-trainable value requiring a valid domain, transform, or prior
-    -> brainstate.nn.Param
-
-fixed model value
-    -> brainstate.nn.Const
-```
-
-Access is intentionally different:
-
-- Ordinary `State`, including `ParamState`, stores its value in `.value`.
-- `brainstate.nn.Param` exposes the constrained value used by computation through `.value()` and stores its underlying trainable `ParamState` in `.val`.
-- `brainstate.nn.Const` represents a fixed value in the Module graph and is excluded from `model.states(brainstate.ParamState)`.
-
-Keep transform choices, constraints, and regularization details in `references/brainstate/parameter-constraints-regularization.md` and its nested transform catalog.
-
-## Fundamental Randomness
-
-### The default `RandomState`
-
-All functions in `brainstate.random` use the global `brainstate.random.DEFAULT` instance unless a separate key or `RandomState` is supplied.
+Modules keep related State and computation together, can be reused after construction, and compose into larger graphs. Collect only the semantic State role required by the operation:
 
 ```python
-print("Default RandomState:")
-print(brainstate.random.DEFAULT)
-print(f"\nType: {type(brainstate.random.DEFAULT)}")
+params = model.states(brainstate.ParamState)
 ```
 
-### Seed management and reproducibility
-
-Set a seed before constructing randomly initialized Modules or generating random data. Resetting to the same seed reproduces the same sequence.
-
-```python
-brainstate.random.seed(42)
-print("Seed set to 42")
-
-x1 = brainstate.random.rand(5)
-print(f"First sequence: {x1}")
-
-brainstate.random.seed(42)
-x2 = brainstate.random.rand(5)
-print(f"Second sequence: {x2}")
-print(f"\nIdentical? {jnp.allclose(x1, x2)}")
-```
-
-Use independent `RandomState` instances or explicit key management for separate streams, stochastic `vmap`, or checkpointed randomness; route those cases to the randomness references.
-
-## Module Essentials
-
-Use `brainstate.nn.Module` to build small reusable components, then compose or nest them into larger models. Modules organize computation and child Modules; State objects hold mutable values at the leaves.
-
-### Add State to a Module
+#### Add State to a Module
 
 ```python
 class Counter(brainstate.nn.Module):
-    """A Module that counts how many times it is called."""
-
     def __init__(self):
         super().__init__()
         self.count = brainstate.ShortTermState(jnp.array(0))
@@ -206,172 +120,163 @@ class Counter(brainstate.nn.Module):
         return x * self.count.value
 
 
-counter = Counter()
-print("Initial count:", counter.count.value)
-
-for i in range(5):
-    result = counter(jnp.array(10.0))
-    print(f"Call {i + 1}: count={counter.count.value}, result={result}")
+counter_module = Counter()
+for _ in range(5):
+    print(counter_module(jnp.array(10.0)), counter_module.count.value)
 ```
 
-Expected result:
+The output advances through `(10, 1)`, `(20, 2)`, ..., `(50, 5)` because the registered State is updated explicitly.
 
-```text
-Initial count: 0
-Call 1: count=1, result=10.0
-Call 2: count=2, result=20.0
-Call 3: count=3, result=30.0
-Call 4: count=4, result=40.0
-Call 5: count=5, result=50.0
-```
-
-### Basic neural-network layers
-
-| Layer type | Use for |
-|---|---|
-| `Linear` | Dense vector-to-vector mapping, MLPs, and classifier heads |
-| `Conv1d` / `Conv2d` / `Conv3d` | Spatial or temporal local feature extraction |
-| Pooling | Reducing spatial or temporal size |
-| `Flatten` | Converting spatial features before dense classifier layers |
-| Activations | Adding nonlinearity between learned layers |
-| Normalization | Stabilizing activations or statistics during training |
-| Dropout | Regularization during training |
-
-Minimal prebuilt layer:
+#### Use basic prebuilt layers
 
 ```python
 brainstate.random.seed(42)
-linear = brainstate.nn.Linear(in_size=(10,), out_size=(5,))
-x = brainstate.random.randn(10)
-y = linear(x)
+
+linear = nn.Linear(in_size=(10,), out_size=(5,))
+relu = nn.ReLU()
+conv = nn.Conv2d(
+    in_size=(28, 28, 3),
+    out_channels=32,
+    kernel_size=3,
+    padding="SAME",
+)
+pool = nn.MaxPool2d(
+    in_size=conv.out_size,
+    kernel_size=(2, 2),
+    stride=(2, 2),
+    channel_axis=-1,
+)
+
+x = brainstate.random.randn(8, 10)
+y = relu(linear(x))
+assert y.shape == (8, 5)
 ```
 
-Minimal activation layer:
+Open the layer and activation catalogs instead of guessing an uncommon class name or signature.
 
-```python
-relu = brainstate.nn.ReLU()
-sigmoid = brainstate.nn.Sigmoid()
-tanh = brainstate.nn.Tanh()
+### 3. Size Inference Drives Composition
 
-x = brainstate.random.randn(5)
-y = relu(x)
-```
+Every size-aware `brainstate.nn.Module` exposes `in_size` and `out_size` as feature shapes without the batch dimension. When the input size is known, the Module computes its output size. `nn.Sequential` propagates one layer's `out_size` into the next layer, and `.desc()` creates a descriptor that is instantiated when that input size becomes available.
 
-Activation functions determine a neuron or layer output from its input, usually by adding nonlinearity.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/02_modules_and_graph.html
 
-### Size inference, `Sequential`, and `.desc()`
-
-- `in_size` is the input feature shape without the batch dimension.
-- `out_size` is the output feature shape without the batch dimension.
-- When `in_size` is known, output size is inferred automatically.
-- In `Sequential`, one layer's `out_size` becomes the next layer's input size.
-- Use `.desc()` when a layer should infer its input size from the preceding layer.
-
-The following `ComplexNet` is the canonical inline example for `Sequential`, `.desc()`, and automatic size propagation. Use it directly when a user asks for the canonical example or its inferred sizes; do not ask whether to generalize it unless customization was requested. Route convolution formulas, pooling reduction, flatten-size inference, and edge cases to the planned consolidated `references/size-inference-variations.md` reference.
+#### Compose `ComplexNet` with `Sequential` and `.desc()`
 
 ```python
 class ComplexNet(brainstate.nn.Module):
-    """Network demonstrating mixed layer types and size propagation."""
-
     def __init__(self, in_size):
         super().__init__()
-
-        self.features = brainstate.nn.Sequential(
-            brainstate.nn.Conv2d(
+        self.features = nn.Sequential(
+            nn.Conv2d(
                 in_size,
                 out_channels=16,
                 kernel_size=3,
                 padding="SAME",
             ),
-            brainstate.nn.ReLU(),
-            brainstate.nn.Conv2d.desc(
+            nn.ReLU(),
+            nn.Conv2d.desc(
                 out_channels=32,
                 kernel_size=3,
                 stride=2,
                 padding="SAME",
             ),
-            brainstate.nn.ReLU(),
-            brainstate.nn.Conv2d.desc(
+            nn.ReLU(),
+            nn.Conv2d.desc(
                 out_channels=64,
                 kernel_size=3,
                 padding="SAME",
             ),
-            brainstate.nn.ReLU(),
-            brainstate.nn.MaxPool2d.desc(
+            nn.ReLU(),
+            nn.MaxPool2d.desc(
                 kernel_size=(2, 2),
                 stride=(2, 2),
                 channel_axis=-1,
             ),
         )
-
-        self.classifier = brainstate.nn.Sequential(
-            brainstate.nn.Flatten(in_size=self.features.out_size),
-            brainstate.nn.Linear.desc(out_size=(256,)),
-            brainstate.nn.ReLU(),
-            brainstate.nn.Linear.desc(out_size=(10,)),
+        self.classifier = nn.Sequential(
+            nn.Flatten(in_size=self.features.out_size),
+            nn.Linear.desc(out_size=256),
+            nn.ReLU(),
+            nn.Linear.desc(out_size=10),
         )
 
     def update(self, x):
-        x = self.features(x)
-        return self.classifier(x)
+        return self.classifier(self.features(x))
 
 
 brainstate.random.seed(42)
 net = ComplexNet(in_size=(32, 32, 3))
+x_image = brainstate.random.randn(2, 32, 32, 3)
+y_image = net(x_image)
 
-print("Complex Network:")
-print(f"Input size: {net.features.in_size}")
-print(f"After features: {net.features.out_size}")
-print(f"After flatten: {net.classifier.layers[0].out_size}")
-print(f"Final output: {net.classifier.out_size}")
-
-x = brainstate.random.randn(2, 32, 32, 3)
-y = net(x)
-print(f"Forward pass: {x.shape} -> {y.shape}")
+assert net.features.out_size == (8, 8, 64)
+assert net.classifier.layers[0].out_size == (4096,)
+assert net.classifier.out_size == (10,)
+assert y_image.shape == (2, 10)
 ```
 
-Expected size propagation and output:
+Open `references/size-inference-variations.md` for convolution formulas, padding/stride edge cases, pooling reduction, and flatten-size variants.
 
-```text
-Complex Network:
-Input size: (32, 32, 3)
-After features: (8, 8, 64)
-After flatten: (4096,)
-Final output: (10,)
-Forward pass: (2, 32, 32, 3) -> (2, 10)
+### 4. Use State-Aware Transforms And Reproducible Randomness
+
+`brainstate.transform` mirrors JAX's `jit`, `grad`, and `vmap`, but tracks the `State` objects a model reads and writes. Raw `jax.jit` can discard State writes; wrap the complete stateful operation in `brainstate.transform` and prefer whole forward, simulation, or training steps over fragmented transforms.
+
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/06_transformations_essentials.html
+
+All `brainstate.random` functions use the global `brainstate.random.DEFAULT` `RandomState` unless a separate stream or key is supplied. Seed before random initialization or data generation when the run must be reproducible.
+
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/08_randomness.html
+
+#### Inspect the default `RandomState`
+
+```python
+print(brainstate.random.DEFAULT)
+print(type(brainstate.random.DEFAULT))
 ```
 
-## Transformation Essentials
+#### Seed a reproducible sequence
 
-`brainstate.transform` mirrors common JAX transforms but tracks State reads and writes so mutable BrainState programs remain correct under transformation.
+```python
+brainstate.random.seed(42)
+x1 = brainstate.random.rand(5)
 
-Use:
+brainstate.random.seed(42)
+x2 = brainstate.random.rand(5)
 
-- `brainstate.transform.jit` for a whole forward pass, simulation step, or training step.
-- `brainstate.transform.grad` for differentiation with respect to a State collection.
-- `brainstate.transform.vmap` for batching a single-example function.
-- `jit(grad(...))` as the standard compiled training-step backbone.
+assert jnp.allclose(x1, x2)
+```
 
-### Minimal state-aware JIT
+Use independent `RandomState` instances, key save/restore, stochastic mapping, or checkpoint-aware randomness only through the randomness parent reference.
 
-The first compatible call traces and compiles the function; later compatible calls reuse the compiled executable while BrainState writes State updates back.
+## Canonical Transformation Workflow
+
+The scripts below share one model and dataset so the `jit`, `grad`, composed training-step, and `vmap` decisions are not re-explained four times.
+
+```python
+brainstate.random.seed(0)
+model = nn.Linear(in_size=(3,), out_size=(1,))
+x_train = brainstate.random.randn(64, 3)
+y_train = brainstate.random.randn(64, 1)
+params = model.states(brainstate.ParamState)
+```
+
+### Minimal State-Aware JIT
 
 ```python
 forward = brainstate.transform.jit(model)
-y = forward(x)
+prediction = forward(x_train)
+assert prediction.shape == (64, 1)
 ```
 
-### Minimal gradient and parameter update
+The first compatible call traces and compiles the complete forward pass; later compatible calls reuse it while BrainState handles State effects.
 
-Gradients use the same keys as the State collection passed to `grad`, so apply each `grads[key]` to the matching `params[key]`.
+### Minimal Gradient And Parameter Update
+
+`grad` differentiates with respect to a State collection and returns gradients keyed by the same State paths. `return_value=True` returns the loss from the same pass.
 
 ```python
-params = model.states(brainstate.ParamState)
-
-
 def loss_fn():
-    pred = model(x)
-    return jnp.mean((pred - target) ** 2)
+    return jnp.mean((model(x_train) - y_train) ** 2)
 
 
 grads, loss = brainstate.transform.grad(
@@ -384,9 +289,7 @@ for key in params:
     params[key].value -= 0.1 * grads[key]
 ```
 
-The collected `ParamState` mapping is the canonical gradient target. Reuse it for optimizer registration in a complete training loop; do not collect all State types.
-
-### Composed training-step transform
+### Composed Training-Step Transform
 
 ```python
 @brainstate.transform.jit
@@ -399,7 +302,12 @@ def train_step():
     for key in params:
         params[key].value -= 0.1 * grads[key]
     return loss
+
+
+loss = train_step()
 ```
+
+Use `jit(grad(...))` as the default compiled training-step backbone. Open the optimizer reference when manual updates should become optimizer-managed updates.
 
 ### Minimal `vmap`
 
@@ -409,76 +317,58 @@ def predict_one(x_row):
 
 
 predict_batch = brainstate.transform.vmap(predict_one)
-y = predict_batch(x)
+batched_prediction = predict_batch(x_train)
+assert batched_prediction.shape == (64, 1)
 ```
 
-## References and Routing
+This maps a function written for one example over a batch. Open the `vmap` expansion for mapped State axes, ensembles, parameter sweeps, or the documented `state_in_axes` / `state_out_axes` controls. The routed tutorial does not define the rough draft's `in_states` / `out_states` names.
 
-Open references only when the task exceeds this backbone.
+## Reference Routing
 
-### Canonical first-layer references
+Open only the smallest reference that owns the requested variant.
 
-- `skills/brainstate/references/state-graph-operations.md`
-  Use to find, extract, split, replace, and reconstruct State graphs.
-- `skills/brainstate/references/model-interop-and-migration.md`
-  Use for Flax or Equinox interoperation and PyTorch migration.
-- `skills/brainstate/references/state_collections_and_utilities.md`
-  Use to filter, organize, freeze, flatten, configure, and print nested collections.
-- `skills/brainstate/references/collective_model_operations.md`
-  Use for model-wide initialization, reset, method invocation, batched lifecycle operations, and State restoration.
-- `skills/brainstate/references/extension_mechanisms.md`
-  Use for mixins, descriptors, runtime modes, and State hooks.
-- `skills/brainstate/references/size-inference-variations.md` [planned]
-  Use for convolution formulas and edge cases, pooling reduction, and flatten-size inference. This consolidated target is not yet present; do not substitute either legacy split size-inference article.
-- `skills/brainstate/references/brainstate/parameter-constraints-regularization.md`
-  Use as the parameter parent for `ParamState` versus `nn.Param`, constraints and transforms, `nn.Const`, penalties, prior regularizers, and loss integration.
-- `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md`
-  Use as the only first-layer randomness parent for streams, stochastic transforms, trials, dropout or noise, and checkpointed RNG State.
-- `skills/brainstate/references/libraries/prebuilt-layer-library.md`
-  Use for the full prebuilt layer catalog.
-- `skills/brainstate/references/libraries/prebuilt-activation-library.md`
-  Use for activation functions and normalization selection.
-- `skills/brainstate/references/brainstate/transformation-jit-expansion.md`
-  Use for State write-back, cache and static arguments, compilation boundaries, and benchmarking.
-- `skills/brainstate/references/brainstate/transformation-grad-expansion.md`
-  Use for autodiff, differentiable simulation, fitting, `return_value`, and `has_aux`.
-- `skills/brainstate/references/brainstate/transformation-vmap-expansion.md`
-  Use for State axes, ensembles, sweeps, stochastic `vmap`, `in_states`, and `out_states`.
-- `skills/brainstate/references/brainstate/brainstate-control-flow-patterns.md`
-  Use for transform-safe loops, scans, branches, and checkpointed control flow.
-- `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md`
-  Use as the diagnostics parent for runtime checks, transformed debugging, NaN or Inf checks, callbacks, and traced values.
-- `skills/brainstate/references/braintools-optimizer-reference.md`
-  Use for optimizer families, learning-rate schedulers, and external optimizer wrappers.
-- `skills/brainx-acceleration-audit/SKILL.md`
-  Route performance, batching, sweeps, memory, GPU, and multi-device work to the acceleration skill.
+| Reference | Open when |
+|---|---|
+| `references/state-graph-operations.md` | Find, extract, split, replace, or reconstruct State graphs |
+| `references/model-interop-and-migration.md` | Interoperate with Flax/Equinox or migrate PyTorch concepts |
+| `references/state_collections_and_utilities.md` | Filter, organize, freeze, flatten, configure, or print nested collections |
+| `references/collective_model_operations.md` | Initialize, reset, invoke methods, batch lifecycle calls, or restore State model-wide |
+| `references/extension_mechanisms.md` | Use mixins, descriptors, runtime modes, or State hooks |
+| `references/size-inference-variations.md` | Handle convolution, pooling, padding, or flatten size variants |
+| `references/braintools-optimizer-reference.md` | Select optimizers, schedules, Optax bridges, or external wrappers |
+| `references/brainstate/parameter-constraints-regularization.md` | Add constraints, transforms, `nn.Const`, regularizers, or loss penalties |
+| `references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` | Use independent streams, stochastic transforms, trials, noise/dropout, or RNG checkpoints |
+| `references/libraries/prebuilt-layer-library.md` | Select an exact prebuilt layer and signature |
+| `references/libraries/prebuilt-activation-library.md` | Select activation or normalization behavior |
+| `references/brainstate/transformation-jit-expansion.md` | Control State write-back, cache/static arguments, boundaries, or benchmarks |
+| `references/brainstate/transformation-grad-expansion.md` | Use advanced autodiff, fitting, differentiable simulation, `return_value`, or `has_aux` |
+| `references/brainstate/transformation-vmap-expansion.md` | Map State axes, ensembles, sweeps, or stochastic work |
+| `references/brainstate/brainstate-control-flow-patterns.md` | Use transform-safe loops, scans, branches, or checkpointed control flow |
+| `references/diagnostics/brainstate-transformed-diagnostics.md` | Debug traced values, runtime checks, NaN/Inf, or callbacks |
 
-### Parent-only nested references
+Nested references have one inbound route each:
 
-- Only `skills/brainstate/references/brainstate/parameter-constraints-regularization.md` may select `skills/brainstate/references/brainstate/parameter-containers-transforms-catalog.md` for exhaustive parameter-container and transform-class selection.
-- Only `skills/brainstate/references/brainstate-randomness-reproducibility/randomness-and-reproducibility.md` may select `skills/brainstate/references/brainstate-randomness-reproducibility/advanced-randomness.md` for advanced streams, mapped randomness, key restoration, and checkpoint behavior.
-- Only `skills/brainstate/references/diagnostics/brainstate-transformed-diagnostics.md` may select `skills/brainstate/references/diagnostics/common-failures-index.md`; establish transformed diagnostics before opening the recurring-failure router.
-- Do not select these three nested children directly from the skill router or another first-layer reference.
+- Only `parameter-constraints-regularization.md` may open `parameter-containers-transforms-catalog.md`.
+- Only `randomness-and-reproducibility.md` may open `advanced-randomness.md`.
+- Only `brainstate-transformed-diagnostics.md` may open `common-failures-index.md`.
 
-### Script references
+Do not route to the existing dynamics, deep-learning training, solver, or legacy split size-inference files from this skill; they are outside the architecture supplied for this BrainState skill.
 
-- `skills/brainstate/references/lif_neuron_model.py`
-  Direct skill script for combined State roles and explicit `.value` updates. Source: `https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html`.
-- `skills/brainstate/references/modern_cnn.py`
-  Script selected through the prebuilt layer or activation branch for convolution, normalization, pooling, dropout, and dense composition. Source: `https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html`.
-- `skills/brainstate/references/resnet.py`
-  Direct skill script for residual Modules and dynamic child registration. Its source is unresolved, so do not treat it as canonical until the source is established.
+## Script References
 
-## Common Mistakes and Fixes
+- `references/lif_neuron_model.py`: extended combination of `HiddenState`, `ShortTermState`, and `ParamState` with explicit `.value` updates. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html
+- `references/modern_cnn.py`: full convolution, normalization, activation, pooling, dropout, and dense Module composition. Select it through the layer or activation branch. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
+- `references/resnet.py`: residual Modules and dynamically registered child blocks. Source: https://brainx.chaobrain.com/brainstate/tutorials/core/02_modules_and_graph.html
 
-- Mutating raw Python attributes inside transformed code -> put mutable values in State.
-- Reading or writing ordinary State without `.value` -> use `state.value`; for `nn.Param`, use `.value()` for the effective value and `.val` for its underlying `ParamState`.
-- Changing a State PyTree structure accidentally -> preserve the structure or use `brainstate.check_state_value_tree()` while debugging.
-- Using generic State for every role -> use semantic State subclasses when the role is known.
-- Forgetting to register child Modules -> assign each child to a Module attribute.
-- Forgetting to collect parameters -> use `model.states(brainstate.ParamState)`.
-- Treating `nn.Const` as trainable -> keep it out of the `ParamState` collection; use `nn.Param` or `ParamState` for trainable values.
-- Using raw `jax.jit` on stateful BrainState code -> use `brainstate.transform.jit`.
-- Differentiating positional arguments like plain JAX -> pass a State collection to `brainstate.transform.grad`.
-- Compiling tiny operations -> JIT the whole forward, simulation, or training step.
-- Python-looping over batches -> write a single-example function and wrap it with `brainstate.transform.vmap`.
+## Common Failures
+
+- Mutable raw attribute inside transformed code -> store the value in an appropriate `State`.
+- Ordinary State read or write omits `.value` -> use `.value`; reserve `.value()` and `.val` for `nn.Param`.
+- State assignment changes the PyTree structure -> preserve it or debug under `check_state_value_tree()`.
+- Every value uses generic `State` -> choose semantic subclasses so filtering and training target the correct leaves.
+- Child Module is kept only in an unregistered local container -> assign each child to a Module attribute.
+- Gradient targets all State roles -> collect `model.states(brainstate.ParamState)` only.
+- `nn.Const` is expected to train -> replace it with `ParamState` or `nn.Param`.
+- Stateful function uses raw `jax.jit`, `jax.grad`, or `jax.vmap` -> use the matching `brainstate.transform` operation.
+- JIT wraps tiny fragments -> compile the whole forward, simulation, or training step.
+- Python loops over a batch -> write the single-example operation and use state-aware `vmap`.

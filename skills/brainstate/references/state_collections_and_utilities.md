@@ -1,31 +1,14 @@
 # BrainState State Collections and Utility Toolkit
 
-Use this reference when a task needs to filter, split, reorganize, freeze, flatten, configure, or pretty-print nested mappings and PyTrees. These are collection and data-structure operations; use `collective_model_operations.md` instead when the task must invoke lifecycle methods across every Module in a model graph.
+Use this reference for the collection-focused parts of BrainState's Utility Toolkit: managing mappings, nested configuration, dictionary conversion, immutable structured PyTrees, declarative filters, and readable PyTree containers. These utilities organize data; the core `State` and `Module` programming model remains in the parent `SKILL.md`.
 
-## Source
+Official page: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
-- Utility Toolkit: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+## Managing Collections with `DictManager`
 
-The official guide describes `brainstate.util` as helpers for collections, structured PyTrees, pretty-printing, and runtime hygiene.
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
 
-## Choose the Smallest Utility
-
-| Need | API |
-|---|---|
-| Filter or split mapping values | `DictManager.subset(...)`, `DictManager.split(...)` |
-| Transform every mapping value | `DictManager.map_values(...)` |
-| Attribute-style nested configuration | `DotDict` |
-| Merge or convert dotted-key dictionaries | `merge_dicts`, `flatten_dict`, `unflatten_dict` |
-| Define an immutable JAX-compatible record | `util.struct.dataclass` |
-| Mark static dataclass metadata | `util.struct.field(pytree_node=False, ...)` |
-| Freeze or unfreeze nested mappings | `util.struct.freeze`, `util.struct.unfreeze` |
-| Build reusable path/value predicates | `brainstate.util.filter` |
-| Flatten nested mappings to tuple paths | `flat_mapping`, `nest_mapping` |
-| Inspect nested mappings and lists readably | `NestedDict`, `PrettyList` |
-
-## Filter and Transform `DictManager`
-
-`DictManager` extends a mapping with filters, splits, combination operators, value transforms, and JAX PyTree support.
+`DictManager` extends the standard mapping interface with filters, splits, combination operators, and JAX PyTree support. The page demonstrates `subset(...)` for one matching collection, `split(...)` for matching and remaining collections, and `map_values(...)` for transforming the retained values.
 
 ```python
 from brainstate.util import DictManager
@@ -36,35 +19,50 @@ modules = DictManager({
     'dropout': 0.1,
 })
 
-submodules = modules.subset(dict)
-matched, remainder = modules.split(dict)
-param_counts = submodules.map_values(lambda layer: layer['params'])
+submods = modules.subset(dict)
+dicts, remainder = modules.split(dict)
+param_counts = submods.map_values(lambda layer: layer['params'])
+
+print(submods)
+print(dicts)
+print(remainder)
+print(param_counts)
 ```
 
-Use `subset` when only the matching collection is needed. Use `split` when both the matched and unmatched entries must be preserved. `map_values` retains the mapping keys while replacing each value.
+The demonstrated results retain `encoder` and `decoder` in `submods` and `dicts`, put only `dropout` in `remainder`, and produce `DictManager({'encoder': 32, 'decoder': 45})` for `param_counts`.
 
-## Nested Configuration with `DotDict`
+## Configuration Access with `DotDict`
 
-`DotDict` provides attribute access to nested dictionary configuration while retaining conversion back to ordinary dictionaries.
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+`DotDict` lets nested dictionaries act like lightweight objects while preserving conversion back to standard dictionaries when needed.
 
 ```python
 from brainstate.util import DotDict
 
 config = DotDict({
-    'model': {'layers': 4, 'hidden': 256},
-    'training': {'lr': 3e-4},
+    'model': {
+        'layers': 4,
+        'hidden': 256,
+    },
+    'training': {
+        'lr': 3e-4,
+        'scheduler': {'warmup_steps': 500},
+    },
 })
 
-hidden = config.model.hidden
+print(config.model.hidden)
 config.training.dropout = 0.2
-plain_config = config.to_dict()
+round_trip = config.to_dict()
 ```
 
-Use it for configuration ergonomics, not as a replacement for mutable BrainState `State` inside transformed computation.
+The example reads `config.model.hidden` as `256`, adds `config.training.dropout`, and converts the complete nested configuration back with `to_dict()`.
 
 ## Merge, Flatten, and Unflatten Dictionaries
 
-`merge_dicts` supports nested configuration overrides. `flatten_dict` and `unflatten_dict` convert between nested dictionaries and dotted-key representations, which is useful for logging, command-line overrides, and configuration serialization.
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+`merge_dicts` performs optional recursive merges. `flatten_dict` and `unflatten_dict` convert between nested and dotted-key representations, which the page uses for logging or CLI overrides.
 
 ```python
 from brainstate.util import flatten_dict, merge_dicts, unflatten_dict
@@ -75,18 +73,35 @@ override = {'optimizer': {'lr': 5e-4}, 'seed': 1234}
 merged = merge_dicts(base, override)
 flat = flatten_dict(merged)
 restored = unflatten_dict(flat)
+
+print(merged)
+print(flat)
+print(restored)
 ```
 
-Do not confuse this dotted-key representation with `flat_mapping`, which uses tuple paths for nested PyTree-style containers.
+The recursive merge preserves `optimizer.beta1`, overrides `optimizer.lr`, and adds `seed`. The demonstrated flattened form is:
 
-## Structured and Frozen PyTrees
+```python
+{
+    'optimizer.lr': 0.0005,
+    'optimizer.beta1': 0.9,
+    'seed': 1234,
+}
+```
 
-The `struct` submodule provides Flax-compatible data structures. `struct.dataclass` registers the class as a PyTree; mark metadata that should stay static with `pytree_node=False`.
+`unflatten_dict(flat)` restores the nested representation.
+
+## Structured PyTrees and Frozen Mappings
+
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+The `struct` submodule mirrors Flax-friendly data structures. Its `dataclass` decorator registers classes as PyTrees, while `FrozenDict` provides immutable mappings compatible with JAX transformations.
 
 ```python
 import jax
 import jax.numpy as jnp
 from brainstate.util import struct
+
 
 @struct.dataclass
 class LayerConfig:
@@ -94,61 +109,116 @@ class LayerConfig:
     bias: jax.Array
     name: str = struct.field(pytree_node=False, default='layer')
 
-cfg = LayerConfig(weight=jnp.ones((2, 2)), bias=jnp.zeros(2))
-updated = cfg.replace(weight=jnp.full((2, 2), 3.0))
+
+cfg = LayerConfig(
+    weight=jnp.ones((2, 2)),
+    bias=jnp.zeros(2),
+)
+cfg2 = cfg.replace(weight=jnp.full((2, 2), 3.0))
+flat_leaves, _ = jax.tree_util.tree_flatten(cfg)
 
 frozen = struct.freeze({'encoder': jnp.arange(3)})
-plain = struct.unfreeze(frozen)
+unfrozen = struct.unfreeze(frozen)
 ```
 
-Use `.replace(...)` for immutable dataclass updates. Static fields are excluded from the dynamic PyTree leaves seen by JAX transforms.
+In the page's result, `cfg.replace(...)` returns a configuration whose weight is filled with `3.0`; flattening `cfg` yields array leaves with shapes `(2, 2)` and `(2,)`, so the `name` field marked `pytree_node=False` is not a dynamic leaf. `struct.freeze(...)` returns a `FrozenDict`, and `struct.unfreeze(...)` returns the ordinary dictionary again.
 
-## Declarative Path/Value Filters
+## Filtering Nested Objects
 
-`brainstate.util.filter` turns declarative filters into predicates. A predicate receives `(path, value)`, allowing type, tag, and path rules to be composed.
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+`brainstate.util.filter` turns declarative filters into callables. The page combines tag, type, and path checks when traversing a nested object tree; each predicate is called with `(path, value)`.
 
 ```python
+from typing import Any
+
+import jax.numpy as jnp
 from brainstate.util import filter as util_filter
 
-class TaggedModule:
-    def __init__(self, tag):
+
+class Module:
+    def __init__(self, tag: str | None, kind: str):
         self.tag = tag
+        self.kind = kind
+        self.params = jnp.arange(2)
 
-candidate = TaggedModule('trainable')
-type_filter = util_filter.OfType(TaggedModule)
-tag_filter = util_filter.WithTag('trainable')
-trainable_modules = util_filter.All(type_filter, tag_filter)
 
-if trainable_modules(('encoder',), candidate):
-    ...
+model_tree = {
+    'encoder': Module(tag='trainable', kind='linear'),
+    'decoder': Module(tag='frozen', kind='linear'),
+    'head': Module(tag='trainable', kind='mlp'),
+}
+
+tag_filter = util_filter.to_predicate('trainable')
+type_filter = util_filter.OfType(Module)
+combined = util_filter.All(
+    type_filter,
+    util_filter.WithTag('trainable'),
+)
+
+
+def collect(
+    tree: dict[str, Any],
+    predicate,
+) -> dict[str, Any]:
+    out = {}
+    for key, value in tree.items():
+        if predicate((key,), value):
+            out[key] = value
+    return out
+
+
+trainable_modules = collect(model_tree, tag_filter)
+both = collect(model_tree, combined)
+
+print(tuple(trainable_modules.keys()))
+print(tuple(both.keys()))
 ```
 
-Use `to_predicate(...)` to normalize a supported filter specification into a callable. Compose filters rather than embedding repeated traversal conditionals.
+Both predicates select `('encoder', 'head')` in the demonstrated tree. Use `to_predicate(...)` to normalize the tag filter, `OfType(...)` for the type check, `WithTag(...)` for tag matching, and `All(...)` to require both conditions.
 
-## Pretty Nested Containers
+## Pretty PyTree Containers and Tuple-Path Flattening
 
-`NestedDict`, `FlattedDict`, and `PrettyList` combine readable representations with PyTree semantics. `flat_mapping` produces tuple-path keys, and `nest_mapping` restores the nested form.
+Source URL: https://brainx.chaobrain.com/brainstate/how_to/filter_and_organize_states.html
+
+`NestedDict`, `FlattedDict`, and `PrettyList` provide readable representations plus PyTree semantics. The page uses them to explore checkpoints or log structured configurations.
 
 ```python
 import jax.numpy as jnp
 from brainstate.util import NestedDict, PrettyList, flat_mapping, nest_mapping
 
 state = NestedDict({
-    'encoder': {'weight': jnp.ones((2, 2)), 'bias': jnp.zeros(2)},
-    'decoder': {'weight': jnp.eye(2)},
+    'encoder': {
+        'weight': jnp.ones((2, 2)),
+        'bias': jnp.zeros(2),
+    },
+    'decoder': {
+        'weight': jnp.eye(2),
+    },
 })
+print(state)
 
 flat_state = flat_mapping(state)
+print(list(flat_state.keys()))
+
 round_trip = nest_mapping(flat_state)
-history = PrettyList([{'loss': 0.8}, {'loss': 0.42}])
+print(round_trip == state)
+
+history = PrettyList([
+    {'loss': 0.8},
+    {'loss': 0.42},
+])
+print(history)
 ```
 
-Use these containers to inspect checkpoints, State collections, histories, or structured configuration without discarding PyTree behavior.
+The displayed flat keys are tuple paths:
 
-## Boundaries and Gotchas
+```python
+[
+    ('encoder', 'weight'),
+    ('encoder', 'bias'),
+    ('decoder', 'weight'),
+]
+```
 
-- `DotDict` is configuration data, not transformed mutable `State`.
-- `flatten_dict` uses dotted keys; `flat_mapping` uses tuple paths. Choose the representation expected by the downstream API.
-- Use `struct.field(pytree_node=False, ...)` for metadata that should not become a JAX leaf.
-- Freezing a mapping makes the container immutable; use `struct.unfreeze` before ordinary mutation.
-- Collection utilities reorganize data. They do not traverse a Module graph to initialize, reset, or invoke methods; use `collective_model_operations.md` for that.
+`nest_mapping(flat_state)` round-trips to the nested mapping (`True` in the page), while `NestedDict` and `PrettyList` print their nested contents in an indented, readable form. This tuple-path representation is the one demonstrated by `flat_mapping`; the dictionary utilities section above separately demonstrates dotted-string keys from `flatten_dict`.

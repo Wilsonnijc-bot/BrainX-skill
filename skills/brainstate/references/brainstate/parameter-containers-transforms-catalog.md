@@ -1,86 +1,107 @@
 # BrainState Parameter Containers and Transform Catalog
 
-## Purpose
+This is an exhaustive selection reference for BrainState parameter containers and built-in parameter transforms. Open it only from `references/brainstate/parameter-constraints-regularization.md`, after that parent has established why a semantic parameter container is needed. Do not open it directly from the main skill or another reference.
 
-Catalog `Param`, `Const`, and built-in parameter transforms, and map common constraint needs to transform choices.
+This file does not re-decide `ParamState` versus `nn.Param`, enumerate regularizers, or integrate penalties into a loss. Return to the parent for those tasks. Parameter transforms here are `brainstate.nn` value transforms, not execution transforms such as `brainstate.transform.jit`, `grad`, or `vmap`.
 
-## Used by
+## Container catalog
 
-- `references/brainstate/parameter-constraints-regularization.md`
+| Container | Exact documented role | Selection distinction |
+|---|---|---|
+| `nn.Param` | A neural-network parameter container with optional transform and regularization. | Select only after the parent has established a need for the richer parameter contract. Its transformed value may be cached. |
+| `nn.Const` | A non-trainable constant parameter. | It has `fit=False` and is not collected when gathering `ParamState`s; use it for a fixed value that must remain in the module tree. Its transformed value may also be cached. |
 
-This catalog has no other selector. The parameter-and-regularization parent establishes the task before opening it.
+Source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
 
-## Primary source pages to expand from
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
-- [Parameter Containers API](https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html)
-- [Parameters, Transforms, and Regularization](https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html)
-- [Constrain and Regularize Parameters](https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html)
+## Transform contract
 
-## Open when
+`nn.Transform` is the abstract base class for bijective parameter transformations. The built-ins map between unconstrained and constrained spaces and implement `forward()`, `inverse()`, and optionally `log_abs_det_jacobian()` for probabilistic applications. With `nn.Param`, the optimizer-facing array is unconstrained and `value()` applies the forward map; `set_value()` applies the inverse when storing a constrained value back.
 
-- A parameter needs positivity, boundedness, ordering, simplex structure, unit norm, masking, or composed transforms.
-- The user needs a catalog of available parameter containers or transform classes.
-- The agent might otherwise invent a custom transform instead of using BrainState's built-ins.
+Constructor notation below is deliberately source-limited. A call form appears only when one of the three routed pages publishes it. **Not published** means to inspect the installed-version API before constructing that class; do not infer arguments from a neighboring transform.
 
-## Role
+Source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
 
-`ParamState` is bare trainable storage.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
-`brainstate.nn.Param` is a semantic parameter container. It can attach a transform with `t=` and a regularizer with `reg=`.
+## Complete built-in transform selection
 
-`brainstate.nn.Const` is a fixed parameter-like value.
+### Identity, interval, and rescaling transforms
 
-`brainstate.nn.Transform` classes are parameter transforms. They are not execution transforms like `brainstate.transform.jit`, `brainstate.transform.grad`, or `brainstate.transform.vmap`.
+| Class | Routed call form | Exact official selection distinction |
+|---|---|---|
+| `IdentityT` | Not published | Identity transformation: no constraint. It is the default transform, under which the stored and model values coincide. |
+| `ClipT` | `ClipT(lower, upper)` | Clips to specified bounds. The tutorial groups it with bounded-interval transforms; distinguish it from the smooth open-interval mapping documented for `SigmoidT`. |
+| `AffineT` | `AffineT(scale, shift)` | Linear scaling and shifting; select for a linear rescale or reparameterization. |
+| `SigmoidT` | `SigmoidT(lower, upper)` | Maps unbounded values to the open interval `(lower, upper)`. Large magnitudes saturate toward the bounds without crossing them. |
+| `TanhT` | Not published | Maps `(-inf, +inf)` to `(lower, upper)` using tanh; the tutorial groups it with symmetric bounded ranges. |
+| `SoftsignT` | Not published | Maps `(-inf, +inf)` to `(lower, upper)` using softsign; the tutorial groups it with symmetric bounded ranges. |
+| `ScaledSigmoidT` | Not published | A sigmoid transform with adjustable sharpness/temperature; the tutorial groups it with symmetric bounded ranges. |
+| `PowerT` | Not published | A power (Box-Cox) transformation for stabilizing variance; the tutorial classifies it as a reparameterization. |
 
-## Important access rule
+Source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
 
-- Optimizers update `param.val`.
-- Model code reads `param.value()`.
-- `param.value()` returns the model-space value, after applying the transform when one is attached.
-- Use `param.reg_loss()` only when a regularizer is attached and the loss should include that penalty.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
-## Transform families
+Source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 
-| Need | Use |
-|---|---|
-| No constraint | `IdentityT` |
-| Positive value | `SoftplusT`, `ExpT`, `PositiveT`, `ReluT` |
-| Negative value | `NegSoftplusT`, `NegativeT` |
-| Bounded interval | `SigmoidT`, `ClipT` |
-| Symmetric bounded interval | `TanhT`, `SoftsignT`, `ScaledSigmoidT` |
-| Probability vector | `SimplexT` |
-| Unit vector | `UnitVectorT` |
-| Ordered values | `OrderedT` |
-| Rescale or reparameterize | `AffineT`, `PowerT`, `LogT` |
-| Compose transforms | `ChainT` |
-| Transform only some entries | `MaskedT` |
+### Positive and negative transforms
 
-## Brain dynamics examples
+| Class | Routed call form | Exact official selection distinction |
+|---|---|---|
+| `SoftplusT` | `SoftplusT(lower)` | Maps the real line to `(lower, infinity)`. Select when the value must remain strictly above a configurable lower bound. |
+| `NegSoftplusT` | Not published | Maps unbounded values to a negative semi-infinite interval. |
+| `LogT` | Not published | Its documented direction is `(lower, +inf)` to `(-inf, +inf)`; it is the constrained-to-unconstrained direction, unlike the positive forward maps below. |
+| `ExpT` | `ExpT(lower)` | Maps `(-inf, +inf)` to `(lower, +inf)`; select for a positive forward value using an exponential map. |
+| `ReluT` | Not published | A lower-bounded ReLU transform whose documented forward rule is `forward(x) = relu(x) + lower_bound`. |
+| `PositiveT` | Not published | Constrains values to the strictly positive interval `(0, +inf)`. |
+| `NegativeT` | Not published | Constrains values to the strictly negative interval `(-inf, 0)`. |
 
-- Positive time constant: use a positive transform such as `SoftplusT` with an appropriate lower bound when needed.
-- Positive conductance: use `PositiveT` or `SoftplusT`.
-- Probability or mixture weights: use `SimplexT`.
-- Bounded gating parameter: use `SigmoidT` or another bounded transform.
-- Ordered thresholds: use `OrderedT`.
+`SoftplusT(lower)` is the documented smooth positive-domain example: even a very negative optimizer value produces a model value just above `lower`. Do not replace that guarantee with a hard clip when the parent requires a smooth bijection.
 
-## Selection notes
+Source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
 
-- Prefer the least surprising transform that matches the model domain.
-- Use `ChainT` only when one transform cannot express the constraint clearly.
-- Use `MaskedT` when only part of a parameter should be constrained.
-- Keep unit-aware BrainCell parameters unit-safe; a transform does not replace correct BrainUnit quantities.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
 
-## Common mistakes to document
+Source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
 
-- Reading `param.val` in model code when the constrained value should come from `param.value()`.
-- Treating `nn.Transform` as a program transform.
-- Hand-rolling a transform when a built-in BrainState transform exists.
-- Choosing a hard clip when a smooth transform is needed for optimization.
-- Choosing a regularizer without returning to `parameter-constraints-regularization.md` to integrate `reg_loss()` into the objective.
+### Structured and composite transforms
 
-## Example prompts this reference should support
+| Class | Routed call form | Exact official selection distinction |
+|---|---|---|
+| `OrderedT` | Not published | Produces monotonically increasing entries. |
+| `SimplexT` | `SimplexT()` | A stick-breaking transform whose model value has non-negative entries summing to one. The how-to's length-three unconstrained example returns four probabilities, so do not assume it preserves the last-axis length. |
+| `UnitVectorT` | Not published | Produces a vector with L2 norm equal to one. |
+| `ChainT` | `ChainT(t1, t2, ...)` | Composes multiple transforms and applies them sequentially in the order supplied. |
+| `MaskedT` | Not published | Applies a transform selectively under a boolean mask. |
 
-- "Which transform should I use for a positive time constant?"
-- "How do I make a parameter a probability simplex?"
-- "What is the difference between `Param`, `Const`, and `ParamState`?"
-- "How do I compose transforms for a constrained fitted parameter?"
+Bundle composition with its documented script:
+
+```python
+chained = nn.ChainT(nn.AffineT(scale=2.0, shift=1.0), nn.SoftplusT(lower=0.0))
+chained.forward(jnp.array(0.0))
+```
+
+The affine transform runs first and `SoftplusT` runs second. Use `ChainT` when sequential composition expresses the target domain; use `MaskedT` when only masked entries should be transformed.
+
+Source: https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
+
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+
+Source: https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html
+
+## Selection safeguards
+
+- Keep the direction of the map explicit: `nn.Param.value()` uses `forward()`. `LogT` is documented in the opposite direction from `ExpT`.
+- Do not treat every bounded transform as interchangeable. `SigmoidT` is an open-interval smooth map; `ClipT` is documented as clipping.
+- Do not infer unpublished constructor arguments. The routed pages name several classes without publishing their calls.
+- Do not assume `SimplexT` preserves vector length; the official example demonstrates a three-value unconstrained input mapping to four simplex entries.
+- Use `ChainT` in listed order and `MaskedT` for boolean-mask selection; do not hand-roll composition before checking these built-ins.
+- Return to `parameter-constraints-regularization.md` for regularizer selection and objective integration.
+
+## Mirror source URLs
+
+- https://brainx.chaobrain.com/brainstate/apis/nn/parameters.html
+- https://brainx.chaobrain.com/brainstate/tutorials/core/05_parameters_transforms_regularization.html
+- https://brainx.chaobrain.com/brainstate/how_to/constrain_and_regularize_parameters.html

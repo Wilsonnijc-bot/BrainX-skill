@@ -1,51 +1,133 @@
-# Braintools Optimizer Reference
+# Braintools Optimizer Selection Reference
 
-Source mirrored: https://brainx.chaobrain.com/braintools/optim/index.html
+Use this reference to select a `braintools.optim` optimizer, learning-rate scheduler, Optax bridge, or external optimizer wrapper. It is a selection adapter, not a BrainState training-loop guide: return to `skills/brainstate/SKILL.md` for the canonical State-aware training structure. Advanced full-training workflows are outside the supplied router.
 
-Use this BrainState-owned reference when a BrainState training task needs optimizer or learning-rate-scheduler selection beyond the default `braintools.optim.Adam` pattern.
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Used by
+## Route From The Official Optimization Index
 
-- `skills/brainstate/SKILL.md`
-- `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md`
+The index states: "Optimization guides highlight practical solvers for tuning models and experiments. Compare gradient-free Nevergrad strategies with SciPy-based routines and learn when to apply each."
 
-Official source phrase: "Optimization guides highlight practical solvers for tuning models and experiments."
+Use its five routes as follows, without importing their unshown details into this reference:
 
-## Scope
+| Official index route | Selection cue available on the index |
+|---|---|
+| Tutorial 1: `NevergradOptimizer` Tutorial | Gradient-free Nevergrad strategy |
+| Tutorial 2: `ScipyOptimizer` Tutorial | SciPy-based routine |
+| Tutorial 3: Getting Started with `optax` Optimizers | Optax optimizer route |
+| Tutorial 4: Learning Rate Scheduling Strategies | Learning-rate scheduler selection |
+| Tutorial 5: Advanced Optimizers and Techniques | Optimizer choices beyond the basic route |
 
-- Use `braintools.optim` for optimizer objects and learning-rate schedulers in BrainState training loops.
-- For direct BrainState loops, keep optimizer state registered against the model trainable states, usually `model.states(brainstate.ParamState)`.
-- Keep gradient computation in `brainstate.transform.grad(...)` and apply updates through the optimizer update path already used by the nested training reference.
-- Use this reference for selecting optimizer families, scheduler families, or external optimization routes; use `skills/brainstate/references/deeplearning-training/supervised-training-workflows.md` for loss/grad/JIT loop structure.
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
 
-## Tutorial Routing
+## Optimizer And State Types
 
-- NevergradOptimizer tutorial: use for gradient-free parameter tuning and experiment search.
-- ScipyOptimizer tutorial: use for SciPy-based routines rather than BrainState gradient-step loops.
-- Getting Started with optax Optimizers: use when selecting Optax-backed optimizers through Braintools.
-- Learning Rate Scheduling Strategies: use when the training loop needs schedules such as decay, warmup, cosine, cyclic, or plateau behavior.
-- Advanced Optimizers and Techniques: use when a task asks for optimizer variants beyond standard SGD/Adam-style choices.
-
-## Optimizer And Scheduler Families Listed By The Index
-
-- Optimizers include `SGD`, `Momentum`, `MomentumNesterov`, `Adam`, `AdamW`, `Adagrad`, `Adadelta`, `RMSprop`, `Adamax`, `Nadam`, `RAdam`, `Lamb`, `Lars`, `Lookahead`, `Yogi`, `LBFGS`, `Rprop`, `Adafactor`, `AdaBelief`, `Lion`, `SM3`, `Novograd`, `Fromage`, `SOFO`, and `SOFOScan`.
-- Scheduler utilities include `LRScheduler`, `StepLR`, `MultiStepLR`, `ConstantLR`, `LinearLR`, `ExponentialLR`, `PolynomialLR`, `ExponentialDecayLR`, `CosineAnnealingLR`, `CosineAnnealingWarmRestarts`, `WarmupCosineSchedule`, `CyclicLR`, `OneCycleLR`, `ReduceLROnPlateau`, `WarmupScheduler`, `PiecewiseConstantSchedule`, `ChainedScheduler`, and `SequentialLR`.
-- External optimizer wrappers include `ScipyOptimizer` and `NevergradOptimizer`.
-
-## BrainState Training Pattern Reminder
+The index exposes the `braintools.optim` module and lists `Optimizer`, `OptaxOptimizer`, and `OptimState` before its concrete optimizer classes. For class selection, preserve the module and symbol names exactly:
 
 ```python
-params = model.states(brainstate.ParamState)
-optimizer = braintools.optim.Adam(lr=1e-2)
-optimizer.register_trainable_weights(params)
+import braintools.optim
 
-@brainstate.transform.jit
-def train_step(x, y):
-    def loss_fn():
-        ...
-    grads, loss = brainstate.transform.grad(loss_fn, params, return_value=True)()
-    optimizer.update(grads)
-    return loss
+optimizer_type = braintools.optim.Adam
 ```
 
-Keep this as the default loop shape unless the selected optimizer tutorial requires a different optimization interface.
+Concrete optimizer classes, in index order:
+
+- `SGD`
+- `Momentum`
+- `MomentumNesterov`
+- `Adam`
+- `AdamW`
+- `Adagrad`
+- `Adadelta`
+- `RMSprop`
+- `Adamax`
+- `Nadam`
+- `RAdam`
+- `Lamb`
+- `Lars`
+- `Lookahead`
+- `Yogi`
+- `LBFGS`
+- `Rprop`
+- `Adafactor`
+- `AdaBelief`
+- `Lion`
+- `SM3`
+- `Novograd`
+- `Fromage`
+- `SOFO`
+- `SOFOScan`
+
+The index does not provide constructor signatures, update semantics, or comparative algorithm guidance. Select the requested class here; do not infer arguments or substitute a training workflow from this catalog.
+
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
+
+## Learning-Rate Schedulers
+
+The scheduler base and concrete scheduler symbols are listed together. Select the exact class first, then return to the main BrainState skill for the surrounding canonical training structure.
+
+```python
+import braintools.optim
+
+scheduler_type = braintools.optim.ExponentialDecayLR
+```
+
+Scheduler classes, in index order:
+
+- `LRScheduler`
+- `StepLR`
+- `MultiStepLR`
+- `ConstantLR`
+- `LinearLR`
+- `ExponentialLR`
+- `PolynomialLR`
+- `ExponentialDecayLR`
+- `CosineAnnealingLR`
+- `CosineAnnealingWarmRestarts`
+- `WarmupCosineSchedule`
+- `CyclicLR`
+- `OneCycleLR`
+- `ReduceLROnPlateau`
+- `WarmupScheduler`
+- `PiecewiseConstantSchedule`
+- `ChainedScheduler`
+- `SequentialLR`
+
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
+
+## Optax Bridge
+
+The index pairs a "Getting Started with `optax` Optimizers" route with the exported `OptaxOptimizer` symbol. Select that bridge only when the task explicitly calls for the Optax route through Braintools:
+
+```python
+import braintools.optim
+
+optax_bridge_type = braintools.optim.OptaxOptimizer
+```
+
+The index gives no adapter constructor or Optax transformation example, so this reference does not invent one.
+
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
+
+## SciPy And Nevergrad Wrappers
+
+The index distinguishes "gradient-free Nevergrad strategies" from "SciPy-based routines" and lists the wrapper symbols `NevergradOptimizer` and `ScipyOptimizer`.
+
+```python
+import braintools.optim
+
+gradient_free_wrapper_type = braintools.optim.NevergradOptimizer
+scipy_wrapper_type = braintools.optim.ScipyOptimizer
+```
+
+- Select `NevergradOptimizer` for the index's gradient-free Nevergrad route.
+- Select `ScipyOptimizer` for the index's SciPy-based route.
+- Do not assume that either wrapper follows the ordinary BrainState gradient-step interface; the index does not state their call contracts.
+
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html
+
+## Integration Boundary
+
+After choosing a symbol, route back to the main BrainState skill for its canonical State-aware training structure. Advanced full-training workflows remain outside this supplied router. Training operations are deliberately not repeated here because the optimization index supplies names and routes, not the BrainState training structure.
+
+**Source URL:** https://brainx.chaobrain.com/braintools/optim/index.html

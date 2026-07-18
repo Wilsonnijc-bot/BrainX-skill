@@ -1,31 +1,30 @@
-# BrainState Collective Model Operations
+# BrainState Collective Operations
 
-Use this reference when one lifecycle or maintenance operation must be applied across every relevant Module or State in a model graph: initialization, reset, ordered method calls, batched lifecycle operations, or State restoration.
+Use this reference when one operation must initialise, reset, batch, invoke a common method on, or restore stateful objects throughout a model without manually traversing its module graph. It assumes familiarity with `brainstate.nn` modules and states and basic JAX `vmap` usage; BrainState requires `brainunit`.
 
-## Source
+## Overview of the API
 
-- Collective Operations: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
-The official guide describes these helpers as managing all modules inside a model without manually traversing the Module graph.
+The official guide presents `brainstate.nn._collective_ops` through these public `brainstate.nn` utilities:
 
-## Operation Map
-
-| Need | API |
+| Operation | API |
 |---|---|
-| Fix the order of collectively invoked methods | `brainstate.nn.call_order(level)` |
-| Invoke one method across model nodes | `brainstate.nn.call_all_fns` |
-| Vectorize a collective method call | `brainstate.nn.vmap_call_all_fns` |
-| Initialize State across the graph | `brainstate.nn.init_all_states` |
-| Reset existing State across the graph | `brainstate.nn.reset_all_states` |
-| Vectorize initialization or reset | `vmap_init_all_states`, `vmap_reset_all_states` |
-| Restore values keyed by absolute State paths | `brainstate.nn.assign_state_values` |
+| Fix the execution order of methods | `brainstate.nn.call_order` |
+| Call the same method on each model node | `brainstate.nn.call_all_fns`, `brainstate.nn.vmap_call_all_fns` |
+| Initialise state variables everywhere | `brainstate.nn.init_all_states`, `brainstate.nn.vmap_init_all_states` |
+| Reset existing states everywhere | `brainstate.nn.reset_all_states`, `brainstate.nn.vmap_reset_all_states` |
+| Restore values keyed by absolute state paths | `brainstate.nn.assign_state_values` |
 
-## Ordered Collective Calls
+## Ordering Calls with `call_order`
 
-`call_order` attaches an execution level to a method. Lower levels run first when collective utilities visit the graph.
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+By default, `call_all_fns` respects graph node order. When method interactions require explicit ordering, `call_order` attaches a `call_order` attribute to a method; lower levels run first.
 
 ```python
 import brainstate
+
 
 class EncoderDecoder(brainstate.nn.Module):
     def __init__(self):
@@ -44,11 +43,13 @@ class EncoderDecoder(brainstate.nn.Module):
         self.decoder.reset_state()
 ```
 
-Add ordering only when method interactions require it. Otherwise let graph order remain the default.
+The decorators make collective utilities honour this order while visiting child modules.
 
-## Initialize and Reset the Whole Model
+## Initialising Every Module
 
-`init_all_states` walks the Module graph and calls `init_state` on each applicable node. It accepts lifecycle keyword arguments, supports `node_to_exclude`, and returns the target so construction can be chained.
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+`init_all_states` walks the module graph and calls `init_state` on each node. Pass keyword arguments through to the lifecycle methods, exclude nodes with `node_to_exclude`, or retain the returned target for chaining.
 
 ```python
 model = brainstate.nn.Sequential(
@@ -58,30 +59,36 @@ model = brainstate.nn.Sequential(
 )
 
 brainstate.nn.init_all_states(model, batch_size=4)
-
-# Exclude a node type when it should not participate.
 brainstate.nn.init_all_states(
     model,
     node_to_exclude=brainstate.nn.Dropout,
 )
+
+model = brainstate.nn.init_all_states(model)
 ```
 
-For recurrent or dynamical models, initialize once and reset existing State between independent sequences or episodes.
+## Resetting State Between Sequences
+
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+For recurrent models, initialise once and use `reset_all_states` after a sequence to automate the reset pass across the entire module.
 
 ```python
 rnn = brainstate.nn.ValinaRNNCell(num_in=8, num_out=16)
 brainstate.nn.init_all_states(rnn, batch_size=2)
 
-# ... process one sequence ...
+# ... run inference or training for one sequence ...
 
 brainstate.nn.reset_all_states(rnn)
 ```
 
-Do not reconstruct the model merely to clear its hidden State. Reset the graph so parameter identity and structure remain intact.
+As with `init_all_states`, reset can exclude nodes or receive additional arguments. `call_order` still governs the pass, allowing buffers to reset before hidden states when required.
 
-## Batched Lifecycle Operations
+## Batched Initialisation with `vmap_*`
 
-Use `vmap_init_all_states` and `vmap_reset_all_states` for independent ensemble or Monte-Carlo instances. The vectorized helpers manage separate random keys and accept filters for State that should remain shared.
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+For independent ensemble or Monte-Carlo instances, the vectorised variants insert a leading axis and manage a separate random key for each copy.
 
 ```python
 policy = brainstate.nn.Sequential(
@@ -92,54 +99,97 @@ policy = brainstate.nn.Sequential(
 
 brainstate.nn.vmap_init_all_states(policy, axis_size=8)
 
-# ... run the ensemble ...
+# ... run the batched rollout ...
 
 brainstate.nn.vmap_reset_all_states(policy, axis_size=8)
 ```
 
-Pass a `state_to_exclude` filter when selected statistics or buffers should stay shared instead of receiving the mapped axis. Keep `axis_size` consistent across initialization, computation, and reset.
+Pass a `state_to_exclude` filter to `vmap_init_all_states` when selected states, such as statistics buffers, must remain shared. Excluded states retain their original shape across the batch.
 
-## Invoke Other Methods Across the Graph
+## Calling Arbitrary Methods Collectively
 
-`call_all_fns` is the primitive behind initialization and reset. Use it when child Modules expose another common lifecycle or maintenance method. Use `vmap_call_all_fns` for the corresponding operation across independent mapped instances.
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
 
-Requirements:
-
-- each participating child implements the named method;
-- arguments are valid for every participating implementation;
-- use node filters when only part of the graph should receive the call;
-- use `call_order` when cross-node dependencies make order observable.
-
-Do not replace ordinary forward execution with collective dispatch. It is intended for model-wide lifecycle and maintenance methods.
-
-## Restore State Values
-
-`assign_state_values` maps values back to State objects using absolute paths and returns `(unexpected, missing)` keys. Preserve each State value at the path returned by `model.states()`; if a State value is itself a dictionary, do not silently reinterpret its inner keys as additional Module-graph path segments.
+`call_all_fns` is the primitive behind the init and reset helpers. It can dispatch another common method only when each participating child module implements that method. The guide illustrates the required common-method shape with `log_stats`:
 
 ```python
-brainstate.nn.init_all_states(model)
+import jax.numpy as jnp
 
-snapshot = {
-    path: state.value
-    for path, state in model.states().items()
-}
 
-# ... mutate parameters or runtime State ...
+class LoggingLayer(brainstate.nn.Module):
+    def __init__(self, size):
+        super().__init__()
+        self.linear = brainstate.nn.Linear((size,), (size,))
+        self.logged = []
 
-unexpected, missing = brainstate.nn.assign_state_values(model, snapshot)
+    def init_state(self):
+        self.linear.init_state()
+
+    def log_stats(self):
+        weight = self.linear.weight.value['weight']
+        self.logged.append(jnp.mean(weight))
+
+
+net = brainstate.nn.Sequential(
+    LoggingLayer(size=8),
+    LoggingLayer(size=8),
+)
+
+brainstate.nn.init_all_states(net)
+for layer in net.layers:
+    layer.log_stats()
+```
+
+The page identifies `brainstate.nn.vmap_call_all_fns` as the corresponding operation for `axis_size` independent instances and says it shares the interface and filter options. It does not provide a concrete `call_all_fns` or `vmap_call_all_fns` invocation signature, so consult API help rather than inferring argument order from this guide.
+
+## Restoring States with `assign_state_values`
+
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+`assign_state_values` maps dictionary values back to state objects by absolute state path and returns mismatched keys as `(unexpected, missing)`. The guide constructs paths for dictionary-valued states by appending each inner key:
+
+```python
+autoencoder = brainstate.nn.Sequential(
+    brainstate.nn.Linear((16,), (8,)),
+    brainstate.nn.ReLU(),
+    brainstate.nn.Linear((8,), (16,)),
+)
+brainstate.nn.init_all_states(autoencoder)
+
+state_snapshot = {}
+for path, state in autoencoder.states().items():
+    if isinstance(state.value, dict):
+        for key, value in state.value.items():
+            state_snapshot[path + (key,)] = value
+    else:
+        state_snapshot[path] = state.value
+
+# ... modify weights or states ...
+
+unexpected, missing = brainstate.nn.assign_state_values(
+    autoencoder,
+    state_snapshot,
+)
 if unexpected or missing:
     raise ValueError(
         f'checkpoint mismatch: unexpected={unexpected}, missing={missing}'
     )
 ```
 
-Always inspect both returned collections. A restore that reports mismatches is not a successful checkpoint load.
+The guide's own output reports flattened paths as unexpected and their parent state paths as missing. Therefore, the example demonstrates why both return collections must be inspected; it does not demonstrate a mismatch-free restore.
 
-## Boundaries and Gotchas
+## Putting It All Together
 
-- Call `init_all_states` after construction before running a State-dependent Module.
-- Use `reset_all_states` between independent sequences; do not reinitialize trainable parameters unless that is intentional.
-- `node_to_exclude` filters nodes; `state_to_exclude` filters State in mapped lifecycle operations.
-- Mapped lifecycle helpers introduce or manage an ensemble axis; keep the axis contract consistent downstream.
-- State restoration is path-sensitive. Preserve the absolute paths emitted by the target graph and fail loudly on unexpected or missing keys.
-- These APIs traverse model structure. Use `state_collections_and_utilities.md` when the task only reorganizes mappings or PyTrees.
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+The final guide example combines the earlier operations in this order: construct a `ValinaRNNCell`, call `vmap_init_all_states(..., axis_size=4)`, build the same absolute-path snapshot shown above, run a time-stepped rollout, call `vmap_reset_all_states(..., axis_size=4)`, and pass the snapshot to `assign_state_values`. It repeats the same dictionary-flattening restoration pattern and likewise produces unexpected and missing keys, so retain the mismatch check when adapting that lifecycle.
+
+## Best Practices
+
+Source: https://brainx.chaobrain.com/brainstate/how_to/collective_operations.html
+
+- Call `init_all_states` once after constructing a module.
+- Decorate stateful methods with `call_order` when their interaction matters.
+- Use `node_to_exclude` and `state_to_exclude` filters to fine-tune traversal.
+- Inspect both return values from `assign_state_values` to catch mismatched checkpoints.
+- Use vmapped helpers for ensembles while accounting for the added leading axis.

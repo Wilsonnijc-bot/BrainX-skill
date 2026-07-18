@@ -1,11 +1,6 @@
-"""
-Reference script mirrored from:
-https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html
+"""LIFNeuron state-management reference.
 
-Purpose:
-State-management LIF example showing how HiddenState, ShortTermState, and
-ParamState work together in a realistic model with explicit `.value` reads and
-writes.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/01_state_and_pytrees.html
 """
 
 import jax.numpy as jnp
@@ -43,7 +38,6 @@ class LIFNeuron(brainstate.nn.Module):
         self.t_last_spike.value = jnp.where(spike, t, self.t_last_spike.value)
 
         return spike
-
 
 # Create and test the neuron
 neuron = LIFNeuron(n_neurons=5)

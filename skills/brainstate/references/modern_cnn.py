@@ -1,10 +1,6 @@
-"""
-Reference script mirrored from:
-https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
+"""ModernCNN composition and fit-mode forward-pass reference.
 
-Purpose:
-Full module-composition reference for a CNN built manually from Conv2d,
-BatchNorm2d, GELU, MaxPool2d, Linear, LayerNorm, and Dropout.
+Source: https://brainx.chaobrain.com/brainstate/tutorials/core/04_activations_and_normalization.html
 """
 
 import brainstate
@@ -59,12 +55,13 @@ class ModernCNN(brainstate.nn.Module):
 
         return x
 
-
+# Create and test
 brainstate.random.seed(0)
 model = ModernCNN(num_classes=10)
 
-x = brainstate.random.randn(4, 32, 32, 3)
-with brainstate.environ.context(fit=True):
+# Forward pass
+x = brainstate.random.randn(4, 32, 32, 3)  # 4 images
+with brainstate.environ.context(fit=True) as env:
     logits = model(x)
 
 print("Modern CNN with GELU + BatchNorm + LayerNorm:")
