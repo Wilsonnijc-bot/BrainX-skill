@@ -40,9 +40,9 @@ Do not automatically remove packages merely because BrainX or JAX depends on the
 
 ## Core Rules
 
-1. Operate on exactly one user-confirmed, non-global Python environment.
-2. Use the exact interpreter inside that environment with `-m pip`. Do not rely on shell activation, a bare `python`, or a bare `pip`.
-3. Inspect first and include only distributions proven installed in the proposed uninstall commands.
+1. Operate on only one Python environment at a time: identify its exact path, verify that it is a virtual environment or non-base Conda environment rather than a global interpreter, and obtain the user's confirmation before uninstalling anything.
+2. Run every pip command through that environment's exact Python executable, for example `"<venv>/bin/python" -m pip`; do not rely on shell activation or use a bare `python` or `pip`, because those commands may target a different environment.
+3. Inspect first and include only distributions proven local to the confirmed virtual environment in the proposed uninstall commands.
 4. Ask explicitly whether JAX cleanup is included. Installed JAX packages or accelerator hardware are evidence, not consent.
 5. Before any mutation, present the complete uninstall specification in this reference and obtain explicit confirmation of the environment, exact package lists, and expected final state.
 6. If the environment or proposed scope changes, discard the earlier confirmation, present a corrected specification, and ask again.
@@ -83,7 +83,13 @@ Prefer distribution metadata over imports. Use the exact interpreter for read-on
 "<exact-python>" -m pip check
 ```
 
-The placeholder is illustrative. Replace it with the platform-appropriate exact interpreter path. Use `importlib.metadata` or another read-only metadata method to inspect declared requirements and find reverse dependencies. Do not import target packages, upgrade pip, or install a helper merely to inspect the environment.
+The placeholder is illustrative. Replace it with the platform-appropriate exact interpreter path. Use `importlib.metadata` or another read-only metadata method to inspect declared requirements and find reverse dependencies. Classify each target before planning removal:
+
+- **Local to venv:** its package location is under the virtual environment's `site-packages`; it is eligible for uninstall.
+- **Visible from external Python:** it is exposed through `--system-site-packages` or another external path; preserve it.
+- **Global interpreter:** `sys.prefix == sys.base_prefix`; stop and do not uninstall.
+
+Only the first case may enter the uninstall specification. If the user asks to uninstall a package visible from external Python or from a global interpreter, explicitly warn that this would modify an external or shared Python environment and stop without uninstalling it. Do not import target packages, upgrade pip, or install a helper merely to inspect the environment.
 
 Evaluate reverse dependencies against the final proposed scope. Ignore requirements from distributions that are themselves being removed, but list every remaining distribution that requires a planned BrainX or JAX target. Do not automatically add those dependents to the uninstall command. If the target environment cannot be proven non-global, stop and request a virtual or Conda environment instead.
 
