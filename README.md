@@ -40,6 +40,12 @@ npx brainx-skill@latest update
 
 Update uses the harness destinations recorded by the previous installation and does not prompt again. It replaces only skill directories proven to be owned by `brainx-skill`. If no managed installation exists, it leaves all destinations unchanged.
 
+## Install when the internet connection is low
+
+```bash
+npx --registry=https://registry.npmmirror.com brainx-skill install
+```
+
 ## Installation locations
 
 Depending on the selected scope, the canonical `brainx-install` skill is installed into:
