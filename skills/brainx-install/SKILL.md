@@ -1,13 +1,19 @@
 ---
 name: brainx-install
-description: Install or configure BrainX, change its package version or device target, and resolve BrainX ecosystem compatibility. Use whenever a user asks to install, set up, upgrade, downgrade, pin, migrate, or reconcile BrainX packages; switch or select CPU, CUDA 12, CUDA 13, or TPU support. Do not use for general BrainX modeling.
+description: Install, uninstall, or configure BrainX, change its package version or device target, and resolve BrainX ecosystem compatibility. Use whenever a user asks to install, set up, upgrade, downgrade, pin, migrate, remove, uninstall, clean up, or reconcile BrainX packages; switch or select CPU, CUDA 12, CUDA 13, or TPU support. Do not use for general BrainX modeling.
 ---
 
 # BrainX Install
 
 ## Objective
 
-Install the BrainX meta-package into one confirmed Python virtual environment, verify, then report the result. BrainX is a meta-package that installs a curated set of BrainX components known to work well together. Treat each published BrainX release as an indivisible compatibility set; never assemble independently selected subpackage versions.
+Install or remove BrainX in one confirmed Python virtual environment, verify, then report the result. For installation, treat each published BrainX release as an indivisible compatibility set; never assemble independently selected subpackage versions.
+
+## Request Routing
+
+For an uninstall, removal, or BrainX package-cleanup request, open [references/uninstall-and-cleanup.md](references/uninstall-and-cleanup.md) and stop here. Follow that reference in full; do not apply the installation workflow's device or release selection.
+
+For installation, upgrade, downgrade, migration, device-target, or compatibility requests, continue with the workflow below.
 
 ## Core Rules
 
@@ -82,15 +88,13 @@ When BrainX packages are already installed or the user requests a specific pinne
 
 ## 4. Choose the Venv
 
-Use the intended run location as the base:
+Prefer reusing an existing relevant Python virtual environment whose interpreter is Python `>=3.11`. This includes environments managed by `venv`, Conda, or another environment manager; inspect the environment before proposing reuse.
 
-- Propose `<run-location>/.venv` when it does not exist.
-- If `.venv` exists and its interpreter is Python `>=3.11`, inspect it and propose reuse.
-- If `.venv` exists but is unsuitable, propose `<run-location>/.venv-brainx`.
+- If no suitable existing environment is available, propose creating a fresh virtual environment.
 - Never delete, rebuild, overwrite, or silently repurpose an existing environment.
 - Never install into the global interpreter or an unrelated environment.
 
-Resolve the exact interpreter inside the proposed venv using the conventions of the confirmed platform and environment manager. Do not rely on shell activation or assume that a bare `python` or `pip` command targets the intended environment.
+Resolve the exact interpreter inside the proposed environment using the conventions of the confirmed platform and environment manager. Do not rely on shell activation or assume that a bare `python` or `pip` command targets the intended environment.
 
 ## 5. Present the Complete Specification
 
@@ -216,6 +220,8 @@ pip install BrainX==2025.9.15
 When an exact release is requested, preserve the confirmed hardware extra while applying the selected BrainX release pin.
 
 ## Reference Routing
+
+Open [references/uninstall-and-cleanup.md](references/uninstall-and-cleanup.md) for any request to uninstall, remove, or clean up BrainX packages. Use its exact package scopes and mandatory uninstall specification; do not use the compatibility matrix to narrow the cleanup set.
 
 Open [references/compatibility-and-release-matching.md](references/compatibility-and-release-matching.md) when the target environment already contains BrainX or BrainX ecosystem packages, or when the user requests a specific pinned BrainX version. Use its matrix to match existing packages, reconcile version drift, evaluate pinned-version compatibility, and select one coherent BrainX release with its declared component versions.
 
