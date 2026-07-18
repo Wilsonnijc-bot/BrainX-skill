@@ -2,6 +2,8 @@
 
 This reference records the package versions explicitly declared by each BrainX release.
 
+Use this matrix for the second release-selection case: the target environment already contains a BrainX ecosystem package, or the user requests a specific pinned BrainX version. In that case, read this matrix before selecting a release and treat each row as one indivisible compatibility set.
+
 ## How to read this table
 
 * `—` means the package or dependency was **not explicitly listed** in that release. It does not prove that the package was unsupported or unavailable.
