@@ -9,7 +9,7 @@ const { makeBundle } = require('./helpers');
 
 test('the published bundle declares only brainx-install', async () => {
   const bundle = await validateBundle(path.resolve(__dirname, '..'));
-  assert.equal(bundle.version, '1.0.1');
+  assert.equal(bundle.version, '1.0.3');
   assert.deepEqual(bundle.skills.map((skill) => skill.name), ['brainx-install']);
   const packageJson = JSON.parse(
     await fs.readFile(path.resolve(__dirname, '..', 'package.json'), 'utf8'),
