@@ -37,7 +37,9 @@ import jax.numpy as jnp
 
 x = jnp.arange(5.0) * u.mV
 y = x.at[2].add(10 * u.mV)
+# Expected: [0, 1, 12, 3, 4] mV; x remains unchanged.
 selected = x.at[2].get()
+# Expected: 2 mV.
 ```
 
 The documented update mappings are:
@@ -58,23 +60,23 @@ None of these expressions modifies the original object; each returns a modified 
 
 ## Quantity Methods
 
-| Exact signature | Structural effect |
-|---|---|
-| `reshape(shape, order='C')` | New shape, same data |
-| `flatten()` | 1-D copy |
-| `squeeze(axis=None)` | Removes length-one axes |
-| `expand_dims(axis)` | Inserts axes |
-| `unsqueeze(axis)` | PyTorch-style alias for `expand_dims()` |
-| `transpose(*axes)` | Permutes axes |
-| `swapaxes(axis1, axis2)` | Interchanges two axes |
-| `repeat(repeats, axis=None)` | Repeats elements |
-| `tile(reps)` | Repeats the full array pattern |
-| `split(indices_or_sections, axis=0)` | Returns multiple sub-arrays |
-| `take(indices, axis=None, mode=None, unique_indices=False, indices_are_sorted=False, fill_value=None)` | Selects elements along an axis |
-| `sort(axis=-1, stable=True, order=None)` | Sorts along an axis |
-| `diagonal(offset=0, axis1=0, axis2=1)` | Selects diagonals and preserves units |
-| `trace(offset=0, axis1=0, axis2=1)` | Sums diagonals and preserves units |
-| `astype(dtype)` | Casts the mantissa dtype |
+| Exact signature | One-line description | Example & result |
+|---|---|---|
+| `reshape(shape, order='C')` | Return a quantity with the same data but a new shape. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV)<br>q.reshape((3, 1)).shape<br><br>(3, 1)</code></pre> |
+| `flatten()` | Return a 1-D copy of this quantity. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.flatten()<br><br>Quantity([1. 2. 3. 4.], "mV")</code></pre> |
+| `squeeze(axis=None)` | Remove length-one axes from the array. | <pre><code>q = u.Quantity(jnp.array([[[1.0]]]), unit=u.mV)<br>q.squeeze().shape<br><br>()</code></pre> |
+| `expand_dims(axis)` | Insert new axes at the given positions. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.expand_dims(0).shape<br><br>(1, 2)</code></pre> |
+| `unsqueeze(axis)` | Insert a length-one axis (PyTorch-style alias for `expand_dims()`). | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.unsqueeze(0).shape<br><br>(1, 2)</code></pre> |
+| `transpose(*axes)` | Return the array with axes transposed. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.transpose().shape<br><br>(2, 2)</code></pre> |
+| `swapaxes(axis1, axis2)` | Interchange two axes of the array. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.swapaxes(0, 1).shape<br><br>(2, 2)</code></pre> |
+| `repeat(repeats, axis=None)` | Repeat elements of the array. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.repeat(2)<br><br>Quantity([1. 1. 2. 2.], "mV")</code></pre> |
+| `tile(reps)` | Construct an array by repeating this quantity. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.tile(2)<br><br>Quantity([1. 2. 1. 2.], "mV")</code></pre> |
+| `split(indices_or_sections, axis=0)` | Split the array into multiple sub-arrays. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV)<br>parts = q.split(3)<br>len(parts)<br><br>3</code></pre> |
+| `take(indices, axis=None, mode=None, unique_indices=False, indices_are_sorted=False, fill_value=None)` | Select elements from the array at the given indices. | <pre><code>q = u.Quantity(jnp.array([10.0, 20.0, 30.0]), unit=u.mV)<br>q.take(jnp.array([0, 2]))<br><br>Quantity([10. 30.], "mV")</code></pre> |
+| `sort(axis=-1, stable=True, order=None)` | Sort the array in-place along the given axis. | <pre><code>q = u.Quantity(jnp.array([3.0, 1.0, 2.0]), unit=u.mV)<br>q.sort()<br><br>Quantity([1. 2. 3.], "mV")</code></pre> |
+| `diagonal(offset=0, axis1=0, axis2=1)` | Return specified diagonals, preserving units. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.diagonal()<br><br>Quantity([1. 4.], "mV")</code></pre> |
+| `trace(offset=0, axis1=0, axis2=1)` | Sum along diagonals of the array, preserving units. | <pre><code>q = u.Quantity(jnp.eye(3), unit=u.mV)<br>q.trace()<br><br>Quantity(3., "mV")</code></pre> |
+| `astype(dtype)` | Return a copy of this quantity with the mantissa cast to `dtype`. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.astype(jnp.float64).dtype<br><br>float64</code></pre> |
 
 ## Functional Structural API
 
@@ -91,14 +93,17 @@ Use these `brainunit.math` functions when composing transformations without bind
 | Repetition | `tile(A, reps, **kwargs)`, `repeat(a, repeats, axis=None, total_repeat_length=None, **kwargs)` |
 | Selection | `take`, `gather`, `choose`, `compress`, `extract` |
 
-The main API categorizes these as functions that keep units. Join examples on the generated pages use values carrying the same unit.
+The module API categorizes these as functions that keep units. Open the [complete functional structural API reference](array-mechanics/functional-structural-api.md) for every exact signature, official one-line description, and example with its result.
 
 ```python
 a = [1, 2] * u.second
 b = [3, 4] * u.second
 joined = u.math.concatenate([a, b])
+# Expected: [1, 2, 3, 4] s.
 rows = u.math.stack([a, b])
+# Expected: [[1, 2], [3, 4]] s with shape (2, 2).
 parts = u.math.array_split(joined, 2)
+# Expected: two Quantity arrays, [1, 2] s and [3, 4] s.
 ```
 
 ## Named-Axis Transformations
@@ -107,19 +112,24 @@ parts = u.math.array_split(joined, 2)
 
 ```python
 channels_last = u.math.einrearrange(x, 'b c h w -> b h w c')
+# Expected: for shape-compatible x, axes change from (b, c, h, w) to (b, h, w, c); unit preserved.
 flat = u.math.einrearrange(x, 'b h w c -> (b h w c)')
+# Expected: for shape-compatible x, a one-dimensional Quantity with all elements; unit preserved.
 split_batch = u.math.einrearrange(
     x,
     '(b1 b2) h w c -> b1 b2 h w c',
     b1=2,
 )
+# Expected: for shape-compatible x, the batch axis splits into axes 2 and b/2; unit preserved.
 ```
 
 `einrepeat(x, pattern, **axes_lengths)` covers repeat, tile, and broadcast-like patterns:
 
 ```python
 expanded = u.math.einrepeat(x, 'h w c -> h new_axis w c', new_axis=5)
+# Expected: for shape-compatible x, a new length-5 axis is inserted after h; unit preserved.
 tiled = u.math.einrepeat(x, 'h w c -> (2 h) (2 w) c')
+# Expected: for shape-compatible x, h and w each double by repetition; unit preserved.
 ```
 
 Use `einshape(x, pattern)` to map named axes to lengths. Use `einreduce()` and `einsum()` through `math-function-library.md` when axes are reduced or contracted.
@@ -150,6 +160,6 @@ All `Quantity` backend methods retain the wrapper and attached unit:
 
 ## Sources Mirrored
 
-- https://brainunit.readthedocs.io/apis/generated/brainunit.Quantity.html
+- https://brainx.chaobrain.com/brainunit/apis/generated/brainunit.Quantity.html
 - https://brainunit.readthedocs.io/apis/brainunit.math.html
 - https://brainunit.readthedocs.io/unit_operations/einstein_operations.html

@@ -35,7 +35,7 @@ The values and units mirror the constants page. Use the constant object in calcu
 - Charge per mole in electrochemistry: `constants.faraday`.
 - Single elementary-charge magnitude: `constants.elementary_charge`.
 - Electromagnetic vacuum properties: `constants.electric` and `constants.magnetic`.
-- Celsius offset handling: `constants.zero_celsius`; see `temperature-conversions.md` for the affine conversion functions.
+- Celsius offset handling: `constants.zero_celsius`; see `Convert Celsius At Affine Boundaries` in the parent skill for the affine conversion functions.
 
 ## Unit-Aware Use
 
@@ -43,9 +43,12 @@ The values and units mirror the constants page. Use the constant object in calcu
 import brainunit as u
 
 R = u.constants.gas
+# Quantity(8.31446262, "J / (K * mol)")
 T = u.celsius2kelvin(25.0)
+# 298.15 K
 V = 0.0224 * u.meter**3
 pressure = R * T / V
+# Expected: approximately 110667.73 kg / (m * s^2 * mol).
 ```
 
 This reference is a lookup catalog. Physical-constant arithmetic and the basic constants workflow remain in the main skill.

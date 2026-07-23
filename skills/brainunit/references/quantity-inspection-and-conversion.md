@@ -45,12 +45,18 @@ import jax.numpy as jnp
 
 q = jnp.array([1.0, 2.0, 3.0]) * u.mV
 
-q_volts = q.to(u.volt)                 # Quantity in V
-raw_volts = q.to_decimal(u.volt)       # plain numeric array
-first = q.item(0)                      # scalar Quantity in mV
-parts = q.tolist()                     # scalar Quantity leaves
+q_volts = q.to(u.volt)
+# Quantity([0.001 0.002 0.003], "V")
+raw_volts = q.to_decimal(u.volt)
+# Array([0.001, 0.002, 0.003], dtype=float32)
+first = q.item(0)
+# Expected: scalar Quantity 1 mV.
+parts = q.tolist()
+# Expected: [1 mV, 2 mV, 3 mV] as scalar Quantity leaves.
 mantissa, unit = u.split_mantissa_unit(q)
+# Expected: mantissa [1, 2, 3] and unit mV.
 rebuilt = mantissa * unit
+# Expected: equivalent to q, [1, 2, 3] mV.
 ```
 
 ## Compatibility Probes
@@ -79,6 +85,7 @@ Convert to the unit expected by an external system before removing the wrapper:
 ```python
 voltage = jnp.array([100.0, 200.0, 300.0]) * u.mV
 payload_in_volts = voltage.to_decimal(u.volt)
+# Array([0.1, 0.2, 0.3], dtype=float32)
 ```
 
 Conversions are not limited to SI prefixes. The official tutorial demonstrates `mile` to `meter`, `kmeter`, and `foot`; `atmosphere` to `pascal`, `bar`, and `mmHg`; and `joule` to `calorie`, `electron_volt`, and `erg`.

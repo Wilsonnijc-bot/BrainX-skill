@@ -61,13 +61,16 @@ import brainunit as u
 
 volt = u.meter2 * u.kilogram / (u.second3 * u.ampere)
 assert volt == u.volt
+# Expected: assertion passes; the derived unit is Unit("V").
 ```
 
 Use `unit.reverse()` when reciprocal intent should be explicit:
 
 ```python
-frequency = u.second.reverse()   # Unit("Hz")
+frequency = u.second.reverse()
+# Unit("Hz")
 inverse_length = u.metre.reverse()
+# Unit("1 / m")
 ```
 
 ## Defining Units
@@ -90,6 +93,7 @@ calorie = u.Unit.create(
     'cal',
     factor=4.184,
 )
+# Unit("cal")
 ```
 
 Define a fundamental or compound unit through `get_or_create_dimension()`:
@@ -101,19 +105,23 @@ metre = u.Unit.create(
     'm',
     base=10.0,
 )
+# Unit("m")
 
 volt = u.Unit.create(
     u.get_or_create_dimension(m=2, kg=1, s=-3, A=-1),
     'volt',
     'V',
 )
+# Unit("V")
 ```
 
 Create a supported prefixed scale from a base unit:
 
 ```python
 kilometre = u.Unit.create_scaled_unit(metre, 'k')
+# Unit("km")
 ratio = 1 * kilometre / (1 * metre)
+# Expected: 1000.0, a plain dimensionless value.
 ```
 
 See `prefix-library.md` for the complete prefix symbol and exponent table.

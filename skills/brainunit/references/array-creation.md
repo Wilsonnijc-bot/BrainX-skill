@@ -1,160 +1,158 @@
 # Array Creation
 
-Start with `asarray()` to normalize unit-bearing inputs and `arange()` to build physical ranges. Use the remaining sections for grids, filled arrays, template-shaped arrays, and matrix patterns; basic scalar or direct `Quantity` construction remains in the skill body.
-
-## Contents
-
-- [`asarray`: normalize and attach units](#asarray-normalize-and-attach-units)
-- [`arange`: build unit-aware ranges](#arange-build-unit-aware-ranges)
-- [Other ranges and grids](#other-ranges-and-grids)
-- [Filled and template arrays](#filled-and-template-arrays)
-- [Matrix constructors](#matrix-constructors)
-- [Additional API constructors](#additional-api-constructors)
-- [Source-backed gotchas](#source-backed-gotchas)
-
-## `asarray`: Normalize And Attach Units
-
-Use `asarray()` as the primary normalization boundary when input may be a plain sequence, an existing `Quantity`, or a sequence of compatible quantities. `brainunit.math.array` is an alias for `brainunit.math.asarray`.
-
-```text
-asarray(a, dtype=None, order=None, unit=None)
-```
-
-| Input and `unit` | Result |
-|---|---|
-| Plain data, no `unit` | Plain array with inferred `dtype` |
-| Unit-bearing quantity data, no `unit` | `Quantity` with its unit inferred from the input |
-| Compatible quantity data plus `unit=target` | `Quantity` converted to `target` |
-| Incompatible quantity elements or target | `UnitMismatchError` |
-
-All elements in a list of quantities must share the same dimension. Supplying `unit` makes the target scale explicit and converts compatible inputs before constructing the result.
+Use this reference for specialized unit-aware ranges, grids, filled arrays, template-shaped arrays, matrix patterns, index constructors, and tree-shaped arrays. Basic `Quantity`, `asarray()`, and `arange()` construction remains in the parent skill.
 
 ```python
 import brainunit as u
-
-plain = u.math.asarray([1, 2, 3])
-inferred = u.math.asarray([1 * u.second, 2 * u.second])
-seconds = u.math.asarray(
-    [1000 * u.ms, 2000 * u.ms],
-    unit=u.second,
-)
-
-try:
-    invalid = u.math.asarray([1 * u.second], unit=u.ampere)
-except Exception as error:
-    print("unit error:", error)
+import jax.numpy as jnp
 ```
 
-Use `dtype` to control the numerical representation and `order` for supported memory-layout requests. Do not strip units before normalization merely to satisfy an array constructor.
+## Contents
 
-## `arange`: Build Unit-Aware Ranges
+- [Choose interval values](#choose-interval-values)
+- [Build coordinate and power grids](#build-coordinate-and-power-grids)
+- [Fill a new shape](#fill-a-new-shape)
+- [Follow an existing shape](#follow-an-existing-shape)
+- [Build matrices and masks](#build-matrices-and-masks)
+- [Locate triangular entries](#locate-triangular-entries)
+- [Mirror pytrees](#mirror-pytrees)
+- [Convert NumPy input](#convert-numpy-input)
+- [Routing](#routing)
+- [Cross-family gotchas](#cross-family-gotchas)
+- [Sources mirrored](#sources-mirrored)
 
-Use `u.math.arange()` as the default constructor for simulation time axes, parameter sweeps, and other half-open physical intervals.
+## Choose Interval Values
 
-```text
-arange(start=None, stop=None, step=None, dtype=None)
-```
+### `linspace`
 
-Values lie in `[start, stop)`. When any supplied bound is a `Quantity`, `start`, `stop`, and `step` must share the same unit; incompatible or mixed physical dimensions raise `UnitMismatchError`. If neither `start` nor `stop` is given, `arange()` raises `TypeError`.
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)` | Generate a fixed number of evenly spaced samples between two endpoints. | Return evenly spaced numbers over a specified interval. | <pre><code>u.math.linspace(0 * u.second, 10 * u.second, 5)<br><br>Quantity([ 0.   2.5  5.   7.5 10. ], "s")</code></pre> |
 
-```python
-# Plain index range.
-indices = u.math.arange(5)
+### `logspace`
 
-# Quantity stop with an explicit quantity step; start defaults to zero.
-first_seconds = u.math.arange(5 * u.second, step=1 * u.second)
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None)` | Generate values whose exponents are evenly spaced. | Return numbers spaced evenly on a log scale. | <pre><code>u.math.logspace(0, 2, 3)<br><br>Array([  1.,  10., 100.], dtype=float32)</code></pre> |
 
-# Canonical simulation time axis.
-times = u.math.arange(0.0 * u.ms, 100.0 * u.ms, 0.1 * u.ms)
+## Build Coordinate And Power Grids
 
-# Parameter sweep with an explicit dtype.
-currents = u.math.arange(
-    0.0 * u.nA,
-    1.0 * u.nA,
-    0.1 * u.nA,
-    dtype=float,
-)
-```
+### `meshgrid`
 
-Prefer this unit-aware interval construction when endpoints already carry physical meaning; it validates the interval before returning a `Quantity` and avoids attaching a unit to an unchecked plain range afterward.
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `meshgrid(*xi, copy=True, sparse=False, indexing='xy')` | Expand 1-D coordinate vectors into dense or sparse coordinate grids. | Return coordinate matrices from coordinate vectors. | <pre><code>x = jnp.array([1, 2]) * u.meter<br>t = jnp.array([0, 1, 2]) * u.second<br>x_grid, t_grid = u.math.meshgrid(x, t, indexing='ij')<br><br># both shapes: (2, 3)<br># units: meter and second</code></pre> |
 
-## Other Ranges And Grids
+### `vander`
 
-| Exact signature | Unit rule |
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `vander(x, N=None, increasing=False, unit=Unit('1'))` | Build a Vandermonde matrix from powers of a 1-D vector. | Generate a Vandermonde matrix. | <pre><code>u.math.vander(jnp.array([1, 2]), N=3)<br><br>Array([[1, 1, 1],<br>       [4, 2, 1]], dtype=int32)</code></pre> |
+
+## Fill A New Shape
+
+### Initialized arrays
+
+| API | Description & result |
 |---|---|
-| `linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)` | Quantity endpoints must have the same unit; `endpoint=False` excludes `stop` |
-| `logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None)` | `start` and `stop` must be dimensionless; result is always a plain array |
-| `meshgrid(*xi, copy=True, sparse=False, indexing='xy')` | Accepts coordinate vectors and supports `Quantity` inputs |
-| `vander(x, N=None, increasing=False, unit=Unit('1'))` | `x` must be dimensionless if it is a `Quantity`; `unit` controls the returned `Quantity` |
+| `full(shape, fill_value, dtype=None)` | Fill a new shape with `fill_value`; a quantity fill produces a `Quantity` with that unit.<br><br><pre><code>u.math.full(2, 3 * u.second)<br># Quantity([3, 3], "s")</code></pre> |
+| `ones(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with ones. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br><br><pre><code>u.math.ones(2, unit=u.second)<br># Quantity([1., 1.], "s")</code></pre> |
+| `zeros(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with zeros. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br><br><pre><code>u.math.zeros(2)<br># plain JAX array</code></pre> |
 
-```python
-samples = u.math.linspace(0 * u.second, 10 * u.second, 5)
-x_grid, y_grid = u.math.meshgrid(
-    u.math.asarray([1, 2, 3], unit=u.second),
-    u.math.asarray([4, 5], unit=u.second),
-)
-```
+### `empty`
+
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `empty(shape, dtype=None, unit=Unit('1'))` | Allocate a shape when every entry will be overwritten before it is read. | Return a new quantity or array of given shape and type, without initializing entries. | <pre><code>buffer = u.math.empty((2, 2), unit=u.second)<br><br>buffer.shape  # (2, 2)<br># Entry values are unspecified.</code></pre> |
+
+## Follow An Existing Shape
+
+### `full_like`
+
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `full_like(a, fill_value, dtype=None, shape=None)` | Fill an array using a prototype's shape and dtype. | Return a new quantity or array with the same shape and type as a given array or quantity, filled with `fill_value`. | <pre><code>prototype = jnp.zeros(2) * u.second<br>u.math.full_like(prototype, 500 * u.ms)<br><br>Quantity([0.5 0.5], "s")</code></pre> |
+
+### `empty_like`
+
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `empty_like(prototype, dtype=None, shape=None, unit=Unit('1'))` | Allocate an uninitialized buffer shaped and typed like a prototype. | Return a new quantity or array with the same shape and type as a given array. | <pre><code>prototype = jnp.ones(3) * u.second<br>buffer = u.math.empty_like(prototype)<br><br>buffer.shape  # (3,)<br># unit: second; entry values are unspecified</code></pre> |
+
+### Create One or zero arrays
+
+| API | Description & result |
+|---|---|
+| `ones_like(a, dtype=None, shape=None, unit=Unit('1'))` | Create ones with `a`'s shape and dtype. A `Quantity` prototype preserves its unit by default; a non-trivial `unit` attaches a unit to a plain prototype or requests a compatible conversion. |
+| `zeros_like(a, dtype=None, shape=None, unit=Unit('1'))` | Create zeros with `a`'s shape and dtype. A `Quantity` prototype preserves its unit by default; a non-trivial `unit` attaches a unit to a plain prototype or requests a compatible conversion. |
+
+## Build Matrices And Masks
+
+### Identity-like and triangular constructors
+
+| API | Description & result |
+|---|---|
+| `eye(N, M=None, k=0, dtype=None, unit=Unit('1'))` | Create an `N`-by-`M` array with ones on diagonal `k` and zeros elsewhere. Returns a plain JAX array by default or a `Quantity` with a non-trivial unit. |
+| `identity(n, dtype=None, unit=Unit('1'))` | Create an `n`-by-`n` identity array. Returns a plain JAX array by default or a `Quantity` with a non-trivial unit. |
+| `tri(N, M=None, k=0, dtype=None, unit=Unit('1'))` | Create an `N`-by-`M` array with ones at and below diagonal `k`. Returns a plain JAX array by default or a `Quantity` with a non-trivial unit. |
+
+### `diag`
+
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `diag(v, k=0, unit=Unit('1'))` | Construct a diagonal matrix or extract a diagonal based on input rank. | Extract a diagonal or construct a diagonal array. | <pre><code>vector = jnp.array([1, 2, 3]) * u.second<br>matrix = u.math.diag(vector)<br>extracted = u.math.diag(matrix)<br><br>matrix.shape, extracted.shape  # ((3, 3), (3,))</code></pre> |
+
+### Keep one triangle of an existing array
+
+| API | Description & result |
+|---|---|
+| `tril(m, k=0, unit=Unit('1'))` | Return `m` with entries above diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br><br><pre><code>m = jnp.arange(1, 5).reshape(2, 2)<br>u.math.tril(m)<br># [[1, 0], [3, 4]]</code></pre> |
+| `triu(m, k=0, unit=Unit('1'))` | Return `m` with entries below diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br><br><pre><code>m = jnp.arange(1, 5).reshape(2, 2)<br>u.math.triu(m)<br># [[1, 2], [0, 4]]</code></pre> |
+
+### `fill_diagonal`
+
+| Exact signature | Use when | One-line description | Code and result |
+|---|---|---|---|
+| `fill_diagonal(a, val, wrap=False, inplace=False)` | Replace the main diagonal of an existing array with one value. | Fill the main diagonal of the given array of any dimensionality. | <pre><code>q = jnp.zeros((2, 2)) * u.second<br>filled = u.math.fill_diagonal(q, 500 * u.ms)<br><br>Quantity([[0.5 0. ]<br>          [0.  0.5]], "s")</code></pre> |
+
+## Locate Triangular Entries
+
+### Lower and upper triangle indices
+
+| API | Description & result |
+|---|---|
+| `tril_indices(n, k=0, m=None)` | Return row and column indices for the lower triangle of an `(n, m)` array as two plain integer arrays. |
+| `triu_indices(n, k=0, m=None)` | Return row and column indices for the upper triangle of an `(n, m)` array as two plain integer arrays. |
+| `tril_indices_from(arr, k=0)` | Derive lower-triangle row and column indices from a 2-D array's shape. Returns two plain integer arrays; an input `Quantity` does not give the indices a unit. |
+| `triu_indices_from(arr, k=0)` | Derive upper-triangle row and column indices from a 2-D array's shape. Returns two plain integer arrays; an input `Quantity` does not give the indices a unit. |
+
+## Mirror Pytrees
+
+### One or zero in every leaf
+
+| API | Description & result |
+|---|---|
+| `tree_ones_like(tree)` | Replace every pytree leaf with ones while preserving structure, leaf shape, dtype, and unit; plain leaves remain plain and quantity leaves remain quantities. |
+| `tree_zeros_like(tree)` | Replace every pytree leaf with zeros while preserving structure, leaf shape, dtype, and unit; plain leaves remain plain and quantity leaves remain quantities. |
+
+## Convert NumPy Input
+
+| API | Description & result |
+|---|---|
+| `from_numpy(x, unit=Unit('1'))` | Convert a NumPy array to the JAX backend. Returns a plain JAX array by default or a `Quantity` with the supplied non-trivial unit. |
+
+## Routing
 
 `array_split()` appears on the tutorial page, but it is a structural operation; route it to `array-mechanics.md`.
 
-## Filled And Template Arrays
-
-| Exact signature | Result selection |
-|---|---|
-| `full(shape, fill_value, dtype=None)` | A quantity fill value gives the result the same unit; otherwise returns a plain array |
-| `empty(shape, dtype=None, unit=Unit('1'))` | `unit` selects a `Quantity`; entries are uninitialized |
-| `ones(shape, dtype=None, unit=Unit('1'))` | `unit` selects a unit-aware array of ones |
-| `zeros(shape, dtype=None, unit=Unit('1'))` | `unit` selects a unit-aware array of zeros |
-| `full_like(a, fill_value, dtype=None, shape=None)` | Uses `a` for shape and dtype; a quantity prototype requires a compatible fill value |
-| `empty_like(prototype, dtype=None, shape=None, unit=Unit('1'))` | Uses prototype shape and dtype, with optional overrides |
-| `ones_like(a, dtype=None, shape=None, unit=Unit('1'))` | Preserves a quantity prototype's unit; `shape` can override shape |
-| `zeros_like(a, dtype=None, shape=None, unit=Unit('1'))` | Preserves a quantity prototype's unit; `shape` can override shape |
-
-```python
-q = u.math.ones((2, 2), unit=u.second)
-same_shape = u.math.zeros_like(q)
-filled = u.math.full_like(q, 4 * u.second)
-```
-
-## Matrix Constructors
-
-| Exact signature | Purpose |
-|---|---|
-| `eye(N, M=None, k=0, dtype=None, unit=Unit('1'))` | Identity-like 2-D result with diagonal offset `k` |
-| `identity(n, dtype=None, unit=Unit('1'))` | Square identity result |
-| `tri(N, M=None, k=0, dtype=None, unit=Unit('1'))` | Ones at and below diagonal `k` |
-| `diag(v, k=0, unit=Unit('1'))` | Constructs a diagonal matrix from 1-D input or extracts from 2-D input |
-| `tril(m, k=0, unit=Unit('1'))` | Zeros entries above diagonal `k`; applies to final two axes when `ndim > 2` |
-| `triu(m, k=0, unit=Unit('1'))` | Zeros entries below diagonal `k`; applies to final two axes when `ndim > 2` |
-| `fill_diagonal(a, val, wrap=False, inplace=False)` | Fills locations `a[i, i, ..., i]`; `val` must have a compatible unit |
-
-```python
-identity_seconds = u.math.eye(3, unit=u.second)
-diagonal_seconds = u.math.diag(u.math.asarray([1, 2, 3]), unit=u.second)
-updated = u.math.fill_diagonal(
-    u.math.zeros((3, 3), unit=u.second),
-    4 * u.second,
-)
-```
-
-## Additional API Constructors
-
-- `tril_indices(n, k=0, m=None)` and `triu_indices(n, k=0, m=None)` create triangular index tuples.
-- `tril_indices_from(arr, k=0)` and `triu_indices_from(arr, k=0)` derive triangular indices from an array shape.
-- `from_numpy(x, unit=Unit('1'))` converts a NumPy array to a JAX array and can attach a unit.
-- `tree_ones_like(tree)` and `tree_zeros_like(tree)` retain tree structure and fill every leaf.
-
 Backend extraction and `as_numpy()` belong in `array-mechanics.md` because they cross an existing array boundary rather than create a scientific quantity from source values.
 
-## Source-Backed Gotchas
+## Cross-Family Gotchas
 
-- `logspace()` rejects unit-bearing exponents because `base ** x` is intrinsically dimensionless.
-- `vander()` likewise requires a dimensionless `x`; its columns use different powers of `x`.
-- `full_like()` rejects a unit-bearing fill for a plain prototype and a plain fill for a unit-bearing prototype.
-- The `unit` argument to `diag()` is ignored when `v` already carries a unit.
-- `empty()` and `empty_like()` do not initialize entries.
+- For constructors with `unit=Unit('1')`, the unitless default produces a plain JAX array unless a quantity input supplies a unit; pass a non-trivial `Unit` to request a `Quantity`.
+- The `dtype` and `shape` arguments on `*_like` functions override the prototype; otherwise its dtype and shape are retained.
 
 ## Sources Mirrored
 
-- https://brainunit.readthedocs.io/unit_operations/array_creation.html
-- https://brainunit.readthedocs.io/apis/brainunit.math.html
+- https://brainx.chaobrain.com/brainunit/unit_operations/array_creation.html
+- https://brainx.chaobrain.com/brainunit/apis/brainunit.math.html

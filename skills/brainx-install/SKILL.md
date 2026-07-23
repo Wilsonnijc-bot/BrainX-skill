@@ -1,6 +1,6 @@
 ---
 name: brainx-install
-description: Install, uninstall, or configure BrainX, change its package version or device target, and resolve BrainX ecosystem compatibility. Use whenever a user asks to install, set up, upgrade, downgrade, pin, migrate, remove, uninstall, clean up, or reconcile BrainX packages; switch or select CPU, CUDA 12, CUDA 13, or TPU support. Do not use for general BrainX modeling.
+description: "Manage BrainX Python package installation and package state: install, set up, upgrade, downgrade, pin, migrate, uninstall, or clean up BrainX; select CPU, CUDA 12, CUDA 13, or TPU package extras; and reconcile BrainX release, dependency, and virtual-environment compatibility. Use only for requests about installing or removing packages, package versions, dependency constraints, pip or virtual-environment setup, or device-specific package builds. Do not use for BrainX modeling, simulation, APIs, coding, application debugging, performance, or other general BrainX questions."
 ---
 
 # BrainX Install

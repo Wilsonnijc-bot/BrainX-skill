@@ -84,10 +84,14 @@ The page constructs every supported prefix variant of a local `metre` object wit
 from brainunit import Unit, get_or_create_dimension
 
 metre = Unit.create(get_or_create_dimension(m=1), "meter", "m")
+# Unit("m")
 
 kilometre = Unit.create_scaled_unit(metre, "k")
+# Unit("km")
 millimetre = Unit.create_scaled_unit(metre, "m")
+# Unit("mm")
 micrometre = Unit.create_scaled_unit(metre, "u")
+# Unit("um")
 ```
 
 Inspect the resulting `Unit.scale` when validating a custom prefix:
@@ -96,6 +100,7 @@ Inspect the resulting `Unit.scale` when validating a custom prefix:
 assert kilometre.scale == 3
 assert millimetre.scale == -3
 assert micrometre.scale == -6
+# Expected: all assertions pass.
 ```
 
 ## Source-Backed Gotchas

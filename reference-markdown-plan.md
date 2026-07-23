@@ -40,7 +40,7 @@ workflow examples inline and declares no standalone script.
 | `skills/brainunit/references/array-mechanics.md` | Inspection, indexing, functional updates, shape operations, and backend conversion |
 | `skills/brainunit/references/math-function-library.md` | Function choice by unit semantics |
 | `skills/brainunit/references/unit-structure-and-definition.md` | Unit structure, combination, and custom definitions |
-| `skills/brainunit/references/temperature-conversions.md` | Affine temperature conversions and temperature differences |
+| `skills/brainunit/references/typing-and-runtime-validation.md` | Type aliases, physical-type annotations, runtime type helpers, and annotation-driven validation |
 | `skills/brainunit/references/prefix-library.md` | Predefined units, prefix names, and scales |
 | `skills/brainunit/references/physical-constant-library.md` | Unit-aware physical constants |
 
