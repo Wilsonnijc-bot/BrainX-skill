@@ -62,21 +62,21 @@ None of these expressions modifies the original object; each returns a modified 
 
 | Exact signature | One-line description | Example & result |
 |---|---|---|
-| `reshape(shape, order='C')` | Return a quantity with the same data but a new shape. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV)<br>q.reshape((3, 1)).shape<br><br>(3, 1)</code></pre> |
-| `flatten()` | Return a 1-D copy of this quantity. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.flatten()<br><br>Quantity([1. 2. 3. 4.], "mV")</code></pre> |
-| `squeeze(axis=None)` | Remove length-one axes from the array. | <pre><code>q = u.Quantity(jnp.array([[[1.0]]]), unit=u.mV)<br>q.squeeze().shape<br><br>()</code></pre> |
-| `expand_dims(axis)` | Insert new axes at the given positions. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.expand_dims(0).shape<br><br>(1, 2)</code></pre> |
-| `unsqueeze(axis)` | Insert a length-one axis (PyTorch-style alias for `expand_dims()`). | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.unsqueeze(0).shape<br><br>(1, 2)</code></pre> |
-| `transpose(*axes)` | Return the array with axes transposed. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.transpose().shape<br><br>(2, 2)</code></pre> |
-| `swapaxes(axis1, axis2)` | Interchange two axes of the array. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.swapaxes(0, 1).shape<br><br>(2, 2)</code></pre> |
-| `repeat(repeats, axis=None)` | Repeat elements of the array. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.repeat(2)<br><br>Quantity([1. 1. 2. 2.], "mV")</code></pre> |
-| `tile(reps)` | Construct an array by repeating this quantity. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.tile(2)<br><br>Quantity([1. 2. 1. 2.], "mV")</code></pre> |
-| `split(indices_or_sections, axis=0)` | Split the array into multiple sub-arrays. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV)<br>parts = q.split(3)<br>len(parts)<br><br>3</code></pre> |
-| `take(indices, axis=None, mode=None, unique_indices=False, indices_are_sorted=False, fill_value=None)` | Select elements from the array at the given indices. | <pre><code>q = u.Quantity(jnp.array([10.0, 20.0, 30.0]), unit=u.mV)<br>q.take(jnp.array([0, 2]))<br><br>Quantity([10. 30.], "mV")</code></pre> |
-| `sort(axis=-1, stable=True, order=None)` | Sort the array in-place along the given axis. | <pre><code>q = u.Quantity(jnp.array([3.0, 1.0, 2.0]), unit=u.mV)<br>q.sort()<br><br>Quantity([1. 2. 3.], "mV")</code></pre> |
-| `diagonal(offset=0, axis1=0, axis2=1)` | Return specified diagonals, preserving units. | <pre><code>q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV)<br>q.diagonal()<br><br>Quantity([1. 4.], "mV")</code></pre> |
-| `trace(offset=0, axis1=0, axis2=1)` | Sum along diagonals of the array, preserving units. | <pre><code>q = u.Quantity(jnp.eye(3), unit=u.mV)<br>q.trace()<br><br>Quantity(3., "mV")</code></pre> |
-| `astype(dtype)` | Return a copy of this quantity with the mantissa cast to `dtype`. | <pre><code>q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV)<br>q.astype(jnp.float64).dtype<br><br>float64</code></pre> |
+| `reshape(shape, order='C')` | Return a quantity with the same data but a new shape. | `q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV); q.reshape((3, 1)).shape`<br>`# (3, 1)` |
+| `flatten()` | Return a 1-D copy of this quantity. | `q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV); q.flatten()`<br>`# Quantity([1. 2. 3. 4.], "mV")` |
+| `squeeze(axis=None)` | Remove length-one axes from the array. | `q = u.Quantity(jnp.array([[[1.0]]]), unit=u.mV); q.squeeze().shape`<br>`# ()` |
+| `expand_dims(axis)` | Insert new axes at the given positions. | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.expand_dims(0).shape`<br>`# (1, 2)` |
+| `unsqueeze(axis)` | Insert a length-one axis (PyTorch-style alias for `expand_dims()`). | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.unsqueeze(0).shape`<br>`# (1, 2)` |
+| `transpose(*axes)` | Return the array with axes transposed. | `q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV); q.transpose().shape`<br>`# (2, 2)` |
+| `swapaxes(axis1, axis2)` | Interchange two axes of the array. | `q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV); q.swapaxes(0, 1).shape`<br>`# (2, 2)` |
+| `repeat(repeats, axis=None)` | Repeat elements of the array. | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.repeat(2)`<br>`# Quantity([1. 1. 2. 2.], "mV")` |
+| `tile(reps)` | Construct an array by repeating this quantity. | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.tile(2)`<br>`# Quantity([1. 2. 1. 2.], "mV")` |
+| `split(indices_or_sections, axis=0)` | Split the array into multiple sub-arrays. | `q = u.Quantity(jnp.array([1.0, 2.0, 3.0]), unit=u.mV); parts = q.split(3); len(parts)`<br>`# 3` |
+| `take(indices, axis=None, mode=None, unique_indices=False, indices_are_sorted=False, fill_value=None)` | Select elements from the array at the given indices. | `q = u.Quantity(jnp.array([10.0, 20.0, 30.0]), unit=u.mV); q.take(jnp.array([0, 2]))`<br>`# Quantity([10. 30.], "mV")` |
+| `sort(axis=-1, stable=True, order=None)` | Sort the array in-place along the given axis. | `q = u.Quantity(jnp.array([3.0, 1.0, 2.0]), unit=u.mV); q.sort()`<br>`# Quantity([1. 2. 3.], "mV")` |
+| `diagonal(offset=0, axis1=0, axis2=1)` | Return specified diagonals, preserving units. | `q = u.Quantity(jnp.array([[1.0, 2.0], [3.0, 4.0]]), unit=u.mV); q.diagonal()`<br>`# Quantity([1. 4.], "mV")` |
+| `trace(offset=0, axis1=0, axis2=1)` | Sum along diagonals of the array, preserving units. | `q = u.Quantity(jnp.eye(3), unit=u.mV); q.trace()`<br>`# Quantity(3., "mV")` |
+| `astype(dtype)` | Return a copy of this quantity with the mantissa cast to `dtype`. | `q = u.Quantity(jnp.array([1.0, 2.0]), unit=u.mV); q.astype(jnp.float64).dtype`<br>`# float64` |
 
 ## Functional Structural API
 

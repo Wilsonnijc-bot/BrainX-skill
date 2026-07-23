@@ -27,13 +27,13 @@ import jax.numpy as jnp
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)` | Generate a fixed number of evenly spaced samples between two endpoints. | Return evenly spaced numbers over a specified interval. | <pre><code>u.math.linspace(0 * u.second, 10 * u.second, 5)<br><br>Quantity([ 0.   2.5  5.   7.5 10. ], "s")</code></pre> |
+| `linspace(start, stop, num=50, endpoint=True, retstep=False, dtype=None)` | Generate a fixed number of evenly spaced samples between two endpoints. | Return evenly spaced numbers over a specified interval. | `u.math.linspace(0 * u.second, 10 * u.second, 5)`<br>`# Quantity([ 0.   2.5  5.   7.5 10. ], "s")` |
 
 ### `logspace`
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None)` | Generate values whose exponents are evenly spaced. | Return numbers spaced evenly on a log scale. | <pre><code>u.math.logspace(0, 2, 3)<br><br>Array([  1.,  10., 100.], dtype=float32)</code></pre> |
+| `logspace(start, stop, num=50, endpoint=True, base=10.0, dtype=None)` | Generate values whose exponents are evenly spaced. | Return numbers spaced evenly on a log scale. | `u.math.logspace(0, 2, 3)`<br>`# Array([  1.,  10., 100.], dtype=float32)` |
 
 ## Build Coordinate And Power Grids
 
@@ -41,13 +41,13 @@ import jax.numpy as jnp
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `meshgrid(*xi, copy=True, sparse=False, indexing='xy')` | Expand 1-D coordinate vectors into dense or sparse coordinate grids. | Return coordinate matrices from coordinate vectors. | <pre><code>x = jnp.array([1, 2]) * u.meter<br>t = jnp.array([0, 1, 2]) * u.second<br>x_grid, t_grid = u.math.meshgrid(x, t, indexing='ij')<br><br># both shapes: (2, 3)<br># units: meter and second</code></pre> |
+| `meshgrid(*xi, copy=True, sparse=False, indexing='xy')` | Expand 1-D coordinate vectors into dense or sparse coordinate grids. | Return coordinate matrices from coordinate vectors. | `x = jnp.array([1, 2]) * u.meter; t = jnp.array([0, 1, 2]) * u.second; x_grid, t_grid = u.math.meshgrid(x, t, indexing='ij')`<br>`# both shapes: (2, 3); units: meter and second` |
 
 ### `vander`
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `vander(x, N=None, increasing=False, unit=Unit('1'))` | Build a Vandermonde matrix from powers of a 1-D vector. | Generate a Vandermonde matrix. | <pre><code>u.math.vander(jnp.array([1, 2]), N=3)<br><br>Array([[1, 1, 1],<br>       [4, 2, 1]], dtype=int32)</code></pre> |
+| `vander(x, N=None, increasing=False, unit=Unit('1'))` | Build a Vandermonde matrix from powers of a 1-D vector. | Generate a Vandermonde matrix. | `u.math.vander(jnp.array([1, 2]), N=3)`<br>`# Array([[1, 1, 1], [4, 2, 1]], dtype=int32)` |
 
 ## Fill A New Shape
 
@@ -55,15 +55,15 @@ import jax.numpy as jnp
 
 | API | Description & result |
 |---|---|
-| `full(shape, fill_value, dtype=None)` | Fill a new shape with `fill_value`; a quantity fill produces a `Quantity` with that unit.<br><br><pre><code>u.math.full(2, 3 * u.second)<br># Quantity([3, 3], "s")</code></pre> |
-| `ones(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with ones. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br><br><pre><code>u.math.ones(2, unit=u.second)<br># Quantity([1., 1.], "s")</code></pre> |
-| `zeros(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with zeros. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br><br><pre><code>u.math.zeros(2)<br># plain JAX array</code></pre> |
+| `full(shape, fill_value, dtype=None)` | Fill a new shape with `fill_value`; a quantity fill produces a `Quantity` with that unit.<br>`u.math.full(2, 3 * u.second)`<br>`# Quantity([3, 3], "s")` |
+| `ones(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with ones. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br>`u.math.ones(2, unit=u.second)`<br>`# Quantity([1., 1.], "s")` |
+| `zeros(shape, dtype=None, unit=Unit('1'))` | Fill a new shape with zeros. Returns a plain JAX array by default or a `Quantity` when a non-trivial unit is supplied.<br>`u.math.zeros(2)`<br>`# plain JAX array` |
 
 ### `empty`
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `empty(shape, dtype=None, unit=Unit('1'))` | Allocate a shape when every entry will be overwritten before it is read. | Return a new quantity or array of given shape and type, without initializing entries. | <pre><code>buffer = u.math.empty((2, 2), unit=u.second)<br><br>buffer.shape  # (2, 2)<br># Entry values are unspecified.</code></pre> |
+| `empty(shape, dtype=None, unit=Unit('1'))` | Allocate a shape when every entry will be overwritten before it is read. | Return a new quantity or array of given shape and type, without initializing entries. | `buffer = u.math.empty((2, 2), unit=u.second); buffer.shape`<br>`# (2, 2); entry values are unspecified` |
 
 ## Follow An Existing Shape
 
@@ -71,13 +71,13 @@ import jax.numpy as jnp
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `full_like(a, fill_value, dtype=None, shape=None)` | Fill an array using a prototype's shape and dtype. | Return a new quantity or array with the same shape and type as a given array or quantity, filled with `fill_value`. | <pre><code>prototype = jnp.zeros(2) * u.second<br>u.math.full_like(prototype, 500 * u.ms)<br><br>Quantity([0.5 0.5], "s")</code></pre> |
+| `full_like(a, fill_value, dtype=None, shape=None)` | Fill an array using a prototype's shape and dtype. | Return a new quantity or array with the same shape and type as a given array or quantity, filled with `fill_value`. | `prototype = jnp.zeros(2) * u.second; u.math.full_like(prototype, 500 * u.ms)`<br>`# Quantity([0.5 0.5], "s")` |
 
 ### `empty_like`
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `empty_like(prototype, dtype=None, shape=None, unit=Unit('1'))` | Allocate an uninitialized buffer shaped and typed like a prototype. | Return a new quantity or array with the same shape and type as a given array. | <pre><code>prototype = jnp.ones(3) * u.second<br>buffer = u.math.empty_like(prototype)<br><br>buffer.shape  # (3,)<br># unit: second; entry values are unspecified</code></pre> |
+| `empty_like(prototype, dtype=None, shape=None, unit=Unit('1'))` | Allocate an uninitialized buffer shaped and typed like a prototype. | Return a new quantity or array with the same shape and type as a given array. | `prototype = jnp.ones(3) * u.second; buffer = u.math.empty_like(prototype); buffer.shape`<br>`# (3,); unit: second; entry values are unspecified` |
 
 ### Create One or zero arrays
 
@@ -100,20 +100,20 @@ import jax.numpy as jnp
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `diag(v, k=0, unit=Unit('1'))` | Construct a diagonal matrix or extract a diagonal based on input rank. | Extract a diagonal or construct a diagonal array. | <pre><code>vector = jnp.array([1, 2, 3]) * u.second<br>matrix = u.math.diag(vector)<br>extracted = u.math.diag(matrix)<br><br>matrix.shape, extracted.shape  # ((3, 3), (3,))</code></pre> |
+| `diag(v, k=0, unit=Unit('1'))` | Construct a diagonal matrix or extract a diagonal based on input rank. | Extract a diagonal or construct a diagonal array. | `vector = jnp.array([1, 2, 3]) * u.second; matrix = u.math.diag(vector); extracted = u.math.diag(matrix); (matrix.shape, extracted.shape)`<br>`# ((3, 3), (3,))` |
 
 ### Keep one triangle of an existing array
 
 | API | Description & result |
 |---|---|
-| `tril(m, k=0, unit=Unit('1'))` | Return `m` with entries above diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br><br><pre><code>m = jnp.arange(1, 5).reshape(2, 2)<br>u.math.tril(m)<br># [[1, 0], [3, 4]]</code></pre> |
-| `triu(m, k=0, unit=Unit('1'))` | Return `m` with entries below diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br><br><pre><code>m = jnp.arange(1, 5).reshape(2, 2)<br>u.math.triu(m)<br># [[1, 2], [0, 4]]</code></pre> |
+| `tril(m, k=0, unit=Unit('1'))` | Return `m` with entries above diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br>`m = jnp.arange(1, 5).reshape(2, 2); u.math.tril(m)`<br>`# [[1, 0], [3, 4]]` |
+| `triu(m, k=0, unit=Unit('1'))` | Return `m` with entries below diagonal `k` zeroed, applying to the final two axes when `m.ndim > 2`. It preserves a `Quantity` input's unit by default; `unit` can attach or request a compatible output unit.<br>`m = jnp.arange(1, 5).reshape(2, 2); u.math.triu(m)`<br>`# [[1, 2], [0, 4]]` |
 
 ### `fill_diagonal`
 
 | Exact signature | Use when | One-line description | Code and result |
 |---|---|---|---|
-| `fill_diagonal(a, val, wrap=False, inplace=False)` | Replace the main diagonal of an existing array with one value. | Fill the main diagonal of the given array of any dimensionality. | <pre><code>q = jnp.zeros((2, 2)) * u.second<br>filled = u.math.fill_diagonal(q, 500 * u.ms)<br><br>Quantity([[0.5 0. ]<br>          [0.  0.5]], "s")</code></pre> |
+| `fill_diagonal(a, val, wrap=False, inplace=False)` | Replace the main diagonal of an existing array with one value. | Fill the main diagonal of the given array of any dimensionality. | `q = jnp.zeros((2, 2)) * u.second; filled = u.math.fill_diagonal(q, 500 * u.ms)`<br>`# Quantity([[0.5 0. ] [0.  0.5]], "s")` |
 
 ## Locate Triangular Entries
 
